@@ -56,7 +56,12 @@ def dump_schema():
 
 
 def dump(resource_id):
-    data, errors = dict_fns.validate(request.args.to_dict(), dump_schema())
+    data_dict = request.args.to_dict()
+    import pdb; pdb.set_trace()
+    if len(data_dict.get('filters', '')) > 2:
+        data_dict['filters'] = _filter_convert(data_dict.pop('filters'))
+
+    data, errors = dict_fns.validate(data_dict, dump_schema())
     if errors:
         abort(
             400, u'\n'.join(
@@ -88,6 +93,21 @@ def dump(resource_id):
     except ObjectNotFound:
         abort(404, _(u'DataStore resource not found'))
     return response
+
+
+def _filter_convert(string):
+    # filter string always starts with "{'filters':+"
+    # we can simply remove it
+    filters = string[13:]
+    filter_dict = {}
+
+    for param in filters.split("|"):
+        param = param.strip("'}{u")
+        k, v = param.split(':')
+        filter_dict.setdefault(k, [])
+        filter_dict[k].append(v)
+
+    return filter_dict
 
 
 class DictionaryView(MethodView):
