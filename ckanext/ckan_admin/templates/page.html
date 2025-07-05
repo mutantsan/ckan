@@ -1,0 +1,16 @@
+{% ckan_extends %}
+
+{%- block scripts %}
+    {% asset 'ckan_admin/ckan-admin-js' %}
+    {% asset 'ckan_admin/ckan-admin-vendor-js' %}
+
+    {{ super() }}
+{% endblock -%}
+
+
+{%- block styles -%}
+    {% asset 'ckan_admin/ckan-admin-css' %}
+    {% asset 'ckan_admin/ckan-admin-vendor-css' %}
+
+    {{ super() }}
+{% endblock %}

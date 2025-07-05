@@ -1,0 +1,61 @@
+@use "variables" as v;
+
+body[admin-panel="true"] {
+    font-family: v.$font-family;
+    background-color: var(--ap-body-bg);
+    color: var(--ap-color);
+
+    #content {
+        padding-top: 1rem;
+    }
+
+    div.main,
+    div.main #content {
+        background: var(--ap-body-bg);
+    }
+
+    a {
+        color: var(--ap-color-link);
+
+        &:hover, &:focus, &:active {
+            color: var(--ap-color-link-hover);
+        }
+    }
+}
+
+.toast-body {
+    position: relative;
+}
+
+.progress-bar-timer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: var(--bs-blue);
+  border-bottom-left-radius: 0.25rem;
+  animation: reverseProgress 5s linear forwards;
+}
+
+@keyframes reverseProgress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+
+.masthead {
+    position: relative;
+
+    .container .debug {
+        position: absolute;
+    }
+}
+
+
+.ap-content {
+    h1 {
+        font-size: 1.625rem;
+        margin-bottom: 4.375rem;
+        font-weight: 700;
+    }
+}

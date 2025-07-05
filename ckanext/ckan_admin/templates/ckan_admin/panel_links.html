@@ -1,0 +1,71 @@
+{% from "macros/form/attributes.html" import attributes %}
+
+{% macro toolbar_button(button, nested=false) %}
+    {% set is_active = request.path == button.url %}
+
+    {% if not nested %}
+        {% set link_class = ' nav-item dropdown' if button.subitems else 'nav-item' %}
+    {% else %}
+        {% set link_class = ' nav-item' %}
+    {% endif %}
+
+    {% if button.attributes and button.attributes.class %}
+        {% do button.attributes.update({"class": button.attributes.class ~ " " ~ link_class}) %}
+    {% endif %}
+
+    <li
+        {% if button.attributes and button.attributes.class %}
+            class="{{ button.attributes.class }} {{ 'active' if is_active }}"
+        {% else %}
+            class="{% if not nested %} nav-item {% if button.subitems %}dropdown{% endif %}{% endif %} {{ 'active' if is_active }}"
+        {% endif %}
+        {{ attributes(button.attributes or {}) }}>
+
+        <a
+            class="{% if nested %}dropdown-item {{ 'with-subitems' if button.subitems }}{% else %}nav-link{% endif %}"
+            href="{{ button.url or '#' }}"
+            {% if button.aria_label %}aria-label="{{ button.aria_label }}"{% endif %}>
+
+            {% if button.icon %}
+                <i class="{{ button.icon }}"></i>
+            {% endif %}
+
+            {{ button.label }}
+
+            {% if nested and button.subitems %}
+                <i class="fas fa-chevron-right"></i>
+            {% endif %}
+        </a>
+
+        {% if button.subitems %}
+            {% set dropdown_id = "dropdown-" ~ h.ckan_admin_munge_string(button.label) %}
+
+            {% if not nested %}
+                <a
+                    class="nav-link ap-dropdown-toggle"
+                    href="#"
+                    id="{{ dropdown_id }}"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    aria-label="{{ button.label }} options">
+
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            {% endif %}
+
+            <ul class="dropdown-menu {% if nested %}submenu{% endif %}" {% if not nested %}aria-labelledby="{{ dropdown_id }}"{% endif %}>
+                {% for item in button.subitems %}
+                    {{ toolbar_button(item, nested=True) }}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% for button in h.ckan_admin_get_toolbar_structure() %}
+    {# render if it's a standalone button or a button with subitems #}
+    {% if button.url or button.subitems %}
+        {{ toolbar_button(button) }}
+    {% endif %}
+{% endfor %}

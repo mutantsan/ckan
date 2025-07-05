@@ -1,0 +1,35 @@
+ckan-admin-js:
+  filter: rjsmin
+  output: ckanext-ckan-admin/%(version)s-ckan-admin.js
+  contents:
+    - js/ckan-admin-htmx.js
+    - js/ckan-admin-nested-dropdown.js
+    - js/ckan-admin-notify.js
+    - js/ckan-admin-confirm-action.js
+    - js/ckan-admin-copy-to-clipboard.js
+    - js/ckan-admin-tabulator.js
+
+  extra:
+    preload:
+      - base/main
+      - base/ckan
+
+ckan-admin-css:
+  filter: cssrewrite
+  output: ckanext-ckan-admin/%(version)s-ckan-admin.css
+  contents:
+    - css/ckan-admin.css
+    - css/ckan-admin-tabulator.css
+
+ckan-admin-vendor-js:
+  filter: rjsmin
+  output: ckanext-ckan-admin/%(version)s-ckan-admin-vendor-js.js
+  contents:
+    - js/vendor/tabulator.min.js
+
+ckan-admin-vendor-css:
+  filter: cssrewrite
+  output: ckanext-ckan-admin/%(version)s-ckan-admin-vendor-css.css
+  contents:
+    - css/vendor/tabulator.min.css
+    - css/vendor/tabulator-theme.min.css

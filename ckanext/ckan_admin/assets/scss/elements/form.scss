@@ -1,0 +1,32 @@
+@use "../variables" as v;
+
+body[admin-panel="true"],
+#admin-panel {
+    input[type=checkbox] {
+        height: auto;
+    }
+
+    #bulk-action {
+        appearance: auto;
+    }
+
+    @media (min-width: v.$screen-sm-min) {
+        #bulk-action {
+            max-width: 600px;
+        }
+    }
+
+    .form-control,
+    .form-select,
+    .select2-container-multi .select2-choices {
+        box-shadow: unset;
+        padding: 6px 12px;
+        color: var(--ap-form-control-color);
+        border-color: var(--ap-form-control-border);
+        border-radius: 4px;
+    }
+
+    .info-block {
+        color: var(--ap-color-help);
+    }
+}

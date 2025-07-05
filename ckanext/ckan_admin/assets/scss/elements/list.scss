@@ -1,0 +1,27 @@
+body[admin-panel="true"] {
+    div.list-group {
+        padding-bottom: 0.5rem;
+        .list-group-item {
+            padding: 0.5rem 2rem;
+            border: unset;
+            background: var(--ap-accordion-bg);
+            color: var(--ap-color);
+
+            & a {
+                font-weight: 600;
+
+                i {
+                    margin-right: 4px;
+                }
+            }
+
+            &.list-group-item--description {
+                color: var(--ap-color);
+            }
+
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

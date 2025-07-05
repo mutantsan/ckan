@@ -1,0 +1,9 @@
+{% ckan_extends %}
+
+{% block header_account %}
+    {% if h.check_access("ckan_admin_access") %}
+        {% snippet 'ckan_admin/toolbar.html' %}
+    {% endif %}
+
+    {{ super() }}
+{% endblock %}
