@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Any, Union
 
 from flask import Blueprint, Response
 from flask.views import MethodView

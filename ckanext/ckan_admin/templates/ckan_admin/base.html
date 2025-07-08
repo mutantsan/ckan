@@ -12,7 +12,7 @@
     <div class="main {% block ckan_admin_class %}{% endblock %}">
         <div id="content" class="container">
             {% block flash %}
-                <div class="flash-messages" data-module="ckan-admin-notify">
+                <div class="flash-messages" data-module="ckan-admin-notify ckan-admin-confirm">
                     {% block flash_inner %}
                         {% for category, message in h.get_flashed_messages(with_categories=true) %}
                             <span class="ap-notification" data-category="{{ category }}" data-message="{{ h.literal(message) }}"></span>

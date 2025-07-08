@@ -105,7 +105,10 @@ def ckan_admin_get_toolbar_structure() -> list[ToolbarButton]:
             icon="fa fa-user",
             url=p.toolkit.url_for("user.read", id=p.toolkit.current_user.name),
             label=p.toolkit.current_user.display_name,  # type: ignore
-            attributes={"title": p.toolkit._("View profile"), "class": "ms-lg-auto cad-small"},
+            attributes={
+                "title": p.toolkit._("View profile"),
+                "class": "ms-lg-auto cad-small",
+            },
         ),
         ToolbarButton(
             icon="fa fa-gavel",

@@ -1,10 +1,28 @@
 from __future__ import annotations
 
 import uuid
+from datetime import datetime
 from abc import abstractmethod
 from typing import Any, Callable
+from dataclasses import dataclass
+
+from typing import Optional
+from sqlalchemy.orm import Query
+from sqlalchemy.sql.elements import ColumnElement, BinaryExpression, ClauseElement
+from sqlalchemy import Boolean, Integer, DateTime
 
 import ckan.plugins.toolkit as tk
+
+
+@dataclass
+class QueryParams:
+    page: int = 1
+    size: int = 10
+    field: str | None = None
+    operator: str | None = None
+    value: str | None = None
+    sort_by: str | None = None
+    sort_order: str | None = None
 
 
 class TableDefinition:
@@ -58,42 +76,108 @@ class TableDefinition:
 
         options = {
             "columns": columns,
-            "layout": "fitDataFill",
             "placeholder": self.placeholder,
             "ajaxURL": self.ajax_url,
+            "sortMode": "remote",
+            "layout": "fitDataFill",
         }
 
         if self.pagination:
-            options["pagination"] = "local"
-            options["paginationSize"] = self.page_size
-            options["paginationSizeSelector"] = [5, 10, 25, 50, 100]
+            options.update(
+                {
+                    "pagination": True,
+                    "paginationMode": "remote",
+                    "paginationSize": self.page_size,
+                    "paginationSizeSelector": [5, 10, 25, 50, 100],
+                }
+            )
 
         if self.selectable or self.global_actions:
-            options["selectableRows"] = True
-            options["selectableRangeMode"] = "click"
-            options["selectableRollingSelection"] = False
-            options["selectablePersistence"] = False
+            options.update(
+                {
+                    "selectableRows": True,
+                    "selectableRangeMode": "click",
+                    "selectableRollingSelection": False,
+                    "selectablePersistence": False,
+                }
+            )
 
         return options
 
     def render_table(self, **kwargs: Any) -> str:
-        """Render the table template with the necessary data"""
-
         return tk.render(self.table_template, extra_vars={"table": self, **kwargs})
 
     @abstractmethod
-    def get_raw_data(self) -> list[dict[str, Any]]:
+    def get_raw_data(self, params: QueryParams) -> list[dict[str, Any]]:
         """Return the list of rows to be rendered in the table
+
+        Args:
+            params: Query parameters
 
         Returns:
             list[dict[str, Any]]: List of rows to be rendered in the table
         """
 
-    def get_data(self) -> list[Any]:
+    @abstractmethod
+    def get_total_count(self, params: QueryParams) -> int:
+        """Return the total number of rows in the table"""
+
+    def get_data(self, params: QueryParams) -> list[Any]:
         """Get the data for the table with applied formatters"""
         self._formatters = tk.h.ckan_admin_get_all_formatters()
 
-        return [self.apply_formatters(dict(row)) for row in self.get_raw_data()]
+        return [self.apply_formatters(dict(row)) for row in self.get_raw_data(params)]
+
+    def filter_query(
+        self,
+        query: Query,
+        model: type[Any],
+        params: QueryParams,
+    ):
+        if not params.field or not params.operator or not params.value:
+            return query
+
+        if column := getattr(model, params.field, None):  # type: ignore
+            filter_expr = self.build_filter(column, params.operator, params.value)
+
+            if filter_expr is not None:
+                query = query.filter(filter_expr)
+
+        return query
+
+    def build_filter(
+        self, column: ColumnElement, operator: str, value: str
+    ) -> Optional[BinaryExpression | ClauseElement]:
+        try:
+            if isinstance(column.type, Boolean):
+                casted_value = value.lower() in ("true", "1", "yes", "y")
+            elif isinstance(column.type, Integer):
+                casted_value = int(value)
+            elif isinstance(column.type, DateTime):
+                casted_value = datetime.fromisoformat(value)
+            else:
+                casted_value = str(value)
+        except ValueError:
+            return None
+
+        operators: dict[
+            str,
+            Callable[[ColumnElement, Any], Optional[BinaryExpression | ClauseElement]],
+        ] = {
+            "=": lambda col, val: col == val,
+            "<": lambda col, val: col < val,
+            "<=": lambda col, val: col <= val,
+            ">": lambda col, val: col > val,
+            ">=": lambda col, val: col >= val,
+            "!=": lambda col, val: col != val,
+            "like": lambda col, val: (
+                col.ilike(f"%{val}%") if isinstance(val, str) else None
+            ),
+        }
+
+        func = operators.get(operator)
+
+        return func(column, casted_value) if func else None
 
     def apply_formatters(self, row: dict[str, Any]) -> dict[str, Any]:
         """Apply formatters to each cell in a row"""

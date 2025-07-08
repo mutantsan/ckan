@@ -3,15 +3,14 @@ from __future__ import annotations
 import json
 import logging
 from abc import abstractmethod
-from typing import Any
 
 from flask import Response, jsonify
 from flask.views import MethodView
 
-import ckan.plugins as p
+import ckan.plugins.toolkit as tk
 
 import ckanext.ckan_admin.types as types
-from ckanext.ckan_admin.table import TableDefinition
+from ckanext.ckan_admin.table import TableDefinition, QueryParams
 
 log = logging.getLogger(__name__)
 
@@ -38,10 +37,27 @@ class CkanAdminTableView(MethodView):
 
         If the data argument is provided, returns the table data
         """
-        table = self.table()  # type: ignore
+        table = self.table()
 
-        if p.toolkit.request.args.get("data"):
-            return jsonify(table.get_data())
+        if tk.request.args.get("data"):
+            params = QueryParams(
+                page=tk.request.args.get("page", 1, int),
+                size=tk.request.args.get("size", 10, int),
+                field=tk.request.args.get("field"),
+                operator=tk.request.args.get("operator"),
+                value=tk.request.args.get("q"),
+                sort_by=tk.request.args.get("sort[0][field]"),
+                sort_order=tk.request.args.get("sort[0][dir]"),
+            )
+
+            print(params)
+
+            data = table.get_data(params)
+            total = table.get_total_count(params)
+
+            return jsonify(
+                {"data": data, "last_page": (total + params.size - 1) // params.size}
+            )
 
         return table.render_table(
             breadcrumb_label=self.breadcrumb_label, page_title=self.page_title
@@ -49,8 +65,8 @@ class CkanAdminTableView(MethodView):
 
     def post(self) -> Response:
         """Handle global actions on a table"""
-        global_action = p.toolkit.request.form.get("global_action")
-        rows = p.toolkit.request.form.get("rows")
+        global_action = tk.request.form.get("global_action")
+        rows = tk.request.form.get("rows")
 
         action_func = self.get_global_action(global_action) if global_action else None
 
@@ -58,7 +74,7 @@ class CkanAdminTableView(MethodView):
             return jsonify(
                 {
                     "success": False,
-                    "errors": [p.toolkit._("The global action is not implemented")],
+                    "errors": [tk._("The global action is not implemented")],
                 }
             )
 

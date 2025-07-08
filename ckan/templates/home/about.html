@@ -15,6 +15,18 @@
         {% else %}
           <h1 class="page-heading">{{ _('About') }}</h1>
           {% snippet 'home/snippets/about_text.html' %}
+
+        <button
+            type="submit"
+            hx-confirm-success="{{ _('The active jobs have been run.') }}"
+            class="btn btn-primary"
+            hx-get="{{ h.url_for('home.index') }}"
+            hx-trigger="click"
+            hx-target=".page-heading"
+            hx-confirm="{{ _('Are you sure you want to run active jobs?') }}">
+            {{ _("Run active jobs")}}
+        </button>
+
         {% endif %}
       {% endblock %}
     </div>

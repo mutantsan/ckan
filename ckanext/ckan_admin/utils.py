@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
 
 import ckan.plugins as p
 
@@ -31,7 +30,9 @@ def ckan_admin_before_request() -> None:
 
         from ckanext.ckan_admin.utils import ckan_admin_before_request
 
-        blueprint = Blueprint("my_blueprint", __name__, url_prefix="/ckan-admin/my_blueprint")
+        blueprint = Blueprint(
+            "my_blueprint", __name__, url_prefix="/ckan-admin/my_blueprint"
+        )
         blueprint.before_request(ckan_admin_before_request)
         ```
     """

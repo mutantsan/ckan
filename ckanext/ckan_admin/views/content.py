@@ -19,6 +19,7 @@ from ckanext.ckan_admin.table import (
     ColumnDefinition,
     GlobalActionDefinition,
     TableDefinition,
+    QueryParams,
 )
 from ckanext.ckan_admin.views.generics import CkanAdminTableView
 
@@ -97,33 +98,18 @@ class ContentTable(TableDefinition):
             ],
         )
 
-    def get_raw_data(self) -> list[dict[str, Any]]:
-        package_query = model.Session.query(
-            model.Package.id.label("id"),
-            model.Package.name.label("name"),
-            model.Package.title.label("title"),
-            model.Package.type.label("type"),
-            model.User.name.label("author"),
-            model.Package.state.label("state"),
-            model.Package.metadata_created.label("metadata_created"),
-            model.Package.metadata_modified.label("metadata_modified"),
-        ).join(model.User, model.Package.creator_user_id == model.User.id)
+    def get_raw_data(self, params: QueryParams) -> list[dict[str, Any]]:
+        offset = (params.page - 1) * params.size
+        union_query = self._build_union_query(params)
 
-        group_query = model.Session.query(
-            model.Group.id.label("id"),
-            model.Group.name.label("name"),
-            model.Group.title.label("title"),
-            model.Group.type.label("type"),
-            sa.null().label("author"),
-            model.Group.state.label("state"),
-            model.Group.created.label("metadata_created"),
-            model.Group.created.label("metadata_modified"),
-        )
+        sort_column = params.sort_by or union_query.c.metadata_modified
+        sort_func = sa.asc if params.sort_order == "asc" else sa.desc
 
-        union_query = package_query.union(group_query).subquery()
-
-        final_query = model.Session.query(union_query).order_by(
-            union_query.c.metadata_modified.desc()
+        paginated_query = (
+            model.Session.query(union_query)
+            .order_by(sort_func(sort_column))
+            .offset(offset)
+            .limit(params.size)
         )
 
         columns = [
@@ -137,7 +123,44 @@ class ContentTable(TableDefinition):
             "metadata_modified",
         ]
 
-        return [dict(zip(columns, row)) for row in final_query.all()]
+        return [dict(zip(columns, row)) for row in paginated_query.all()]
+
+    def get_total_count(self, params: QueryParams) -> int:
+        return (
+            model.Session.query(sa.func.count())
+            .select_from(self._build_union_query(params))
+            .scalar()
+        )
+
+    def _build_union_query(self, params: QueryParams) -> sa.sql.Alias:
+        """Builds a union of package and group queries."""
+        package_query = model.Session.query(
+            model.Package.id.label("id"),
+            model.Package.name.label("name"),
+            model.Package.title.label("title"),
+            model.Package.type.label("type"),
+            model.User.name.label("author"),
+            model.Package.state.label("state"),
+            model.Package.metadata_created.label("metadata_created"),
+            model.Package.metadata_modified.label("metadata_modified"),
+        ).join(model.User, model.Package.creator_user_id == model.User.id)
+
+        package_query = self.filter_query(package_query, model.Package, params)
+
+        group_query = model.Session.query(
+            model.Group.id.label("id"),
+            model.Group.name.label("name"),
+            model.Group.title.label("title"),
+            model.Group.type.label("type"),
+            sa.null().label("author"),
+            model.Group.state.label("state"),
+            model.Group.created.label("metadata_created"),
+            model.Group.created.label("metadata_modified"),
+        )
+
+        group_query = self.filter_query(group_query, model.Group, params)
+
+        return package_query.union_all(group_query).subquery()
 
 
 class ContentListView(CkanAdminTableView):

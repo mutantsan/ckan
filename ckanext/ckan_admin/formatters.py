@@ -6,7 +6,7 @@ import ckan.model as model
 from ckan.plugins import toolkit as tk
 
 
-import ckanext.ap_main.types as types
+import ckanext.ckan_admin.types as types
 
 
 def get_formatters() -> dict[str, types.Formatter]:
@@ -34,10 +34,10 @@ def date(
     """Render a datetime object as a string.
 
     Args:
-        value (datetime): date value
+        value: date value
         options: options for the renderer
-        name (str): column name
-        record (Any): row data
+        column: column definition
+        row: row data
         table: table definition
 
     Options:
@@ -67,7 +67,7 @@ def user_link(
     expensive to do it for every user in the list. So we use a placeholder
 
     Args:
-        value (str): user ID
+        value: user ID
         options: options for the renderer
         column: column definition
         row: row data
@@ -116,11 +116,12 @@ def bool(
     """Render a boolean value as a string.
 
     Args:
-        value (Any): boolean value
+        value: boolean value
         options: options for the renderer
         column: column definition
         row: row data
         table: table definition
+
     Returns:
         "Yes" if value is True, otherwise "No"
     """
@@ -137,7 +138,7 @@ def list(
     """Render a list as a comma-separated string.
 
     Args:
-        value: list value
+        value: list of values
         options: options for the renderer
         column: column definition
         row: row data
@@ -156,6 +157,18 @@ def none_as_empty(
     row: types.Row,
     table: types.TableDefinition,
 ) -> types.FormatterResult:
+    """Render None as an empty string.
+
+    Args:
+        value: value to be rendered
+        options: options for the renderer
+        column: column definition
+        row: row data
+        table: table definition
+
+    Returns:
+        value if not None, otherwise an empty string
+    """
     return value if value is not None else ""
 
 
@@ -166,16 +179,17 @@ def day_passed(
     row: types.Row,
     table: types.TableDefinition,
 ) -> types.FormatterResult:
-    """Calculate the number of days passed since the date.
+    """Render None as an empty string.
 
     Args:
-        value: date value
+        value: value to be rendered
         options: options for the renderer
         column: column definition
         row: row data
         table: table definition
+
     Returns:
-        A priority badge with day counter and color based on priority.
+        value if not None, otherwise an empty string
     """
     if not value:
         return "0"

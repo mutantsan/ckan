@@ -6,6 +6,7 @@ ckan-admin-js:
     - js/ckan-admin-nested-dropdown.js
     - js/ckan-admin-notify.js
     - js/ckan-admin-confirm-action.js
+    - js/ckan-admin-confirm.js
     - js/ckan-admin-copy-to-clipboard.js
     - js/ckan-admin-tabulator.js
 

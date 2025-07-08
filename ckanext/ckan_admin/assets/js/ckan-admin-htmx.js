@@ -21,18 +21,26 @@ ckan.module("ckan-admin-htmx", function ($) {
 
             event.preventDefault(); // Prevent the default confirm
 
-            Swal.fire({
-                title: this._('Are you sure?'),
-                text: event.detail.question, // The value of `hx-confirm`
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: this._('Yes'),
-                cancelButtonText: this._('Cancel'),
-            }).then((result) => {
-                if (result.isConfirmed) {
+            console.log(this.sandbox.publish);
+
+            this.sandbox.publish("ckan-admin:confirm", {
+                message: event.detail.question,
+                title: "Please Confirm",
+                confirmText: this._('Yes'),
+                cancelText: this._('Cancel'),
+                type: "danger",
+                icon: "<i class='fa fa-exclamation-triangle me-2'></i>",
+                onConfirm: () => {
                     // If the user confirms, we manually issue the request
                     // true to skip the built-in window.confirm()
+                    console.log('confirmed');
+
                     event.detail.issueRequest(true);
+                },
+                onCancel: () => {
+                    console.log('cancelled');
+
+                    event.detail.issueRequest(false);
                 }
             });
         },

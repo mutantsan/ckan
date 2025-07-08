@@ -4,6 +4,7 @@ import logging
 from functools import partial
 from typing import Any, Optional
 
+from sqlalchemy.orm import Query
 from flask import Blueprint, Response
 from flask.views import MethodView
 from typing_extensions import TypeAlias
@@ -95,7 +96,18 @@ class UserTable(table.TableDefinition):
             ],
         )
 
-    def get_raw_data(self) -> list[dict[str, Any]]:
+    def get_raw_data(self, params: table.QueryParams) -> list[dict[str, Any]]:
+        offset = (params.page - 1) * params.size
+        query = self._build_query(params).offset(offset).limit(params.size)
+
+        columns = ["id", "name", "fullname", "email", "state", "sysadmin"]
+        return [dict(zip(columns, row)) for row in query.all()]
+
+    def get_total_count(self, params: table.QueryParams) -> int:
+        query = self._build_query(params)
+        return query.count()
+
+    def _build_query(self, params: table.QueryParams) -> Query[Any]:
         query = (
             model.Session.query(
                 model.User.id.label("id"),
@@ -105,13 +117,13 @@ class UserTable(table.TableDefinition):
                 model.User.state.label("state"),
                 model.User.sysadmin.label("sysadmin"),
             )
-            .filter(model.User.email != None)
+            .filter(model.User.email is not None)
             .order_by(model.User.name)
         )
 
-        columns = ["id", "name", "fullname", "email", "state", "sysadmin"]
+        query = self.filter_query(query, model.User, params)
 
-        return [dict(zip(columns, row)) for row in query.all()]
+        return query.order_by(model.User.name)
 
 
 class UserListView(CkanAdminTableView):
