@@ -220,17 +220,17 @@ class ColumnDefinition:
         Initialize a column definition
 
         Args:
-            field (str): The field name in the data dict
-            title (str, optional): The display title for the column
-            formatters (list, optional): List of formatters to apply to the column
-            tabulator_formatter (str, optional): Tabulator formatter to apply to the column
-            tabulator_formatter_params (dict, optional): Parameters for the tabulator formatter
-            width (int, optional): Width of the column
-            min_width (int, optional): Minimum width of the column
-            visible (bool): Whether the column is visible
-            sorter (str, optional): Default sorter for the column
-            filterable (bool): Whether the column can be filtered
-            resizable (bool): Whether the column is resizable
+            field: The field name in the data dict
+            title: The display title for the column
+            formatters: List of formatters to apply to the column
+            tabulator_formatter: Tabulator formatter to apply to the column
+            tabulator_formatter_params: Parameters for the tabulator formatter
+            width: Width of the column
+            min_width: Minimum width of the column
+            visible: Whether the column is visible
+            sorter: Default sorter for the column
+            filterable: Whether the column can be filtered
+            resizable: Whether the column is resizable
         """
         self.field = field
         self.title = title or field.replace("_", " ").title()
@@ -295,15 +295,15 @@ class ActionDefinition:
         Initialize an action definition
 
         Args:
-            name (str): Unique identifier for the action
-            label (str, optional): Display label for the action
-            icon (str, optional): Icon class (e.g., "fa fa-edit")
-            url (str, optional): Static URL for the action
-            endpoint (str, optional): Flask endpoint to generate URL
-            url_params (dict, optional): Parameters for the URL
-            css_class (str, optional): CSS class for styling
-            visible_callback (callable, optional): Function that determines if action is visible
-            attrs (dict, optional): Additional attributes for the action
+            name: Unique identifier for the action
+            label: Display label for the action
+            icon: Icon class (e.g., "fa fa-edit")
+            url: Static URL for the action
+            endpoint: Flask endpoint to generate URL
+            url_params: Parameters for the URL
+            css_class: CSS class for styling
+            visible_callback: Function that determines if action is visible
+            attrs: Additional attributes for the action
         """
         self.name = name
         self.label = label

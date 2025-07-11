@@ -81,7 +81,18 @@ def ckan_admin_get_toolbar_structure() -> list[ToolbarButton]:
         ToolbarButton(
             label=p.toolkit._("Content"),
             icon="fa fa-folder",
-            url=p.toolkit.url_for("ckan_admin_content.list"),
+            subitems=[
+                ToolbarButton(
+                    label=p.toolkit._("Datasets"),
+                    url=p.toolkit.url_for("ckan_admin_content.datasets"),
+                    icon="fa fa-tree",
+                ),
+                ToolbarButton(
+                    label=p.toolkit._("Organisations"),
+                    url=p.toolkit.url_for("ckan_admin_content.organisations"),
+                    icon="fa fa-building",
+                ),
+            ],
         ),
         ToolbarButton(
             label=p.toolkit._("Configuration"),

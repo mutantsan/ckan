@@ -33,6 +33,7 @@ $color-active: #206b82;
                     }
                 }
             }
+
             .tabulator-footer {
                 border-top: unset;
 
@@ -66,7 +67,10 @@ $color-active: #206b82;
             // this is to hide a "Loading..." message that appears when the table is loading
             // I'm not sure, that something important is lost by hiding it
             .tabulator-alert {
-                display: none;
+                .tabulator-alert-msg {
+                    border: 1px solid var(--ap-form-control-border);
+                    color: var(--ap-color);
+                }
             }
         }
     }

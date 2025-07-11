@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime
-
 import ckan.model as model
 from ckan.plugins import toolkit as tk
-
 
 import ckanext.ckan_admin.types as types
 
@@ -16,11 +13,9 @@ def get_formatters() -> dict[str, types.Formatter]:
         "bool": bool,
         "list": list,
         "none_as_empty": none_as_empty,
-        "day_passed": day_passed,
         "trim_string": trim_string,
         "actions": actions,
         "json_display": json_display,
-        "shorten_path": shorten_path,
     }
 
 
@@ -31,21 +26,7 @@ def date(
     row: types.Row,
     table: types.TableDefinition,
 ) -> types.FormatterResult:
-    """Render a datetime object as a string.
-
-    Args:
-        value: date value
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
-    Options:
-        - `date_format` (str) - date format string. **Default** is `%d/%m/%Y - %H:%M`
-
-    Returns:
-        formatted date
-    """
+    """Format a datetime string."""
     date_format: str = options.get("date_format", "%d/%m/%Y - %H:%M")
 
     return tk.h.render_datetime(value, date_format=date_format)
@@ -113,18 +94,7 @@ def bool(
     row: types.Row,
     table: types.TableDefinition,
 ) -> types.FormatterResult:
-    """Render a boolean value as a string.
-
-    Args:
-        value: boolean value
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
-    Returns:
-        "Yes" if value is True, otherwise "No"
-    """
+    """Render a boolean as 'Yes' or 'No'."""
     return "Yes" if value else "No"
 
 
@@ -135,18 +105,7 @@ def list(
     row: types.Row,
     table: types.TableDefinition,
 ) -> types.FormatterResult:
-    """Render a list as a comma-separated string.
-
-    Args:
-        value: list of values
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
-    Returns:
-        comma-separated string
-    """
+    """Render a list as a comma-separated string."""
     return ", ".join(value)
 
 
@@ -157,58 +116,8 @@ def none_as_empty(
     row: types.Row,
     table: types.TableDefinition,
 ) -> types.FormatterResult:
-    """Render None as an empty string.
-
-    Args:
-        value: value to be rendered
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
-    Returns:
-        value if not None, otherwise an empty string
-    """
+    """Render `None` as an empty string."""
     return value if value is not None else ""
-
-
-def day_passed(
-    value: types.Value,
-    options: types.Options,
-    column: types.ColumnDefinition,
-    row: types.Row,
-    table: types.TableDefinition,
-) -> types.FormatterResult:
-    """Render None as an empty string.
-
-    Args:
-        value: value to be rendered
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
-    Returns:
-        value if not None, otherwise an empty string
-    """
-    if not value:
-        return "0"
-
-    try:
-        datetime_obj = datetime.fromisoformat(value)
-    except AttributeError:
-        return "0"
-
-    current_date = datetime.now()
-
-    days_passed = (current_date - datetime_obj).days
-
-    return tk.literal(
-        tk.render(
-            "ckan_admin/tables/formatters/day_passed.html",
-            extra_vars={"value": days_passed},
-        )
-    )
 
 
 def trim_string(
@@ -220,19 +129,10 @@ def trim_string(
 ) -> types.FormatterResult:
     """Trim string to a certain length.
 
-    Args:
-        value: string value
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
     Options:
         - `max_length` (int) - maximum length of the string. **Default** is `79`
-        - `add_ellipsis` (bool) - add ellipsis to the end of the string. **Default** is `True`
-
-    Returns:
-        trimmed string
+        - `add_ellipsis` (bool) - add ellipsis to the end of the string.
+                **Default** is `True`
     """
     if not value:
         return ""
@@ -255,13 +155,6 @@ def actions(
 ) -> types.FormatterResult:
     """Render actions for the table row.
 
-    Args:
-        value: string value
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
     Options:
         - `template` (str) - template to render the actions.
     """
@@ -283,52 +176,10 @@ def json_display(
     row: types.Row,
     table: types.TableDefinition,
 ) -> types.FormatterResult:
-    """Render a JSON object as a string.
-
-    Args:
-        value: JSON object
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
-    Returns:
-        JSON object as a string
-    """
+    """Render a JSON object as a string."""
     return tk.literal(
         tk.render(
             "ap_cron/formatters/json.html",
             extra_vars={"value": value},
         )
     )
-
-
-def shorten_path(
-    value: types.Value,
-    options: types.Options,
-    column: types.ColumnDefinition,
-    row: types.Row,
-    table: types.TableDefinition,
-) -> types.FormatterResult:
-    """Shorten a path to a certain length.
-
-    Args:
-        value: path value
-        options: options for the renderer
-        column: column definition
-        row: row data
-        table: table definition
-
-    Options:
-        - `max_length` (int) - maximum length of the path. **Default** is `50`
-
-    Returns:
-        shortened path
-    """
-    max_length: int = options.get("max_length", 50)
-
-    if len(value) <= max_length:
-        return value
-
-    half = (max_length - 3) // 2
-    return value[:half] + "..." + value[-half:]

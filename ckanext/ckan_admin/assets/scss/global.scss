@@ -23,10 +23,6 @@ body[admin-panel="true"] {
     }
 }
 
-.toast-body {
-    position: relative;
-}
-
 .progress-bar-timer {
   position: absolute;
   bottom: 0;
@@ -42,7 +38,6 @@ body[admin-panel="true"] {
   to { width: 0%; }
 }
 
-
 .masthead {
     position: relative;
 
@@ -50,7 +45,6 @@ body[admin-panel="true"] {
         position: absolute;
     }
 }
-
 
 .ap-content {
     h1 {

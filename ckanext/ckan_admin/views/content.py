@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 import logging
 from functools import partial
 from typing import Any, Optional, Union
@@ -8,6 +9,7 @@ import sqlalchemy as sa
 from flask import Blueprint, Response
 from flask.views import MethodView
 from typing_extensions import TypeAlias
+from sqlalchemy.orm import Query
 
 import ckan.plugins as p
 from ckan import model
@@ -31,11 +33,53 @@ ckan_admin_content.before_request(ap_utils.ckan_admin_before_request)
 log = logging.getLogger(__name__)
 
 
-class ContentTable(TableDefinition):
+class BaseContentListTable(TableDefinition):
+    column_names = []
+
+    def get_raw_data(self, params: QueryParams) -> list[dict[str, Any]]:
+        offset = (params.page - 1) * params.size
+        union_query = self._build_query(params)
+
+        sort_column = params.sort_by or union_query.c.metadata_modified
+        sort_func = sa.asc if params.sort_order == "asc" else sa.desc
+
+        paginated_query = (
+            model.Session.query(union_query)
+            .order_by(sort_func(sort_column))
+            .offset(offset)
+            .limit(params.size)
+        )
+
+        return [dict(zip(self.column_names, row)) for row in paginated_query.all()]
+
+    def get_total_count(self, params: QueryParams) -> int:
+        return (
+            model.Session.query(sa.func.count())
+            .select_from(self._build_query(params))
+            .scalar()
+        )
+
+    @abstractmethod
+    def _build_query(self, params: QueryParams) -> sa.sql.Alias:
+        pass
+
+
+class PackageListTable(BaseContentListTable):
+    column_names = [
+        "id",
+        "name",
+        "title",
+        "type",
+        "author",
+        "state",
+        "metadata_created",
+        "metadata_modified",
+    ]
+
     def __init__(self):
         super().__init__(
-            name="content",
-            ajax_url=p.toolkit.url_for("ckan_admin_content.list", data=True),
+            name="datasets",
+            ajax_url=p.toolkit.url_for("ckan_admin_content.datasets", data=True),
             columns=[
                 ColumnDefinition(field="id", visible=False, filterable=False),
                 ColumnDefinition(field="title"),
@@ -88,52 +132,13 @@ class ContentTable(TableDefinition):
                 ),
             ],
             global_actions=[
-                GlobalActionDefinition(
-                    action="restore", label="Restore selected entities"
-                ),
-                GlobalActionDefinition(
-                    action="delete", label="Delete selected entities"
-                ),
-                GlobalActionDefinition(action="purge", label="Purge selected entities"),
+                GlobalActionDefinition(action="restore", label="Restore dataset(s)"),
+                GlobalActionDefinition(action="delete", label="Delete dataset(s)"),
+                GlobalActionDefinition(action="purge", label="Purge dataset(s)"),
             ],
         )
 
-    def get_raw_data(self, params: QueryParams) -> list[dict[str, Any]]:
-        offset = (params.page - 1) * params.size
-        union_query = self._build_union_query(params)
-
-        sort_column = params.sort_by or union_query.c.metadata_modified
-        sort_func = sa.asc if params.sort_order == "asc" else sa.desc
-
-        paginated_query = (
-            model.Session.query(union_query)
-            .order_by(sort_func(sort_column))
-            .offset(offset)
-            .limit(params.size)
-        )
-
-        columns = [
-            "id",
-            "name",
-            "title",
-            "type",
-            "author",
-            "state",
-            "metadata_created",
-            "metadata_modified",
-        ]
-
-        return [dict(zip(columns, row)) for row in paginated_query.all()]
-
-    def get_total_count(self, params: QueryParams) -> int:
-        return (
-            model.Session.query(sa.func.count())
-            .select_from(self._build_union_query(params))
-            .scalar()
-        )
-
-    def _build_union_query(self, params: QueryParams) -> sa.sql.Alias:
-        """Builds a union of package and group queries."""
+    def _build_query(self, params: QueryParams) -> sa.sql.Alias:
         package_query = model.Session.query(
             model.Package.id.label("id"),
             model.Package.name.label("name"),
@@ -145,25 +150,95 @@ class ContentTable(TableDefinition):
             model.Package.metadata_modified.label("metadata_modified"),
         ).join(model.User, model.Package.creator_user_id == model.User.id)
 
-        package_query = self.filter_query(package_query, model.Package, params)
+        return self.filter_query(package_query, model.Package, params).subquery()
 
+
+class OrganisationListTable(BaseContentListTable):
+    column_names = [
+        "id",
+        "title",
+        "name",
+        "type",
+        "description",
+        "state",
+        "metadata_created",
+        "metadata_modified",
+    ]
+
+    def __init__(self):
+        super().__init__(
+            name="organisations",
+            ajax_url=p.toolkit.url_for("ckan_admin_content.organisations", data=True),
+            columns=[
+                ColumnDefinition(field="id", visible=False, filterable=False),
+                ColumnDefinition(field="title"),
+                ColumnDefinition(field="name"),
+                ColumnDefinition(field="description"),
+                ColumnDefinition(field="state", resizable=False),
+                ColumnDefinition(
+                    field="metadata_created",
+                    formatters=[("date", {"date_format": "%Y-%m-%d %H:%M"})],
+                    resizable=False,
+                ),
+                ColumnDefinition(
+                    field="actions",
+                    formatters=[("actions", {})],
+                    filterable=False,
+                    tabulator_formatter="html",
+                    sorter=None,
+                    resizable=False,
+                ),
+            ],
+            actions=[
+                ActionDefinition(
+                    name="edit",
+                    icon="fa fa-pencil",
+                    endpoint="ckan_admin_content.entity_proxy",
+                    url_params={
+                        "view": "edit",
+                        "entity_type": "$type",
+                        "entity_id": "$id",
+                    },
+                ),
+                ActionDefinition(
+                    name="view",
+                    icon="fa fa-eye",
+                    endpoint="ckan_admin_content.entity_proxy",
+                    url_params={
+                        "view": "read",
+                        "entity_type": "$type",
+                        "entity_id": "$id",
+                    },
+                ),
+            ],
+            global_actions=[
+                GlobalActionDefinition(
+                    action="restore", label="Restore organization(s)"
+                ),
+                GlobalActionDefinition(action="delete", label="Delete organization(s)"),
+                GlobalActionDefinition(action="purge", label="Purge organization(s)"),
+            ],
+        )
+
+    def _build_query(self, params: QueryParams) -> sa.sql.Alias:
         group_query = model.Session.query(
             model.Group.id.label("id"),
             model.Group.name.label("name"),
             model.Group.title.label("title"),
             model.Group.type.label("type"),
-            sa.null().label("author"),
+            model.Group.description.label("description"),
             model.Group.state.label("state"),
             model.Group.created.label("metadata_created"),
-            model.Group.created.label("metadata_modified"),
-        )
+            model.Group.created.label("metadata_modified")
+        ).filter(model.Group.type == "organization")
 
-        group_query = self.filter_query(group_query, model.Group, params)
-
-        return package_query.union_all(group_query).subquery()
+        return self.filter_query(group_query, model.Group, params).subquery()
 
 
-class ContentListView(CkanAdminTableView):
+class BaseContentListView(CkanAdminTableView):
+    patch_action = ""
+    purge_action = ""
+
     def get_global_action(self, value: str) -> types.GlobalActionHandler | None:
         return {
             "restore": partial(self._change_entities_state, is_active=True),
@@ -171,22 +246,12 @@ class ContentListView(CkanAdminTableView):
             "purge": partial(self._purge_entities),
         }.get(value)
 
-    @staticmethod
+    @classmethod
     def _change_entities_state(
-        row: types.Row, is_active: Optional[bool] = False
+        cls, row: types.Row, is_active: Optional[bool] = False
     ) -> types.GlobalActionHandlerResult:
-        actions = {
-            "dataset": "package_patch",
-            "organization": "organization_patch",
-            "group": "group_patch",
-        }
-        action = actions.get(row["type"])
-
-        if not action:
-            return False, f"Changing {row['type']} entity state isn't supported"
-
         try:
-            p.toolkit.get_action(action)(
+            p.toolkit.get_action(cls.patch_action)(
                 {"ignore_auth": True},
                 {
                     "id": row["id"],
@@ -200,20 +265,12 @@ class ContentListView(CkanAdminTableView):
 
         return True, None
 
-    @staticmethod
-    def _purge_entities(row: types.Row) -> types.GlobalActionHandlerResult:
-        actions = {
-            "dataset": "dataset_purge",
-            "organization": "organization_purge",
-            "group": "group_purge",
-        }
-        action = actions.get(row["type"])
-
-        if not action:
-            return False, f"Purging {row['type']} entity isn't supported"
-
+    @classmethod
+    def _purge_entities(cls, row: types.Row) -> types.GlobalActionHandlerResult:
         try:
-            p.toolkit.get_action(action)({"ignore_auth": True}, {"id": row["id"]})
+            p.toolkit.get_action(cls.purge_action)(
+                {"ignore_auth": True}, {"id": row["id"]}
+            )
         except p.toolkit.ObjectNotFound:
             pass
         except p.toolkit.ValidationError as e:
@@ -222,17 +279,51 @@ class ContentListView(CkanAdminTableView):
         return True, None
 
 
+class PackageListView(BaseContentListView):
+    patch_action = "package_patch"
+    purge_action = "dataset_purge"
+
+
+class OrganisationListView(CkanAdminTableView):
+    patch_aciton = "organization_patch"
+    purge_action = "organization_purge"
+
+
 class ContentProxyView(MethodView):
     def get(self, view: str, entity_type: str, entity_id: str) -> Union[str, Response]:
         return p.toolkit.redirect_to(f"{entity_type}.{view}", id=entity_id)
 
 
 ckan_admin_content.add_url_rule(
-    "/content",
-    view_func=ContentListView.as_view(
-        "list", table=ContentTable, breadcrumb_label="Content", page_title="Content"
+    "/content/datasets",
+    view_func=PackageListView.as_view(
+        "datasets",
+        table=PackageListTable,
+        breadcrumb_label="Datasets",
+        page_title="Datasets",
     ),
 )
+
+ckan_admin_content.add_url_rule(
+    "/content/organisations",
+    view_func=OrganisationListView.as_view(
+        "organisations",
+        table=OrganisationListTable,
+        breadcrumb_label="Organisations",
+        page_title="Organisations",
+    ),
+)
+
+ckan_admin_content.add_url_rule(
+    "/content/groups",
+    view_func=OrganisationListView.as_view(
+        "groups",
+        table=OrganisationListTable,
+        breadcrumb_label="Groups",
+        page_title="Groups",
+    ),
+)
+
 ckan_admin_content.add_url_rule(
     "/content/<view>/<entity_type>/<entity_id>",
     view_func=ContentProxyView.as_view("entity_proxy"),

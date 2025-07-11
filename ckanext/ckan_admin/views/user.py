@@ -239,7 +239,7 @@ ckan_admin_user.add_url_rule(
         "list",
         table=UserTable,
         breadcrumb_label=tk._("Users"),
-        page_title=tk._("Users"),
+        page_title=tk._("List of registered users"),
     ),
 )
 ckan_admin_user.add_url_rule("/user/add", view_func=UserAddView.as_view("create"))

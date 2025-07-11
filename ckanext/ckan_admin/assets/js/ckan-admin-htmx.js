@@ -8,11 +8,13 @@ ckan.module("ckan-admin-htmx", function ($) {
         },
 
         /**
-         * Handle the confirm dialog for HTMX by using SweetAlert2
+         * Handle the confirm dialog for HTMX with CKAN confirm dialog
          *
          * @param {Event} event The HTMX event
          */
         _onHTMXconfirm: function (event) {
+            console.log(event);
+
             // The event is triggered on every trigger for a request, so we need to check if the element
             // that triggered the request has a confirm question set via the hx-confirm attribute,
             // if not we can return early and let the default behavior happen
@@ -21,26 +23,14 @@ ckan.module("ckan-admin-htmx", function ($) {
 
             event.preventDefault(); // Prevent the default confirm
 
-            console.log(this.sandbox.publish);
-
-            this.sandbox.publish("ckan-admin:confirm", {
+            ckan.confirm({
                 message: event.detail.question,
-                title: "Please Confirm",
-                confirmText: this._('Yes'),
-                cancelText: this._('Cancel'),
-                type: "danger",
-                icon: "<i class='fa fa-exclamation-triangle me-2'></i>",
+                type: "primary",
+                centered: true,
                 onConfirm: () => {
                     // If the user confirms, we manually issue the request
                     // true to skip the built-in window.confirm()
-                    console.log('confirmed');
-
                     event.detail.issueRequest(true);
-                },
-                onCancel: () => {
-                    console.log('cancelled');
-
-                    event.detail.issueRequest(false);
                 }
             });
         },
@@ -49,21 +39,15 @@ ckan.module("ckan-admin-htmx", function ($) {
          * Handle actions after HTMX content is swapped into the DOM
          *
          * This includes:
-         * - Refreshing the Tabulator table if the `hx-refresh-tabulator` attribute is present
          * - Showing a success notification if the `hx-confirm-success` attribute is set
          *
          * @param {Event} event The HTMX afterSwap event
          */
         _onAfterSwap: function (event) {
-            // refresh the table
-            if (event.target.getAttribute("hx-refresh-tabulator")) {
-                this.sandbox.publish("ap:tabulator:refresh")
-            }
+            const successMsg = event.detail.requestConfig.elt.getAttribute("hx-confirm-success");
 
-            let successMsg = event.target.getAttribute("hx-confirm-success");
-            // show a success notification
             if (successMsg) {
-                this.sandbox.publish("ckan-admin:notify", {message: successMsg, type: "success"});
+                ckan.toast({message: successMsg, type: "success"});
             }
         },
     };

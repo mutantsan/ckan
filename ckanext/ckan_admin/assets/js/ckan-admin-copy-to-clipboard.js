@@ -59,7 +59,7 @@ ckan.module("ckan-admin-copy-to-clipboard", function ($, _) {
             // Remove the temporary input element
             document.body.removeChild(tempEl);
 
-            this.sandbox.publish("ckan-admin:notify", {message: this._("The text is copied to the clipboard")});
+            ckan.toast({message: this._("The text is copied to the clipboard")});
         }
     };
 });

@@ -108,7 +108,7 @@ ckan.module("ckan-admin-tabulator", function ($, _) {
                 return;
             }
 
-            this.sandbox.publish("ckan-admin:confirm", {
+            ckan.confirm({
                 message: ckan.i18n._("Are you sure you want to perform this action?"),
                 onConfirm: () => this._onGlobalActionConfirm(globalAction)
             });
@@ -145,19 +145,18 @@ ckan.module("ckan-admin-tabulator", function ($, _) {
                 .then(resp => resp.json())
                 .then(resp => {
                     if (!resp.success) {
-                        this.sandbox.publish("ckan-admin:notify", { message: resp.errors[0], type: "danger" });
+                        ckan.toast({ message: resp.errors[0], type: "danger" });
 
                         if (resp.errors.length > 1) {
-                            this.sandbox.publish(
-                                "ckan-admin:notify",
-                                ckan.i18n._("Multiple errors occurred and were suppressed"),
-                                "error"
-                            );
+                            ckan.toast({
+                                message: ckan.i18n._("Multiple errors occurred and were suppressed"),
+                                type: "error"
+                            });
                         }
                     }
 
                     this._refreshData()
-                    this.sandbox.publish("ckan-admin:notify", {
+                    ckan.toast({
                         message: ckan.i18n._("Operation completed"),
                         title: ckan.i18n._("Notification"),
                     });
