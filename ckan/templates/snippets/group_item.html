@@ -1,7 +1,7 @@
 {% block group_item %}
   <section class="group-list module module-narrow module-shallow">
     {% block group_item_header %}
-      <header class="module-heading">
+      <header>
         {% set title = group.title or group.name %}
         {% block group_item_header_image %}
           <a class="module-image" href="{{ h.url_for(group.type ~ '.read', id=group.name) }}">

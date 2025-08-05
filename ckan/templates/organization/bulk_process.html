@@ -10,7 +10,7 @@
 
 {% block primary_content_inner %}
   <div class="row">
-    <h1 class="hide-heading">{{ h.humanize_entity_type('package', dataset_type, 'edit label') or _('Edit datasets') }}</h1>
+    <h1 class="d-none">{{ h.humanize_entity_type('package', dataset_type, 'edit label') or _('Edit datasets') }}</h1>
     <div class="primary col-md-12">
       <h3 class="page-heading">
         {% block page_heading %}

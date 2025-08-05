@@ -18,17 +18,17 @@ Example:
   {{ h.csrf_input() }}
   {{ form.errors(errors=error_summary) }}
 
-  {{ form.input('login', label=_("Username or Email"), id='field-login', value="", error=username_error, classes=["control-medium"]) }}
+  {{ form.input('login', label=_("Username or Email"), id='field-login', value="", error=username_error, classes=["mb-3"]) }}
 
-  {{ form.input('password', label=_("Password"), id='field-password', type="password", value="", error=password_error, classes=["control-medium"]) }}
+  {{ form.input('password', label=_("Password"), id='field-password', type="password", value="", error=password_error, classes=["mb-3"]) }}
 
-  {{ form.checkbox('remember', label=_("Remember me"), id='field-remember', checked=true, value="63072000") }}
+  {{ form.checkbox('remember', label=_("Remember me"), id='field-remember', checked=true, value="63072000", classes=["mb-3"]) }}
 
   {% if g.recaptcha_publickey %}
     {% snippet "user/snippets/recaptcha.html", public_key=g.recaptcha_publickey %}
   {% endif %}
 
-  <div class="form-actions">
+  <div class="text-end">
     {% block login_button %}
     <button class="btn btn-primary" type="submit">{{ _('Login') }}</button>
     {% endblock %}

@@ -14,7 +14,7 @@
     {{ h.csrf_input() }}
     <div class="row">
       <div class="col-md-5">
-        <div class="form-group control-medium">
+        <div class="mb-3">
           {% if not user %}
             <label class="form-label" for="username">
               {{ _('Existing User') }}
@@ -59,11 +59,11 @@
 {% block secondary_content %}
 {{ super() }}
 <div class="module module-narrow module-shallow">
-  <h2 class="module-heading">
+  <h2>
     <i class="fa fa-lg fa-info-circle"></i>
     {{ _('What are the available roles?') }}
   </h2>
-  <div class="module-content">
+  <div class="pt-3">
     {% if h.check_config_permission('allow_admin_collaborators') %}
       {% trans %}
         <p><strong>Admin:</strong> In addition to managing the dataset, admins can add and remove collaborators from a dataset.</p>

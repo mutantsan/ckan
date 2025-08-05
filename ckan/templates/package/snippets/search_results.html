@@ -1,8 +1,8 @@
 <section class="module" id="search-results" hx-swap-oob="true" hx-swap="none">
-  <div class="module-content">
+  <div class="pt-3">
     {% block page_primary_action %}
       {% if h.check_access('package_create') %}
-        <div class="page_primary_action">
+        <div class="mb-3">
           {% snippet 'snippets/add_dataset.html', dataset_type=dataset_type %}
         </div>
       {% endif %}

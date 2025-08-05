@@ -6,11 +6,11 @@
 {% set no_bottom_border = no_bottom_border if no_bottom_border else false %}
 {% set form_id = form_id if form_id else false %}
 
-<form {% if form_id %}id="{{ form_id }}" {% endif %}class="search-form{% if no_bottom_border %} no-bottom-border{% endif %}" hx-boost="true" hx-disinherit="hx-boost" method="get" hx-trigger="change, submit">
+<form {% if form_id %}id="{{ form_id }}" {% endif %}class="{% if no_bottom_border %} border-bottom-0{% endif %}" hx-boost="true" hx-disinherit="hx-boost" method="get" hx-trigger="change, submit">
 
   {% block search_input %}
-    <div class="input-group search-input-group">
-      <input aria-label="{% block header_site_search_label %}{{ placeholder }}{% endblock %}" id="field-giant-search" type="text" class="form-control input-lg" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
+    <div class="input-group mb-2">
+      <input aria-label="{% block header_site_search_label %}{{ placeholder }}{% endblock %}" id="field-giant-search" type="text" class="form-control" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
       {% block search_input_button %}
       <button class="btn btn-secondary btn-lg" type="submit" value="search" aria-label="{{_('Submit')}}">
         <i class="fa fa-search"></i>
@@ -27,9 +27,9 @@
 
   {% block search_sortby %}
     {% if sorting %}
-      <div class="form-group control-order-by">
+      <div class="form-group d-flex align-items-center gap-2 ms-auto mt-3 mb-2 justify-content-end">
         <label for="field-order-by">{{ _('Order by') }}</label>
-        <select id="field-order-by" name="sort" class="form-control form-select">
+        <select id="field-order-by" name="sort" class="form-control form-select w-auto">
           {% for label, value in sorting %}
             {% if label and value %}
               <option value="{{ value }}"{% if sorting_selected == value %} selected="selected"{% endif %}>{{ label }}</option>
@@ -37,20 +37,20 @@
           {% endfor %}
         </select>
         {% block search_sortby_button %}
-        <button class="btn btn-secondary js-hide" type="submit">{{ _('Go') }}</button>
+            <button class="btn btn-secondary d-none" type="submit">{{ _('Go') }}</button>
         {% endblock %}
       </div>
     {% endif %}
   {% endblock %}
 
   {% block search_title %}
-    <h1>
-    {% if not error %}
-      {% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}
-    {% else %}
-      Error
-    {% endif %}
-    </h1>
+    <h2>
+        {% if not error %}
+            {% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}
+        {% else %}
+            {{ _("Error") }}
+        {% endif %}
+    </h2>
   {% endblock %}
 
   {% block search_facets %}
@@ -71,7 +71,7 @@
           {% endfor %}
         {% endfor %}
       </p>
-      <a class="show-filters btn btn-secondary">{{ _('Filter Results') }}</a>
+      <a class="d-lg-none btn btn-secondary">{{ _('Filter Results') }}</a>
     {% endif %}
   {% endblock %}
 

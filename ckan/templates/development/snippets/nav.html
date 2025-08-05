@@ -1,6 +1,6 @@
 <section class="module module-narrow">
   {% with items=(("First", true), ("Second", false), ("Third", true), ("Fourth", false), ("Last", false)) %}
-    <h2 class="module-heading">{{ heading }}</h2>
+    <h2>{{ heading }}</h2>
     <nav>
       <ul class="list-unstyled nav nav-simple">
         {% for value, active in items %}

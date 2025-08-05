@@ -12,7 +12,7 @@
     hx-on::after-request="$('#revoke-tokens-button').attr('disabled', true)">
   {{ h.csrf_input() }}
 
-  <table class="table table-stripped table-condensed table-header table-hover table-bordered" id="api-tokens-table">
+  <table class="table table-stripped table-sm table-header table-hover table-bordered" id="api-tokens-table">
     <thead>
       <tr>
         {% block head_cells %}

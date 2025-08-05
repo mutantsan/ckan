@@ -2,7 +2,7 @@
 
 {% block primary_content_inner %}
 <form method="POST" action="{{ h.url_for('admin.trash') }}" id="form-purge-all">
-  {{ h.csrf_input() }} 
+  {{ h.csrf_input() }}
   <div class="form-actions">
     <input type="hidden" name="action" value="all">
     <a class="btn btn-danger purge-all"
@@ -23,11 +23,11 @@
 
 {% block secondary_content %}
 <div class="module module-narrow module-shallow">
-  <h2 class="module-heading">
+  <h2>
     <i class="fa fa-info-circle"></i>
     {{ _("Trash") }}
   </h2>
-  <div class="module-content">
+  <div class="pt-3">
     <p>
       {% trans %}
       Purge deleted datasets, organizations or groups forever and irreversibly.

@@ -1,15 +1,15 @@
 {% with classes = classes or [], hn = heading_level or 1 %}
   <section class="module{{ ' ' ~ classes|join(' ') if classes }}">
     {% if heading_link %}
-      <h{{ hn }} class="module-heading"><a href="#">{{ heading }}</a></h{{ hn }}>
+      <h{{ hn }}><a href="#">{{ heading }}</a></h{{ hn }}>
     {% elif heading_action %}
-      <h{{ hn }} class="module-heading">{{ heading }}</h{{ hn }}>
+      <h{{ hn }}>{{ heading }}</h{{ hn }}>
     {% elif heading_icon %}
-      <h{{ hn }} class="module-heading"><i class="fa fa-wrench"></i> {{ heading }}</h{{ hn }}>
+      <h{{ hn }}><i class="fa fa-wrench"></i> {{ heading }}</h{{ hn }}>
     {% else %}
-      <h{{ hn }} class="module-heading">{{ heading }}</h{{ hn }}>
+      <h{{ hn }}>{{ heading }}</h{{ hn }}>
     {% endif %}
-    <div class="module-content">
+    <div class="pt-3">
       {{ lipsum(1) }}
     </div>
     {% if footer %}

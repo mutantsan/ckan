@@ -8,7 +8,7 @@
 
 {% block primary_content %}
   <article class="module">
-    <div class="module-content">
+    <div class="pt-3">
       {% block primary_content_inner %}
       <h1 class="page-heading">
         {% block page_heading %}{{ _('Register for an Account') }}{% endblock %}
@@ -23,8 +23,8 @@
   {% block help %}
   <section class="module module-narrow module-shallow">
     {% block help_inner %}
-    <h2 class="module-heading">{{ _('Why Sign Up?') }}</h2>
-    <div class="module-content">
+    <h2>{{ _('Why Sign Up?') }}</h2>
+    <div class="pt-3">
       <p>{% trans %}Create datasets, groups and other exciting things{% endtrans %}</p>
     </div>
     {% endblock %}

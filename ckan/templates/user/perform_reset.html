@@ -10,7 +10,7 @@
 {% block primary_content %}
   <article class="module">
     {% block primary_content_inner %}
-    <div class="module-content">
+    <div class="pt-3">
       <h1 class="page-heading">
         {% block page_heading %}{{ _('Reset Your Password') }}{% endblock %}
       </h1>
@@ -41,8 +41,8 @@
   {% block help %}
   <section class="module module-narrow module-shallow">
     {% block help_inner %}
-    <h2 class="module-heading">{{ _('How does this work?') }}</h2>
-    <div class="module-content">
+    <h2>{{ _('How does this work?') }}</h2>
+    <div class="pt-3">
       <p>{% trans %}Simply enter a new password and we'll update your account{% endtrans %}</p>
     </div>
     {% endblock %}

@@ -39,11 +39,11 @@
 
 {% block secondary_content %}
   <div class="module module-narrow module-shallow">
-    <h2 class="module-heading">
+    <h2>
       <i class="fa fa-info-circle"></i>
       {{ _('CKAN config options') }}
     </h2>
-    <div class="module-content">
+    <div class="pt-3">
       {% block admin_form_help %}
         {% set about_url = h.url_for('home.about') %}
         {% set home_url = h.url_for('home.index') %}

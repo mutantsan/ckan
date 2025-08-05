@@ -1,11 +1,11 @@
 {% set dataset_type = h.default_package_type() %}
 
 {% block header_wrapper %} {% block header_account %}
-<div class="account-masthead">
+<div class="bg-secondary-subtle">
   <div class="container">
     {% block header_account_container_content %} {% if c.userobj %}
     <div class="account avatar authed" data-module="me" data-me="{{ c.userobj.id }}">
-      <ul class="list-unstyled">
+      <ul class="list-unstyled d-flex align-items-center gap-2 justify-content-end mb-0">
         {% block header_account_logged %} {% if c.userobj.sysadmin %}
         <li>
           <a href="{{ h.url_for('admin.index') }}" aria-label="{{ _('Sysadmin settings') }}" data-bs-title="{{ _('Sysadmin settings') }}" data-bs-toggle="tooltip">
@@ -50,8 +50,8 @@
       </ul>
     </div>
     {% else %}
-    <nav class="account not-authed" aria-label="{{ _('Account') }}">
-      <ul class="list-unstyled">
+    <nav aria-label="{{ _('Account') }}">
+      <ul class="list-unstyled d-flex align-items-center gap-2 justify-content-end mb-0">
         {% block header_account_notlogged %}
         <li>{% link_for _('Log in'), named_route='user.login' %}</li>
         {% if h.check_access('user_create') %}
@@ -63,28 +63,29 @@
   </div>
 </div>
 {% endblock %}
-<header class="masthead">
+
+<header class="bg-info">
   <div class="container">
     {% block header_debug %} {% if g.debug and not g.debug_supress_header %}
-    <div class="debug">Blueprint : {{ g.blueprint }}<br />View : {{ g.view }}</div>
+    <div class="position-absolute top-0 start-0 border p-1">Blueprint : {{ g.blueprint }}<br />View : {{ g.view }}</div>
     {% endif %} {% endblock %}
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg">
       <hgroup class="{{ g.header_class }} navbar-left">
 
       {% block header_logo %}
-      {% if g.site_logo %}
-      <a class="logo" href="{{ h.url_for('home.index') }}">
-        <img src="{{ h.url_for_static_or_external(g.site_logo) }}" alt="{{ g.site_title }}"
-          aria-label="{{ _('Navigate to Home - {site_title}').format(site_title=g.site_title) }}"/>
-      </a>
-      {% else %}
-      <h1>
-        <a href="{{ h.url_for('home.index') }}">{{ g.site_title }}</a>
-      </h1>
-      {% if g.site_description %}
-      <h2>{{ g.site_description }}</h2>
-      {% endif %}
-      {% endif %}
+        {% if g.site_logo %}
+            <a href="{{ h.url_for('home.index') }}">
+                <img src="{{ h.url_for_static_or_external(g.site_logo) }}" alt="{{ g.site_title }}"
+                aria-label="{{ _('Navigate to Home - {site_title}').format(site_title=g.site_title) }}"/>
+            </a>
+        {% else %}
+            <h1>
+                <a href="{{ h.url_for('home.index') }}">{{ g.site_title }}</a>
+            </h1>
+            {% if g.site_description %}
+                <h2>{{ g.site_description }}</h2>
+            {% endif %}
+        {% endif %}
       {% endblock %}
 
        </hgroup>
@@ -94,7 +95,7 @@
       </button>
 
       <div class="main-navbar collapse navbar-collapse" id="main-navigation-toggle">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-2 me-lg-3">
           {% block header_site_navigation %}
             {% block header_site_navigation_tabs %}
               {% set org_type = h.default_group_type('organization') %}
@@ -114,8 +115,8 @@
       {% block header_site_search %}
           <form class="d-flex site-search" action="{% url_for dataset_type ~ '.search' %}" method="get">
               <label class="d-none" for="field-sitewide-search">{% block header_site_search_label %}{{ h.humanize_entity_type('package', dataset_type, 'search_placeholder') or _('Search Datasets...') }}{% endblock %}</label>
-              <input id="field-sitewide-search" class="form-control me-2"  type="text" name="q" placeholder="{{ _('Search') }}" aria-label="{{ h.humanize_entity_type('package', dataset_type, 'search_placeholder') or _('Search datasets...') }}"/>
-              <button class="btn" type="submit" aria-label="{{ _('Submit') }}"><i class="fa fa-search"></i></button>
+              <input class="form-control me-2"  type="text" name="q" placeholder="{{ _('Search') }}" aria-label="{{ h.humanize_entity_type('package', dataset_type, 'search_placeholder') or _('Search datasets...') }}"/>
+              <button class="btn text-light" type="submit" aria-label="{{ _('Submit') }}"><i class="fa fa-search"></i></button>
           </form>
       {% endblock %}
       </div>

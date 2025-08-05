@@ -974,13 +974,14 @@ def _make_menu_item(menu_item: str, title: str, **kw: Any) -> Markup:
     }
     item.update(kw)
     active = _link_active(item)
+    item.update({"class_": "nav-link active" if active else "nav-link"})
+
     # Remove highlight controllers so that they won't appear in generated urls.
     item.pop('highlight_controllers', False)
 
     link = _link_to(title, menu_item, suppress_active_class=True, **item)
-    if active:
-        return literal('<li class="active">') + link + literal('</li>')
-    return literal('<li>') + link + literal('</li>')
+
+    return literal('<li class="nav-item">') + link + literal('</li>')
 
 
 @core_helper

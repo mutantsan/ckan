@@ -14,8 +14,8 @@
 {% snippet 'development/snippets/context.html' %}
 
 <div class="module module-narrow module-shallow">
-  <h2 class="module-heading"><i class="fa fa-info-circle"></i> Helper text</h2>
-  <div class="module-content">{{ lipsum(1) }}</div>
+  <h2><i class="fa fa-info-circle"></i> Helper text</h2>
+  <div class="pt-3">{{ lipsum(1) }}</div>
 </div>
 
 {% snippet 'development/snippets/nav.html', heading='Navigation' %}
@@ -27,7 +27,7 @@
 {% block primary_content %}
 {% snippet 'development/snippets/page_header.html' %}
 
-<div class="module-content">
+<div class="pt-3">
   <div class="input-group input-group-lg search-giant">
     <input type="text" class="search form-control" name="q" value="" autocomplete="off" placeholder="Search something...">
       <button class="btn btn-secondary" type="submit">
@@ -37,7 +37,7 @@
   </div>
 </div>
 
-<div class="module-content">
+<div class="pt-3">
   <h1 class="page-heading">Top level heading (h1)</h1>
   <h2>Some Rendered Markdown (h2)</h2>
   <div class="embedded-content">
@@ -50,14 +50,14 @@
   </div>
 </div>
 
-<div class="module-content">
+<div class="pt-3">
   <hr>
   <h2>Forms</h2>
 </div>
 {% snippet 'development/snippets/form.html' %}
 {% snippet 'development/snippets/form.html', error=['This field has an error'] %}
 
-<div class="module-content">
+<div class="pt-3">
   <hr>
   <h2>Form stages</h2>
 </div>
@@ -88,7 +88,7 @@
 {'name': "test", 'display_name': 'Group #6', 'type': 'group', 'description': lipsum(0), 'packages': 5}
 ] %}
 
-<div class="module-content">
+<div class="pt-3">
   <h2>Pagination</h2>
 </div>
 {% snippet 'development/snippets/pagination.html', total=5, current=1 %}

@@ -8,12 +8,12 @@
 
 {% block primary_content %}
   <article class="module">
-    <div class="module-content">
+    <div class="pt-3">
       {% block primary_content_inner %}
       <h1 class="page-heading">{{ _('Reset your password') }}</h1>
       {% block form %}
         <form action="" method="post">
-          {{ h.csrf_input() }} 
+          {{ h.csrf_input() }}
           <div class="form-group">
             <label for="field-username">{{ _('Email or username') }}</label>
             <input id="field-username" class="control-medium form-control" name="user" value="" type="text" />
@@ -39,8 +39,8 @@
   {% block help %}
   <section class="module module-narrow module-shallow">
     {% block help_inner %}
-    <h2 class="module-heading">{{ _('How does this work?') }}</h2>
-    <div class="module-content">
+    <h2>{{ _('How does this work?') }}</h2>
+    <div class="pt-3">
       <p>{% trans %}Enter your email address or username into the box and we
         will send you an email with a link to enter a new password.
         {% endtrans %}</p>

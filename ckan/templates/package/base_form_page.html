@@ -3,7 +3,7 @@
 {% block primary_content %}
   <section class="module">
     {% block page_header %}{% endblock %}
-    <div class="module-content">
+    <div class="pt-3">
       {% block primary_content_inner %}
         {% block form %}
           {{- h.snippet(form_snippet, pkg_dict=pkg_dict, **form_vars) -}}
@@ -16,8 +16,8 @@
 {% block secondary_content %}
   {% block info_module %}
     <section class="module module-narrow module-shallow">
-      <h2 class="module-heading"><i class="fa fa-info-circle"></i> {{ _('What are datasets?') }}</h2>
-      <div class="module-content">
+      <h2><i class="fa fa-info-circle"></i> {{ _('What are datasets?') }}</h2>
+      <div class="pt-3">
         <p>
           {% trans %}
           A CKAN Dataset is a collection of data resources (such as files),

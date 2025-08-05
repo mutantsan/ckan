@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block primary_content_inner %}
-  <h2 class="hide-heading">{{ h.humanize_entity_type('package', dataset_type, 'my label') or _('My Datasets') }}</h2>
+  <h2 class="d-none">{{ h.humanize_entity_type('package', dataset_type, 'my label') or _('My Datasets') }}</h2>
   {% if user_dict.datasets %}
     {% snippet 'snippets/package_list.html', packages=user_dict.datasets %}
   {% else %}

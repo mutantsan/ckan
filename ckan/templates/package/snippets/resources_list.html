@@ -10,11 +10,11 @@
 
   #}
 
-<section id="dataset-resources" class="resources">
+<section id="dataset-resources">
   <h2>{{ _('Data and Resources') }}</h2>
   {% block resource_list %}
     {% if resources %}
-      <ul class="{% block resource_list_class %}resource-list{% endblock %}">
+      <ul class="{% block resource_list_class %}list-unstyled{% endblock %}">
         {% block resource_list_inner %}
           {% set can_edit = can_edit or h.check_access('package_update', {'id':pkg.id }) %}
           {% for resource in resources %}

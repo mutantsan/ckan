@@ -16,7 +16,7 @@
     {{ h.csrf_input() }}
     <div class="row align-items-center">
       <div class="col-md-5">
-        <div class="form-group control-medium">
+        <div class="mb-3">
           {% if not user %}
             <label class="form-label" for="username">
               {{ _('Existing User') }}
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="col-md-5">
-        <div class="form-group control-medium">
+        <div class="mb-3">
           <label class="form-label" for="email">
             {{ _('New User') }}
           </label>
@@ -88,11 +88,11 @@
 {% block secondary_content %}
 {{ super() }}
 <div class="module module-narrow module-shallow">
-  <h2 class="module-heading">
+  <h2>
     <i class="fa fa-lg fa-info-circle"></i>
     {{ _('What are roles?') }}
   </h2>
-  <div class="module-content">
+  <div class="pt-3">
     {% trans %}
       <p><strong>Admin:</strong> Can add/edit and delete datasets, as well as
         manage organization members.</p>

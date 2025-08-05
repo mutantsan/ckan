@@ -1,5 +1,5 @@
 {% with items=(("First", true), ("Second", false), ("Third", false)) %}
-  <header class="module-content page-header">
+  <header>
     <ul class="nav nav-tabs">
       {% for value, active in items %}
         <li{{ ' class=active' if active }}>

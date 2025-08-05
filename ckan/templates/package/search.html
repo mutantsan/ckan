@@ -3,7 +3,7 @@
 {% block subtitle %}{{ _(dataset_type.title()) }}{% endblock %}
 
 {% block breadcrumb_content %}
-  <li class="active">{{ h.nav_link(_(dataset_type.title() + 's'), named_route='%s.search' % dataset_type) }}</li>
+  <li class="breadcrumb-item active">{{ h.nav_link(_(dataset_type.title() + 's'), named_route='%s.search' % dataset_type) }}</li>
 {% endblock %}
 
 {% block primary_content %}
@@ -23,7 +23,7 @@
 
   {% block package_search_results_api %}
     <section class="module">
-      <div class="module-content">
+      <div class="pt-3">
         {% block package_search_results_api_inner %}
           <small>
             {% set api_link = h.link_to(_('API'), h.url_for('api.get_api', ver=3)) %}

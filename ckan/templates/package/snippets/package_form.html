@@ -27,9 +27,9 @@ then itself be extended to add/remove blocks of functionality. #}
   {% block form_actions %}
     {{ form.required_message() }}
 
-    <div class="form-actions">
+    <div class="d-flex flex-column">
       {% block disclaimer %}
-        <p class="action-info small">
+        <p class="small">
           {%- trans -%}
           The <i>data license</i> you select above only applies to the contents
           of any resource files that you add to this dataset. By submitting
@@ -46,11 +46,11 @@ then itself be extended to add/remove blocks of functionality. #}
       {% endblock %}
       {% block publish_button %}
         {% if form_style == 'edit' %}
-          <button class="btn btn-warning" name="save" value="go-metadata-unpublish" type="submit">{% block publish_button_text %}{{ _('Unpublish') }}{% endblock %}</button>
+          <button class="btn btn-warning w-25 ms-auto" name="save" value="go-metadata-unpublish" type="submit">{% block publish_button_text %}{{ _('Unpublish') }}{% endblock %}</button>
         {% endif %}
       {% endblock %}
       {% block save_button %}
-        <button class="btn btn-primary" type="submit" name="save">
+        <button class="btn btn-primary w-25 ms-auto" type="submit" name="save">
           {%- block save_button_text -%}
             {%- if form_style == 'edit' -%}
               {{ h.humanize_entity_type('package', pkg_dict.type, 'update label') or _('Update Dataset') }}

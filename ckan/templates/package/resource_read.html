@@ -22,7 +22,7 @@
   {% block resource %}
     <section class="module module-resource" role="complementary">
       {% block resource_inner %}
-      <div class="module-content">
+      <div class="pt-3">
         <div class="actions">
           {% block resource_actions %}
             <ul class="d-flex flex-wrap gap-1 justify-content-end">
@@ -137,9 +137,9 @@
     {% if res %}
       <section class="module">
         {% block resource_additional_information_inner %}
-        <div class="module-content">
+        <div class="pt-3">
           <h2>{{ _('Additional Information') }}</h2>
-          <table class="table table-striped table-bordered table-condensed" data-module="table-toggle-more">
+          <table class="table table-striped table-bordered table-sm" data-module="table-toggle-more">
             <thead>
               <tr>
                 <th scope="col">{{ _('Field') }}</th>
