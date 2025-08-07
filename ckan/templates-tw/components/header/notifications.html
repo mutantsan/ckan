@@ -1,0 +1,52 @@
+<div class="relative">
+    <button id="notifications-button"
+        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors relative">
+        <i class="fas fa-bell h-5 w-5"></i>
+        <span class="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500"></span>
+    </button>
+
+    <!-- Notifications Dropdown -->
+    <div id="notifications-dropdown"
+        class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
+        <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-600">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ _("Notifications") }}</h3>
+        </div>
+        <div class="max-h-64 overflow-y-auto">
+
+        </div>
+        <div class="border-t border-gray-200 dark:border-gray-600">
+            <a href="#"
+                class="block px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-center">
+                {{ _("View all notifications")}}
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Notifications dropdown
+    const notificationsButton = document.getElementById('notifications-button');
+    const notificationsDropdown = document.getElementById('notifications-dropdown');
+    let isNotificationsOpen = false;
+
+    notificationsButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isNotificationsOpen = !isNotificationsOpen;
+
+        if (isNotificationsOpen) {
+            notificationsDropdown.classList.remove('hidden');
+            userDropdown.classList.add('hidden');
+            isUserMenuOpen = false;
+        } else {
+            notificationsDropdown.classList.add('hidden');
+        }
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!notificationsButton.contains(e.target) && !notificationsDropdown.contains(e.target)) {
+            notificationsDropdown.classList.add('hidden');
+            isNotificationsOpen = false;
+        }
+    });
+</script>
