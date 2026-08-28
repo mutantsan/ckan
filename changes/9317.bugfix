@@ -1,0 +1,1 @@
+``user_list_dictize`` now honours the ``keep_email`` context flag, so callers that dictize a list of users (e.g. ``organization_show``/``group_show`` with ``include_users``) can keep member email addresses instead of having them stripped unconditionally.

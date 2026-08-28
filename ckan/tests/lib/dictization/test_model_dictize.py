@@ -123,6 +123,33 @@ class TestGroupListDictize:
 
 
 @pytest.mark.usefixtures("non_clean_db")
+class TestUserListDictize:
+    def test_email_stripped_by_default(self):
+        user = factories.User.model()
+        context = {"model": model, "session": model.Session,
+                   "user": "", "ignore_auth": True}
+
+        user_dicts = model_dictize.user_list_dictize([user], context)
+
+        assert user_dicts[0]["name"] == user.name
+        assert "email" not in user_dicts[0]
+        assert "apikey" not in user_dicts[0]
+        assert "reset_key" not in user_dicts[0]
+
+    def test_keep_email(self):
+        user = factories.User.model()
+        context = {"model": model, "session": model.Session,
+                   "user": "", "ignore_auth": True, "keep_email": True}
+
+        user_dicts = model_dictize.user_list_dictize([user], context)
+
+        assert user_dicts[0]["email"] == user.email
+        # keep_email must not leak the other restricted fields
+        assert "apikey" not in user_dicts[0]
+        assert "reset_key" not in user_dicts[0]
+
+
+@pytest.mark.usefixtures("non_clean_db")
 class TestGroupDictize:
     def test_group_dictize(self):
         group_obj = factories.Group.model()

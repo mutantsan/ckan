@@ -866,6 +866,39 @@ class TestOrganizationShow(object):
         )
         assert len(results["packages"]) == 2  # i.e. ckan.search.rows_max
 
+    def test_organization_show_members_email_stripped_by_default(self):
+        user = factories.User()
+        org = factories.Organization(
+            users=[{"name": user["name"], "capacity": "admin"}]
+        )
+
+        org_dict = helpers.call_action(
+            "organization_show", id=org["id"], include_users=True
+        )
+
+        member = next(
+            u for u in org_dict["users"] if u["name"] == user["name"]
+        )
+        assert "email" not in member
+
+    def test_organization_show_keep_email_for_members(self):
+        user = factories.User()
+        org = factories.Organization(
+            users=[{"name": user["name"], "capacity": "admin"}]
+        )
+
+        org_dict = helpers.call_action(
+            "organization_show",
+            id=org["id"],
+            include_users=True,
+            context={"keep_email": True},
+        )
+
+        member = next(
+            u for u in org_dict["users"] if u["name"] == user["name"]
+        )
+        assert member["email"] == user["email"]
+
 
 @pytest.mark.usefixtures("clean_db")
 class TestUserList(object):
