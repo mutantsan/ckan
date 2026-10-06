@@ -1,33 +1,9 @@
 @mixin break-word {
-    -ms-word-break: break-all;
-    word-break: break-all;
-    /* Non standard for webkit */
     word-break: break-word;
     -webkit-hyphens: auto;
-    -moz-hyphens: auto;
-    -ms-hyphens: auto;
     hyphens: auto;
 }
 
-@mixin border-radius($size) {
-    border-radius: $size;
-}
-
-@mixin transform ($args...) {
-    -webkit-transform: $args;
-    -moz-transform: $args;
-    -ms-transform: $args;
-    -o-transform: $args;
-    transform: $args;
-}
-
-@mixin transform-origin ($x, $y) {
-    -webkit-transform-origin: $x,$y ;
-    -moz-transform-origin: $x,$y;
-    -ms-transform-origin: $x,$y;
-    -o-transform-origin: $x,$y;
-    transform-origin: $x,$y;
-}
 // Allows use of rgba() in gradients. This will not provide a fallback for IE.
 @mixin rgba-vertial-gradient($startColor: #555, $endColor: #333) {
     background-color: color.mix($startColor, $endColor, 60%);
@@ -40,15 +16,48 @@
     background-repeat: repeat-x;
 }
 
-@mixin rgba-vertical-gradient-three-colors($startColor: #00b3ee, $midColor: #7a43b6, $colorStop: 50%, $endColor: #c3325f) {
-    background-color: color.mix($midColor, $endColor, 80%);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from($startColor), color-stop($colorStop, $midColor), to($endColor));
-    background-image: -webkit-linear-gradient($startColor, $midColor $colorStop, $endColor);
-    background-image: -moz-linear-gradient(top, $startColor, $midColor $colorStop, $endColor);
-    background-image: -ms-linear-gradient($startColor, $midColor $colorStop, $endColor);
-    background-image: -o-linear-gradient($startColor, $midColor $colorStop, $endColor);
-    background-image: linear-gradient($startColor, $midColor $colorStop, $endColor);
-    background-repeat: no-repeat;
+// Drag handle and drag state of an item in a sortable list.
+@mixin reorder-handle {
+    .handle {
+        position: absolute;
+        color: $moduleHeadingActionTextColor;
+        left: -31px;
+        top: 50%;
+        margin-top: -15px;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border: 1px solid $moduleHeadingBorderColor;
+        border-width: 1px 0 1px 1px;
+        background-color: $moduleBackgroundColor;
+        border-radius: 20px 0 0 20px;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    &:hover .handle {
+        background-color: $layoutBackgroundColor;
+    }
+    &.ui-sortable-helper {
+        background-color: $layoutBackgroundColor;
+        border: 1px solid $layoutLinkColor;
+        .handle {
+            background-color: $layoutBackgroundColor;
+            border-color: $layoutLinkColor;
+            color: $navLinkColor;
+        }
+    }
+}
+
+// Two-dimensional card grid with equal-width columns.
+@mixin card-grid($columns, $gap: 12px) {
+    display: grid;
+    grid-auto-flow: row;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-columns: repeat($columns, 1fr);
+    column-gap: $gap;
+    row-gap: $gap;
 }
 
 @mixin list-unstyled {

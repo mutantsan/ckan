@@ -23,7 +23,6 @@
 
     li {
       margin-bottom: 10px;
-      position: relative;
       cursor: move;
       position: relative;
 
@@ -34,36 +33,7 @@
       a {
         cursor: inherit;
       }
-      .handle {
-        position: absolute;
-        color: $moduleHeadingActionTextColor;
-        left: -31px;
-        top: 50%;
-        margin-top: -15px;
-        width: 30px;
-        height: 30px;
-        line-height: 30px;
-        text-align: center;
-        border: 1px solid $moduleHeadingBorderColor;
-        border-width: 1px 0 1px 1px;
-        background-color: $moduleBackgroundColor;
-        @include border-radius(20px 0 0 20px);
-        &:hover {
-          text-decoration: none;
-        }
-      }
-      &:hover .handle {
-        background-color: $layoutBackgroundColor;
-      }
-      &.ui-sortable-helper {
-        background-color: $layoutBackgroundColor;
-        border: 1px solid $layoutLinkColor;
-        .handle {
-          background-color: $layoutBackgroundColor;
-          border-color: $layoutLinkColor;
-          color: $navLinkColor;
-        }
-      }
+      @include reorder-handle;
     }
   }
 }
