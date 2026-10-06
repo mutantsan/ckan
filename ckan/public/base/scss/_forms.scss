@@ -21,7 +21,7 @@ label.checkbox:after {
     content: "";
 }
 
-.cr-controls-reset {
+%cr-controls-reset {
     position: relative;
     margin-left: initial;
     margin-right: math.div($grid-gutter-width, 6);
@@ -30,13 +30,13 @@ label.checkbox:after {
 
 .checkbox {
     input[type=checkbox] {
-        @extend .cr-controls-reset;
+        @extend %cr-controls-reset;
     }
 }
 
 .radio {
     input[type=radio] {
-        @extend .cr-controls-reset;
+        @extend %cr-controls-reset;
     }
 }
 
@@ -52,14 +52,10 @@ textarea {
     margin-bottom: 30px;
 }
 
-.unselectable {
-    -webkit-user-select: none;
-    user-select: none;
-}
-
 .checkbox,
 .radio {
-    @extend .unselectable;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .control-full input,
@@ -135,13 +131,6 @@ textarea {
     margin-top: 6px;
 }
 
-.form-group .info-help {
-    padding: 6px 0;
-    &:before {
-        display: none;
-    }
-}
-
 .form-group .info-help-tight {
     margin-top: -10px;
 }
@@ -160,41 +149,9 @@ form .control-medium .info-block.info-inline {
     width: 165px;
 }
 
-.form-group .info-block:before {
-    font-size: 2.2em;
-    position: absolute;
-    left: 0;
-    top: 2px;
-}
-
-.form-group .info-inline:before {
-    top: 8px;
-}
-
-.info-block,
-.info-inline {
-    .icon-large {
-        float: left;
-        font-size: 22px;
-        margin-right: $gutterSmallX;
-    }
-}
-
 .form-group .info-block a {
     color: $emptyTextColor;
     text-decoration: underline;
-}
-
-.form-inline input {
-    padding-bottom: 9px;
-}
-
-.form-inline select {
-    margin-top: 0;
-}
-
-.form-inline .btn {
-    margin-left: 5px;
 }
 
 // Form icons
@@ -206,21 +163,6 @@ form .control-medium .info-block.info-inline {
 .form-group .controls .icon + .form-control {
     width: 100%;
     padding-left: 2.5rem;
-}
-
-// Form Narrow
-.form-narrow label {
-    margin-bottom: 0;
-}
-
-.form-narrow select {
-    width: 100%;
-}
-
-.form-narrow .form-actions {
-    margin-left: -$gutterSmallX;
-    margin-right: -$gutterSmallX;
-    padding: 10px $gutterSmallX 0;
 }
 
 input[data-module="autocomplete"],
@@ -369,13 +311,6 @@ select[data-module="autocomplete"] {
     text-decoration: underline;
 }
 
-.form-group.has-error input,
-.form-group.has-error select,
-.form-group.has-error textarea,
-.form-group.has-error .input-group .input-group-addon {
-    border-color: $errorBorder;
-}
-
 .form-group {
     select,
     .select2-container {
@@ -450,31 +385,6 @@ select[data-module="autocomplete"] {
     }
 }
 
-.stages li.last {
-    position: relative;
-}
-
-.stages li.first:after {
-    content: none;
-    border: none;
-}
-
-.stages li.active:after {
-    border-color: $stagesActiveTransparentBackground;
-    border-top-color: $stagesActiveBackground;
-    border-bottom-color: $stagesActiveBackground;
-}
-
-.stages li.complete:after {
-    border-color: $stagesCompleteTransparentBackground;
-    border-top-color: $stagesCompleteBackground;
-    border-bottom-color: $stagesCompleteBackground;
-}
-
-.stages.stage-3 li.complete:first-child:after {
-    content: none;
-}
-
 .stages li.active .step,
 .stages li.complete .step {
     color: $gray-500;
@@ -482,43 +392,6 @@ select[data-module="autocomplete"] {
 .stages li.active .step-name,
 .stages li.complete .step-name {
     color: $gray-900;
-}
-
-.stages li.active:before {
-    color: $stagesCounterActiveTextColor;
-    background: $stagesCounterActiveBackground;
-}
-
-.stages li.complete:before {
-    color: $stagesCounterCompleteTextColor;
-    background: $stagesCounterCompleteBackground;
-}
-
-// Needs to style spa, button and a elements.
-.stages li .highlight {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    padding: 10px 52px;
-    border: none;
-    text-align: left;
-    text-decoration: none;
-    line-height: 27px;
-    z-index: -1;
-}
-
-.stages li.active .highlight {
-    color: $stagesActiveTextColor;
-    background: $stagesActiveBackground;
-}
-
-.stages li.complete .highlight {
-    color: $stagesCompleteTextColor;
-    background: $stagesCompleteBackground;
 }
 
 // Errors
@@ -538,70 +411,9 @@ select[data-module="autocomplete"] {
 }
 
 // Select2
-.select2-container .select2-choice input,
-.select2-container-multi .select2-choices .select2-search-field:first-child input {
-    font-size: 14px;
-}
-
-.select2-container-multi .select2-choices .select2-search-field input {
-    padding: 0px !important;
-    font-size: 16px;
-    font-weight: 400;
-    letter-spacing: -0.8px;
-    color: #667085;
-    font-family: $baseFontFamily;
-    line-height: 100%;
-}
-
-.select2-container .select2-choice input,
-.select2-container-multi .select2-choices .select2-search-field:first-child input {
-    // Only apply if there are no other tags (ie. is the first child)
-    padding-left: 10px;
-}
-
 .select2-container {
     margin-top: 1px;
     margin-bottom: math.div($grid-gutter-width,4);
-}
-
-.select2-container-multi {
-    margin-top: 0;
-}
-
-.select2-container-multi .select2-choices .select2-search-choice {
-    padding: 5px 8px 5px 22px;
-}
-
-.select2-container-multi.select2-container .select2-choices {
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    border: 0.125rem solid #D0D5DD ;
-}
-
-.select2-search-choice-close,
-.select2-container-multi .select2-search-choice-close {
-    top: 6px;
-    left: 5px;
-}
-
-.select2-container-multi .select2-choices {
-    @include border-radius(3px);
-    @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075));
-    $transition: border linear .2s,
-    box-shadow linear .2s;
-    @include transition($transition);
-    background-color: $inputBackground;
-    border: 1px solid $inputBorder;
-}
-
-.select2-container-active .select2-choices,
-.select2-container-multi.select2-container-active .select2-choices {
-    border-color: rgba(82, 168, 236, .8);
-    outline: 0;
-}
-
-.select2-container-multi .select2-drop {
-    margin-top: -2px;
 }
 
 .select2-container .select2-results li {
@@ -612,14 +424,6 @@ select[data-module="autocomplete"] {
 
 .control-full .select2-container {
     max-width: 100%;
-}
-
-.form-group.has-error .select2-container {
-    input:focus,
-    select:focus,
-    textarea:focus {
-        @include box-shadow(none);
-    }
 }
 
 .js .image-upload {
@@ -653,9 +457,6 @@ select[data-module="autocomplete"] {
         right: math.div($grid-gutter-width,6);
         padding: 5px 12px;
         @include border-radius(100px);
-        .icon-remove {
-            margin-right: 0;
-        }
     }
 
     .error-inline {
@@ -675,11 +476,6 @@ select[data-module="autocomplete"] {
     @include media-breakpoint-up(md) {
         margin-bottom: 0;
     }
-}
-
-#recaptcha_table {
-    table-layout: inherit;
-    line-height: 1;
 }
 
 .resource-upload-field {
@@ -712,9 +508,6 @@ select[data-module="autocomplete"] {
         padding: 5px 12px;
         transform: translateY(30%);
         border-radius: 100px;
-        .icon-remove {
-            margin-right: 0;
-        }
     }
 
     input#field-clear-upload {
@@ -739,79 +532,4 @@ select[data-module="autocomplete"] {
           display: block;
         }
     }
-}
-
-.select2-container {
-    .select2-choice {
-        display: block;
-        height: 40px !important;
-        padding: 0.75rem !important;
-        overflow: hidden;
-        position: relative;
-        border: none !important;
-        white-space: none !important;
-        line-height: 1.5 !important;
-        font-weight: 400;
-        font-size: 14px;
-        color: #667085 !important;
-        text-decoration: none;
-        border-radius: 6px !important;
-        background-clip: padding-box;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        user-select: none;
-        background-color: #fff;
-        filter: none !important;
-        background-image: none !important;
-        border-color: #D0D5DD !important;
-
-        .select2-arrow {
-            display: inline-block;
-            width: 18px;
-            height: 100%;
-            position: absolute;
-            right: 0;
-            top: 0;
-            border-left: none !important;
-            border-radius: 0 4px 4px 0;
-            background-clip: padding-box;
-            background: white !important;
-            background-image: none !important;
-            padding-right: 8px;
-
-            b {
-                display: block;
-                width: 100%;
-                height: 100%;
-                background: none !important;
-                position: relative;
-
-                &::before {
-                    content: "\f078";
-                    font-family: 'Font Awesome 5 Free';
-                    font-weight: 900;
-                    font-size: 8px;
-                    color: #667085;
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                }
-
-            }
-        }
-    }
-
-    .select2-default {
-        color: white !important;
-    }
-
-    .select2-choice.select2-default {
-        background-color: #ffffff !important;
-    }
-}
-
-
-.select2-dropdown-open .select2-choice {
-    background-color: white !important;
 }

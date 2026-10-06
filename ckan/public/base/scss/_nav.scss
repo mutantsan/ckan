@@ -1,21 +1,12 @@
-.nav-simple,
-.nav-aside {
+.nav-simple {
     @include simple-list; // Adds border and padding.
     padding-bottom: 0;
     display: block;
 }
 
-.nav-aside {
-    border-top: 1px dotted #DDD;
-    border-bottom: 1px dotted #DDD;
-    margin-bottom: 15px;
-}
-
-
 .module-narrow {
 
-    .nav-item>a,
-    .nav-aside li a {
+    .nav-item>a {
         text-decoration: none;
         display: block;
         color: $navLinkColor;
@@ -51,13 +42,11 @@
         }
     }
 
-    .nav-item.active,
-    .nav-aside li.active {
+    .nav-item.active {
         background-color: $primary;
     }
 
-    .nav-item.active>a,
-    .nav-aside li.active a {
+    .nav-item.active>a {
         position: relative;
         color: $navItemActiveTextColor;
         background-color: $brand-400;
@@ -74,10 +63,6 @@
         @include media-breakpoint-down(sm) {
             float: left;
         }
-    }
-
-    .nav-aside li.active a span {
-        white-space: nowrap;
     }
 }
 
@@ -102,19 +87,16 @@
     }
 }
 
-.module-narrow .nav-item.image,
-.module-narrow .nav-aside li.image {
+.module-narrow .nav-item.image {
     position: relative;
 }
 
-.module-narrow .nav-item.image>a,
-.module-narrow .nav-aside li.image a {
+.module-narrow .nav-item.image>a {
     padding-left: $gutterSmallX + 27;
     padding-right: $gutterSmallX + 27;
 }
 
-.module-narrow .nav-item.image>img,
-.module-narrow .nav-aside li.image img {
+.module-narrow .nav-item.image>img {
     position: absolute;
     top: 50%;
     left: $gutterSmallX;

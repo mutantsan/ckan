@@ -15,12 +15,6 @@ body {
     flex: 1;
 }
 
-.main:after,
-[role=main]:after {
-    bottom: 0;
-    border-top-width: 1px;
-}
-
 .main .primary {
     border-radius: 0.5rem;
     background-color: $layoutPrimaryBackgroundColor;
@@ -106,22 +100,6 @@ body {
     }
 }
 
-.hero:after {
-    // Need to manually declare this here@mixin  If you pass rgba() through to
-    // #gradient it breaks the filter property in IE7.
-   @include rgba-vertial-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0));
-    background-color: $moduleHeadingBackgroundColor;
-    border-bottom: 1px solid color.adjust($moduleHeadingBorderColor, $lightness: -5%);
-    @include border-radius(3px 3px 0 0);
-    @include box-shadow(inset 0 -4px 0 rgba(0,0,0,0.03));
-    .back:hover {
-        text-decoration: none;
-        span {
-            text-decoration: underline;
-        }
-    }
-}
-
 .context-info {
     .module-content {
         padding: 1rem 0;
@@ -189,11 +167,6 @@ body {
                 font-size: 1.5rem;
                 font-weight: 500;
             }
-        }
-    }
-    &.editing {
-        .module-content {
-            margin-top: 0;
         }
     }
 }

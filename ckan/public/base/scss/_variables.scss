@@ -2,7 +2,6 @@
 $imagePath: "../../../base/images";
 
 // Layout Variables
-$layoutFontFamily: $font-family-sans-serif;
 $layoutTextColor: $gray-700;
 $layoutBoldColor: $black;
 $layoutLinkColor: $primary;
@@ -12,12 +11,10 @@ $logoMaxHeight: 60px;
 $logoMinHeight: 48px;
 
 $navLinkColor: $gray-900;
-$navActiveBackgroundColor: $gray-100;
 
 // Module Variables
 $moduleBackgroundColor: #fff;
 $moduleHeadingBorderColor: #ddd;
-$moduleHeadingBackgroundColor: #f6f6f6;
 $moduleHeadingActionTextColor: #888;
 
 $tabTextColor: #111;
@@ -37,7 +34,6 @@ $mastheadBackgroundColor: $white;
 
 $navItemActiveTextColor: $white;
 $navItemActiveBackgroundColor: $gray-500;
-$navItemActiveArrowSize: $spacer-1;
 
 $pillTextColor: $navItemActiveTextColor;
 $pillBackgroundColor: color.adjust($navItemActiveBackgroundColor, $lightness: -10%);
@@ -60,20 +56,9 @@ $errorBorder: #a2191f;
 $formInfoText: #707070;
 
 $stagesTextColor: #aeaeae;
-$stagesActiveTextColor: #fff;
-$stagesActiveBackground: #8cc68a;
-$stagesActiveTransparentBackground: rgba(140, 198, 138, 0);
-$stagesCompleteTextColor: #eef6ed;
-$stagesCompleteBackground: #c5e2c4;
-$stagesCompleteTransparentBackground: rgba(197, 226, 196, 0);
-$stagesCounterActiveTextColor: #8cc68a;
-$stagesCounterActiveBackground: #fff;
-$stagesCounterCompleteTextColor: #c5e2c4;
-$stagesCounterCompleteBackground: #eef6ed;
 
 // Twitter Bootstrap Overrides
 $btnPrimaryBackground: #30778d;
-$baseFontFamily: $layoutFontFamily;
 
 // Icons
 $chevronActiveIcon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$white}'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");

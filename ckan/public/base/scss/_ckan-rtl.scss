@@ -1,15 +1,3 @@
-@use "sass:math";
-.wrapper {
-  @include media-breakpoint-up(sm) {
-    &:before {
-      left: initial;
-      right: 0;
-      width: 25%;
-      border-left: 1px solid $genericBorderColor;
-    }
-  }
-}
-
 .simple-input .field .btn-search {
   right: initial;
   left: 0;
@@ -26,41 +14,6 @@
         float: left;
     }
 }
-
-.masthead .main-navbar .site-search button {
-    margin-right: -40px;
-    margin-left: 0;
-}
-
-.masthead {
-    .section {
-      float: right;
-    }
-    .navigation {
-      margin-right: initial;
-      margin-left: 20px;
-    }
-    .site-search {
-        @include media-breakpoint-up(lg) {
-            margin-right: math.div($grid-gutter-width,2);
-        }
-    }
-}
-
-@include media-breakpoint-up(md) {
-    .nav-item.active>a:before,
-    .nav-aside li.active a:before {
-        border-left: none;
-        border-right: inherit;
-        border-left-color: inherit;
-        border-left-width: inherit;
-        border-right-color: $navItemActiveBackgroundColor;
-        border-right-width: $navItemActiveArrowSize;
-        left: -$navItemActiveArrowSize;
-        right: inherit;
-    }
-}
-
 
 @include media-breakpoint-up(sm) {
   .nav-pills>li {
@@ -121,12 +74,5 @@
     padding-right: 0;
     .nav-item a span.item-label {
         padding-right: 15px;
-    }
-}
-
-@include media-breakpoint-up(md) {
-    .homepage.layout-1 .row1 .col2 {
-        right: auto;
-        left: 0;
     }
 }

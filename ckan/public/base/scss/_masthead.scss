@@ -35,9 +35,6 @@ $notificationsBg: #CF1322;
                         background-color: color.adjust($primary, $lightness: -15%);
                         text-decoration: none;
                     }
-                    &.sub {
-                        font-weight: 300;
-                    }
                 }
                 a.image {
                     background-color: $white;

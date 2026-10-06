@@ -314,14 +314,6 @@ html[data-theme="dark"] {
         color: var(--dm-text);
     }
 
-    .select2-container .select2-choice,
-    .select2-container-multi .select2-choices,
-    .select2-dropdown-open .select2-choice {
-        background-color: var(--dm-surface) !important;
-        border-color: var(--dm-border) !important;
-        color: var(--dm-text) !important;
-    }
-
     .select2-dropdown {
         background-color: var(--dm-surface);
         border-color: var(--dm-border);

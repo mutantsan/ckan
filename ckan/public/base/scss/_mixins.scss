@@ -4,18 +4,6 @@
     hyphens: auto;
 }
 
-// Allows use of rgba() in gradients. This will not provide a fallback for IE.
-@mixin rgba-vertial-gradient($startColor: #555, $endColor: #333) {
-    background-color: color.mix($startColor, $endColor, 60%);
-    background-image: -moz-linear-gradient(top, $startColor, $endColor); // FF 3.6+
-    background-image: -ms-linear-gradient(top, $startColor, $endColor); // IE10
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from($startColor), to($endColor)); // Safari 4+, Chrome 2+
-    background-image: -webkit-linear-gradient(top, $startColor, $endColor); // Safari 5.1+, Chrome 10+
-    background-image: -o-linear-gradient(top, $startColor, $endColor); // Opera 11.10
-    background-image: linear-gradient(top, $startColor, $endColor); // The standard
-    background-repeat: repeat-x;
-}
-
 // Drag handle and drag state of an item in a sortable list.
 @mixin reorder-handle {
     .handle {
@@ -123,22 +111,6 @@ a.tag:hover {
   @include list-unstyled;
 }
 
-
-.module-narrow .simple-list>li {
-    padding-left: $gutterSmallX;
-    padding-right: $gutterSmallX;
-    position: relative;
-}
-
-.listing li {
-    text-align: right;
-    margin-bottom: 5px;
-}
-
-.listing .key {
-    clear: right;
-    font-weight: bold;
-}
 
 .js .tab-content {
     display: none;
