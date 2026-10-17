@@ -1,4 +1,3 @@
-# encoding: utf-8
 """080 Continuity id indexes
 
 Revision ID: 8224d872c64f

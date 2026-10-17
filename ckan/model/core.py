@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import logging
 from typing import Optional
@@ -6,15 +5,15 @@ from typing import Optional
 log = logging.getLogger(__name__)
 
 
-class State(object):
-    ACTIVE = u'active'
-    DELETED = u'deleted'
-    PENDING = u'pending'
+class State:
+    ACTIVE = 'active'
+    DELETED = 'deleted'
+    PENDING = 'pending'
 
 
-class StatefulObjectMixin(object):
+class StatefulObjectMixin:
     __stateful__ = True
-    state: Optional[str] = None
+    state: str | None = None
 
     def delete(self) -> None:
         log.debug('Running delete on %s', self)

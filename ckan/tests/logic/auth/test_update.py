@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Unit tests for ckan/logic/auth/update.py.
 
 """
@@ -118,7 +117,7 @@ def test_user_update_with_no_user_in_context():
 
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestUpdateWithView(object):
+class TestUpdateWithView:
     def test_anon_can_not_update(self):
 
         resource_view = factories.ResourceView()
@@ -220,7 +219,7 @@ class TestUpdateWithView(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUpdate(object):
+class TestUpdate:
     def test_config_option_update_anon_user(self):
         """An anon user is not authorized to use config_option_update
         action."""
@@ -247,7 +246,7 @@ class TestUpdate(object):
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
 @pytest.mark.ckan_config("ckan.auth.allow_admin_collaborators", True)
-class TestUpdateAuthWithCollaborators(object):
+class TestUpdateAuthWithCollaborators:
 
     def _get_context(self, user):
 

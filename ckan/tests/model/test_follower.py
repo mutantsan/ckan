@@ -1,11 +1,10 @@
-# encoding: utf-8
 
 import pytest
 import ckan.model as model
 import ckan.tests.factories as factories
 
 
-class FollowerClassesTests(object):
+class FollowerClassesTests:
     def test_get(self):
         self._before()
         following = self.FOLLOWER_CLASS.get(

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """016 Uuids everywhere
 
 Revision ID: 37ada738328e

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import pytest
 from faker import Faker
-from typing import Iterable, Any
+from typing import Any
+from collections.abc import Iterable
 
 from ckan.lib import files
 from ckan.lib.files import base

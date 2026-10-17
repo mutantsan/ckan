@@ -10,7 +10,7 @@ from ckan.types import CKANApp, Request
 from ckan.lib.redis import connect_to_redis
 
 
-class RootPathMiddleware(object):
+class RootPathMiddleware:
     '''
     Prevents the SCRIPT_NAME server variable conflicting with the ckan.root_url
     config. The routes package uses the SCRIPT_NAME variable and appends to the

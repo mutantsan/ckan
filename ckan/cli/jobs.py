@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import click
@@ -8,19 +7,19 @@ import ckan.logic as logic
 from ckan.cli import error_shout
 
 
-@click.group(name=u"jobs", short_help=u"Manage background jobs.")
+@click.group(name="jobs", short_help="Manage background jobs.")
 def jobs():
     pass
 
 
-@jobs.command(short_help=u"Start a worker.",)
-@click.option(u"--burst", is_flag=True, help=u"Start worker in burst mode.")
-@click.option(u"--max-idle-time", default=None, type=click.INT,
-              help=u"Max seconds for worker to be idle. "
+@jobs.command(short_help="Start a worker.",)
+@click.option("--burst", is_flag=True, help="Start worker in burst mode.")
+@click.option("--max-idle-time", default=None, type=click.INT,
+              help="Max seconds for worker to be idle. "
               "Defaults to None (never stops idling).")
 @click.option("--no-scheduler", is_flag=True,
               help="Do not enqueue scheduled jobs from this worker.")
-@click.argument(u"queues", nargs=-1)
+@click.argument("queues", nargs=-1)
 def worker(burst: bool, max_idle_time: int, queues: list[str], no_scheduler: bool):
     """Start a worker that fetches jobs from queues and executes them. If
     no queue names are given then the worker listens to the default
@@ -56,61 +55,61 @@ def worker(burst: bool, max_idle_time: int, queues: list[str], no_scheduler: boo
     )
 
 
-@jobs.command(name=u"list", short_help=u"List jobs.")
+@jobs.command(name="list", short_help="List jobs.")
 @click.option("-l", "--limit", type=click.INT,
               help="Number of jobs to return. Default: %s" %
               bg_jobs.DEFAULT_JOB_LIST_LIMIT,
               default=bg_jobs.DEFAULT_JOB_LIST_LIMIT)
 @click.option("-i", "--ids", is_flag=True, type=click.BOOL,
               help="Only return a list of job ids.", default=False)
-@click.argument(u"queues", nargs=-1)
+@click.argument("queues", nargs=-1)
 def list_jobs(queues: list[str],
               limit: int = bg_jobs.DEFAULT_JOB_LIST_LIMIT, ids: bool = False):
     """List currently enqueued jobs from the given queues. If no queue
     names are given then the jobs from all queues are listed.
     """
     data_dict = {
-        u"queues": list(queues),
+        "queues": list(queues),
         "limit": limit,
         "ids_only": ids,
     }
-    jobs = logic.get_action(u"job_list")({u"ignore_auth": True}, data_dict)
+    jobs = logic.get_action("job_list")({"ignore_auth": True}, data_dict)
     if not jobs:
-        return click.secho(u"There are no pending jobs.", fg=u"green")
+        return click.secho("There are no pending jobs.", fg="green")
     for job in jobs:
         if ids:
             click.secho(job)
         else:
-            if job[u"title"] is None:
-                job[u"title"] = u""
+            if job["title"] is None:
+                job["title"] = ""
             else:
-                job[u"title"] = u'"{}"'.format(job[u"title"])
-            click.secho(u"{created} {id} {queue} {title}".format(**job))
+                job["title"] = '"{}"'.format(job["title"])
+            click.secho("{created} {id} {queue} {title}".format(**job))
 
 
-@jobs.command(short_help=u"Show details about a specific job.")
-@click.argument(u"id")
+@jobs.command(short_help="Show details about a specific job.")
+@click.argument("id")
 def show(id: str):
     try:
-        job = logic.get_action(u"job_show")(
-            {u"ignore_auth": True}, {u"id": id}
+        job = logic.get_action("job_show")(
+            {"ignore_auth": True}, {"id": id}
         )
     except logic.NotFound:
-        error_shout(u'There is no job with ID "{}"'.format(id))
+        error_shout(f'There is no job with ID "{id}"')
         raise click.Abort()
 
-    click.secho(u"ID:      {}".format(job[u"id"]))
-    if job[u"title"] is None:
-        title = u"None"
+    click.secho("ID:      {}".format(job["id"]))
+    if job["title"] is None:
+        title = "None"
     else:
-        title = u'"{}"'.format(job[u"title"])
-    click.secho(u"Title:   {}".format(title))
-    click.secho(u"Created: {}".format(job[u"created"]))
-    click.secho(u"Queue:   {}".format(job[u"queue"]))
+        title = '"{}"'.format(job["title"])
+    click.secho(f"Title:   {title}")
+    click.secho("Created: {}".format(job["created"]))
+    click.secho("Queue:   {}".format(job["queue"]))
 
 
-@jobs.command(short_help=u"Cancel a specific job.")
-@click.argument(u"id")
+@jobs.command(short_help="Cancel a specific job.")
+@click.argument("id")
 def cancel(id: str):
     """Cancel a specific job. Jobs can only be canceled while they are
     enqueued. Once a worker has started executing a job it cannot be
@@ -118,35 +117,35 @@ def cancel(id: str):
 
     """
     try:
-        logic.get_action(u"job_cancel")(
-            {u"ignore_auth": True}, {u"id": id}
+        logic.get_action("job_cancel")(
+            {"ignore_auth": True}, {"id": id}
         )
     except logic.NotFound:
-        error_shout(u'There is no job with ID "{}"'.format(id))
+        error_shout(f'There is no job with ID "{id}"')
         raise click.Abort()
 
-    click.secho(u"Cancelled job {}".format(id), fg=u"green")
+    click.secho(f"Cancelled job {id}", fg="green")
 
 
-@jobs.command(short_help=u"Cancel all jobs.")
-@click.argument(u"queues", nargs=-1)
+@jobs.command(short_help="Cancel all jobs.")
+@click.argument("queues", nargs=-1)
 def clear(queues: list[str]):
     """Cancel all jobs on the given queues. If no queue names are given
     then ALL queues are cleared.
 
     """
     data_dict = {
-        u"queues": list(queues),
+        "queues": list(queues),
     }
-    queues = logic.get_action(u"job_clear")(
-        {u"ignore_auth": True}, data_dict
+    queues = logic.get_action("job_clear")(
+        {"ignore_auth": True}, data_dict
     )
-    queues = [u'"{}"'.format(q) for q in queues]
-    click.secho(u"Cleared queue(s) {}".format(u", ".join(queues)), fg=u"green")
+    queues = [f'"{q}"' for q in queues]
+    click.secho("Cleared queue(s) {}".format(", ".join(queues)), fg="green")
 
 
-@jobs.command(short_help=u"Enqueue a test job.")
-@click.argument(u"queues", nargs=-1)
+@jobs.command(short_help="Enqueue a test job.")
+@click.argument("queues", nargs=-1)
 def test(queues: list[str]):
     """Enqueue a test job. If no queue names are given then the job is
     added to the default queue. If queue names are given then a
@@ -155,9 +154,9 @@ def test(queues: list[str]):
     """
     for queue in queues or [bg_jobs.DEFAULT_QUEUE_NAME]:
         job = bg_jobs.enqueue(
-            bg_jobs.test_job, [u"A test job"], title=u"A test job", queue=queue
+            bg_jobs.test_job, ["A test job"], title="A test job", queue=queue
         )
         click.secho(
-            u'Added test job {} to queue "{}"'.format(job.id, queue),
-            fg=u"green",
+            f'Added test job {job.id} to queue "{queue}"',
+            fg="green",
         )

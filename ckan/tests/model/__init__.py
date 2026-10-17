@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """**All model methods should have tests**.
 

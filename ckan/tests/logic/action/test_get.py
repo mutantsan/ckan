@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import datetime
 import re
@@ -15,7 +14,7 @@ from ckan.lib.search.common import SearchError
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageShow(object):
+class TestPackageShow:
     def test_package_show(self):
         # simple dataset, simple checks
         dataset1 = factories.Dataset()
@@ -207,7 +206,7 @@ class TestPackageShow(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestGroupList(object):
+class TestGroupList:
     def test_group_list(self):
 
         group1 = factories.Group()
@@ -308,7 +307,7 @@ class TestGroupList(object):
     def eq_expected(self, expected_dict, result_dict):
         superfluous_keys = set(result_dict) - set(expected_dict)
         assert not superfluous_keys, "Did not expect key: %s" % " ".join(
-            ("%s=%s" % (k, result_dict[k]) for k in superfluous_keys)
+            "%s=%s" % (k, result_dict[k]) for k in superfluous_keys
         )
         for key in expected_dict:
             assert (
@@ -339,7 +338,7 @@ class TestGroupList(object):
     def _create_bulk_groups(self, name, count):
 
         groups = [
-            model.Group(name="{}_{}".format(name, i)) for i in range(count)
+            model.Group(name=f"{name}_{i}") for i in range(count)
         ]
         model.Session.add_all(groups)
         model.repo.commit_and_remove()
@@ -488,7 +487,7 @@ class TestGroupList(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestGroupShow(object):
+class TestGroupShow:
     def test_group_show(self):
         group = factories.Group(user=factories.User())
 
@@ -669,7 +668,7 @@ class TestGroupShow(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestOrganizationList(object):
+class TestOrganizationList:
     def test_organization_list(self):
 
         org1 = factories.Organization()
@@ -721,14 +720,14 @@ class TestOrganizationList(object):
 
         assert sorted(org_list) == sorted(
             [g["name"] for g in [org2]]
-        ), "{}".format(org_list)
+        ), f"{org_list}"
 
     def _create_bulk_orgs(self, name, count):
         from ckan import model
 
         orgs = [
             model.Group(
-                name="{}_{}".format(name, i),
+                name=f"{name}_{i}",
                 is_organization=True,
                 type="organization",
             )
@@ -780,7 +779,7 @@ class TestOrganizationList(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationShow(object):
+class TestOrganizationShow:
     def test_organization_show(self):
         org = factories.Organization()
 
@@ -868,7 +867,7 @@ class TestOrganizationShow(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestUserList(object):
+class TestUserList:
     def test_user_list_default_values(self):
         user = factories.User()
 
@@ -1061,7 +1060,7 @@ class TestUserList(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserShow(object):
+class TestUserShow:
     def test_user_show_default_values(self):
 
         user = factories.User()
@@ -1276,7 +1275,7 @@ class TestUserShow(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestCurrentPackageList(object):
+class TestCurrentPackageList:
     def test_current_package_list(self):
         """
         Test current_package_list_with_resources with no parameters
@@ -1351,7 +1350,7 @@ class TestCurrentPackageList(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestPackageAutocomplete(object):
+class TestPackageAutocomplete:
     def test_package_autocomplete_match_name(self):
         pkg = factories.Dataset(name="warandpeace")
         result = helpers.call_action("package_autocomplete", q="war")
@@ -1424,7 +1423,7 @@ class TestPackageAutocomplete(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestPackageSearch(object):
+class TestPackageSearch:
     def test_search(self):
         factories.Dataset(title="Rivers")
         factories.Dataset(title="Lakes")  # decoy
@@ -2022,7 +2021,7 @@ class TestPackageSearch(object):
 
 @pytest.mark.ckan_config("ckan.plugins", "example_idatasetform")
 @pytest.mark.usefixtures("clean_db", "with_plugins")
-class TestPackageAutocompleteWithDatasetForm(object):
+class TestPackageAutocompleteWithDatasetForm:
     def test_custom_schema_returned(self):
         dataset1 = factories.Dataset(custom_text="foo")
 
@@ -2049,7 +2048,7 @@ class TestPackageAutocompleteWithDatasetForm(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestUserAutocomplete(object):
+class TestUserAutocomplete:
     def test_autocomplete(self):
         factories.Sysadmin(name="autocompletesysadmin")
         factories.User(name="autocompleteuser")
@@ -2100,7 +2099,7 @@ class TestFormatAutocomplete:
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestBadLimitQueryParameters(object):
+class TestBadLimitQueryParameters:
     """test class for #1258 non-int query parameters cause 500 errors
 
     Test that validation errors are raised when calling actions with
@@ -2114,7 +2113,7 @@ class TestBadLimitQueryParameters(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestOrganizationListForUser(object):
+class TestOrganizationListForUser:
     """Functional tests for the organization_list_for_user() action function."""
 
     def test_when_user_is_not_a_member_of_any_organizations(self):
@@ -2538,7 +2537,7 @@ class TestOrganizationListForUser(object):
 
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestShowResourceView(object):
+class TestShowResourceView:
     def test_resource_view_show(self):
 
         resource = factories.Resource()
@@ -2570,7 +2569,7 @@ class TestShowResourceView(object):
             helpers.call_action("resource_view_show", id="does_not_exist")
 
 
-class TestGetHelpShow(object):
+class TestGetHelpShow:
     def test_help_show_basic(self):
 
         function_name = "package_search"
@@ -2606,7 +2605,7 @@ class TestGetHelpShow(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestConfigOptionShow(object):
+class TestConfigOptionShow:
     @pytest.mark.ckan_config("ckan.site_title", "My Test CKAN")
     def test_config_option_show_in_config_not_in_db(self):
         """config_option_show returns value from config when value on in
@@ -2639,7 +2638,7 @@ class TestConfigOptionShow(object):
             helpers.call_action("config_option_show", key="ckan.not.editable")
 
 
-class TestConfigOptionList(object):
+class TestConfigOptionList:
     def test_config_option_list(self):
         """config_option_list returns whitelisted config option keys"""
 
@@ -2657,7 +2656,7 @@ def remove_pseudo_users(user_list):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestTagShow(object):
+class TestTagShow:
     def test_tag_show_for_free_tag(self):
         tag = factories.Tag.stub().name
         dataset = factories.Dataset(tags=[{"name": tag}])
@@ -2721,7 +2720,7 @@ class TestTagShow(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestTagList(object):
+class TestTagList:
     def test_tag_list(self):
         tag = factories.Tag.stub().name
         tag2 = factories.Tag.stub().name
@@ -2766,7 +2765,7 @@ class TestTagList(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestMembersList(object):
+class TestMembersList:
     def test_dataset_delete_marks_membership_of_group_as_deleted(self):
         sysadmin = factories.Sysadmin()
         group = factories.Group()
@@ -2929,7 +2928,7 @@ class TestMembersList(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestFollow(object):
+class TestFollow:
     def test_followee_list(self):
 
         group1 = factories.Group(title="Finance")
@@ -3028,7 +3027,7 @@ class TestFollow(object):
         assert organization_followee_count == 1
 
 
-class TestStatusShow(object):
+class TestStatusShow:
     @pytest.mark.ckan_config("ckan.plugins", "stats")
     @pytest.mark.usefixtures("clean_db", "with_plugins")
     def test_status_show(self):
@@ -3133,7 +3132,7 @@ def _seconds_since_timestamp(timestamp, format_):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestApiToken(object):
+class TestApiToken:
     @pytest.mark.parametrize("num_tokens", [0, 1, 2, 5])
     def test_token_list(self, num_tokens):
         from ckan.lib.api_token import decode
@@ -3177,7 +3176,7 @@ def test_package_collaborator_list_when_config_disabled():
 
 @pytest.mark.usefixtures("clean_db")
 @pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
-class TestPackageMemberList(object):
+class TestPackageMemberList:
     def test_list(self):
 
         dataset = factories.Dataset()
@@ -3350,7 +3349,7 @@ class TestPackageMemberList(object):
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
 @pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
-class TestCollaboratorsSearch(object):
+class TestCollaboratorsSearch:
     def test_search_results_editor(self):
 
         org = factories.Organization()
@@ -3429,7 +3428,7 @@ class TestCollaboratorsSearch(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestResourceSearch(object):
+class TestResourceSearch:
     def test_required_fields(self):
         with pytest.raises(logic.ValidationError):
             helpers.call_action("resource_search")
@@ -3478,7 +3477,7 @@ class TestResourceSearch(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserPluginExtras(object):
+class TestUserPluginExtras:
     def test_returned_if_sysadmin_and_include_plugin_extras_only(self):
 
         sysadmin = factories.Sysadmin()
@@ -3554,7 +3553,7 @@ class TestPackageList:
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestPackagePluginData(object):
+class TestPackagePluginData:
 
     def test_returned_if_sysadmin_and_include_plugin_data_only(self):
         sysadmin = factories.Sysadmin()

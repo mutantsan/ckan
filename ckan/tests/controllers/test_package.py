@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import uuid
 from bs4 import BeautifulSoup
@@ -36,7 +35,7 @@ def _get_location(res):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestPackageNew(object):
+class TestPackageNew:
 
     @pytest.mark.ckan_config("ckan.plugins", "test_package_controller_plugin")
     @pytest.mark.usefixtures("with_plugins")
@@ -46,7 +45,7 @@ class TestPackageNew(object):
         app.post(
             url_for("dataset.new"),
             headers=headers,
-            data={"name": u"plugged", "save": ""},
+            data={"name": "plugged", "save": ""},
             follow_redirects=False,
         )
         assert plugin.calls["edit"] == 0, plugin.calls
@@ -60,7 +59,7 @@ class TestPackageNew(object):
         app.post(
             url_for("dataset.new"),
             headers=headers,
-            data={"name": u"plugged2", "save": ""},
+            data={"name": "plugged2", "save": ""},
             follow_redirects=False,
         )
         assert plugin.calls["after_dataset_update"] == 0, plugin.calls
@@ -71,7 +70,7 @@ class TestPackageNew(object):
     @pytest.mark.ckan_config("solr_url", "http://example.com/badsolrurl")
     @pytest.mark.usefixtures("clean_index")
     def test_new_indexerror(self, app, user):
-        new_package_name = u"new-package-missing-solr"
+        new_package_name = "new-package-missing-solr"
         offset = url_for("dataset.new")
         headers = {"Authorization": user["token"]}
         res = app.post(
@@ -173,7 +172,7 @@ class TestPackageNew(object):
         })
 
         pkg = model.Package.by_name(name)
-        assert pkg.resources[0].url == u"http://example.com/resource"
+        assert pkg.resources[0].url == "http://example.com/resource"
         assert pkg.state == "active"
 
     def test_complete_package_with_two_resources(self, app):
@@ -210,8 +209,8 @@ class TestPackageNew(object):
         )
         pkg = model.Package.by_name(name)
         resources = sorted(pkg.resources, key=lambda r: r.url)
-        assert resources[0].url == u"http://example.com/resource0"
-        assert resources[1].url == u"http://example.com/resource1"
+        assert resources[0].url == "http://example.com/resource0"
+        assert resources[1].url == "http://example.com/resource1"
         assert pkg.state == "active"
 
     # resource upload is tested in TestExampleIUploaderPlugin
@@ -476,7 +475,7 @@ class TestPackageNew(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageEdit(object):
+class TestPackageEdit:
     def test_redirect_after_edit_using_param(self, app, sysadmin):
         return_url = "http://random.site.com/dataset/<NAME>?test=param"
         pkg = factories.Dataset()
@@ -503,12 +502,12 @@ class TestPackageEdit(object):
             url_for("dataset.edit", id=dataset["name"]),
             headers=headers,
             data={
-                "notes": u"edited description",
+                "notes": "edited description",
                 "save": ""
             }, follow_redirects=False
         )
         result = helpers.call_action("package_show", id=dataset["id"])
-        assert u"edited description" == result["notes"]
+        assert "edited description" == result["notes"]
 
     def test_organization_editor_can_edit(self, app, user):
         headers = {"Authorization": user["token"]}
@@ -520,13 +519,13 @@ class TestPackageEdit(object):
             url_for("dataset.edit", id=dataset["name"]),
             headers=headers,
             data={
-                "notes": u"edited description",
+                "notes": "edited description",
                 "save": ""
             }, follow_redirects=False
 
         )
         result = helpers.call_action("package_show", id=dataset["id"])
-        assert u"edited description" == result["notes"]
+        assert "edited description" == result["notes"]
 
     def test_organization_member_cannot_edit(self, app, user):
         headers = {"Authorization": user["token"]}
@@ -592,7 +591,7 @@ class TestPackageEdit(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageOwnerOrgList(object):
+class TestPackageOwnerOrgList:
 
     owner_org_select = '<select id="field-organizations" name="owner_org"'
 
@@ -673,7 +672,7 @@ class TestPackageOwnerOrgList(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageRead(object):
+class TestPackageRead:
     def test_read(self, app):
         dataset = factories.Dataset()
         response = app.get(url_for("dataset.read", id=dataset["name"]))
@@ -742,7 +741,7 @@ class TestPackageRead(object):
             follow_redirects=False
         )
         assert 302 == response.status_code
-        assert '/login' in response.headers[u"Location"]
+        assert '/login' in response.headers["Location"]
 
     @pytest.mark.ckan_config("ckan.auth.reveal_private_datasets", "True")
     def test_user_not_in_organization_cannot_read_private_datasets(self, app, user):
@@ -755,7 +754,7 @@ class TestPackageRead(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageDelete(object):
+class TestPackageDelete:
     def test_owner_delete(self, app, user):
         headers = {"Authorization": user["token"]}
         owner_org = factories.Organization(
@@ -858,14 +857,14 @@ class TestPackageDelete(object):
         sysadmin_headers = {"Authorization": sysadmin["token"]}
         app.post(url, headers=sysadmin_headers)
 
-        assert model.Package.get(dataset["name"]).state == u"deleted"
+        assert model.Package.get(dataset["name"]).state == "deleted"
 
         assert plugin.calls["delete"] == 2
         assert plugin.calls["after_dataset_delete"] == 2
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestResourceNew(object):
+class TestResourceNew:
     def test_manage_dataset_resource_listing_page(self, app, user):
         headers = {"Authorization": user["token"]}
         organization = factories.Organization(user=user)
@@ -951,7 +950,7 @@ class TestResourceNew(object):
         )
         result = helpers.call_action("package_show", id=dataset["id"])
         assert 1 == len(result["resources"])
-        assert u"test resource" == result["resources"][0]["name"]
+        assert "test resource" == result["resources"][0]["name"]
 
     def test_admin_can_add_new_resource(self, app, user):
         headers = {"Authorization": user["token"]}
@@ -974,7 +973,7 @@ class TestResourceNew(object):
         )
         result = helpers.call_action("package_show", id=dataset["id"])
         assert 1 == len(result["resources"])
-        assert u"test resource" == result["resources"][0]["name"]
+        assert "test resource" == result["resources"][0]["name"]
 
     def test_member_cannot_add_new_resource(self, app, user):
         headers = {"Authorization": user["token"]}
@@ -1081,31 +1080,31 @@ class TestResourceNew(object):
 
 
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestResourceDownload(object):
+class TestResourceDownload:
 
     def test_resource_download_content_type(self, create_with_upload, app):
 
         dataset = factories.Dataset()
         resource = create_with_upload(
-            u"hello,world", u"file.csv",
-            package_id=dataset[u"id"]
+            "hello,world", "file.csv",
+            package_id=dataset["id"]
         )
 
-        assert resource[u"mimetype"] == u"text/csv"
+        assert resource["mimetype"] == "text/csv"
         url = url_for(
-            u"{}_resource.download".format(dataset[u"type"]),
-            id=dataset[u"id"],
-            resource_id=resource[u"id"],
+            "{}_resource.download".format(dataset["type"]),
+            id=dataset["id"],
+            resource_id=resource["id"],
         )
 
         response = app.get(url)
 
-        assert response.headers[u"Content-Type"] == u"text/csv; charset=utf-8"
+        assert response.headers["Content-Type"] == "text/csv; charset=utf-8"
 
 
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestResourceView(object):
+class TestResourceView:
     def test_resource_view_create(self, app):
         user = factories.UserWithToken()
         owner_org = factories.Organization(
@@ -1212,7 +1211,7 @@ class TestResourceView(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestResourceRead(object):
+class TestResourceRead:
     def test_existing_resource_with_not_associated_dataset(self, app):
 
         dataset = factories.Dataset()
@@ -1348,11 +1347,11 @@ class TestResourceRead(object):
             follow_redirects=False
         )
         assert 302 == response.status_code
-        assert '/login' in response.headers[u"Location"]
+        assert '/login' in response.headers["Location"]
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestResourceDelete(object):
+class TestResourceDelete:
     def test_dataset_owners_can_delete_resources(self, app, user):
         headers = {"Authorization": user["token"]}
         owner_org = factories.Organization(
@@ -1486,7 +1485,7 @@ class TestResourceDelete(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestSearch(object):
+class TestSearch:
     def test_search_basic(self, app):
         dataset1 = factories.Dataset()
 
@@ -1822,7 +1821,7 @@ class TestSearch(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageFollow(object):
+class TestPackageFollow:
     def test_package_follow(self, app, user):
 
         package = factories.Dataset()
@@ -1898,7 +1897,7 @@ class TestPackageFollow(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestDatasetRead(object):
+class TestDatasetRead:
     def test_dataset_read(self, app):
 
         dataset = factories.Dataset()
@@ -1926,7 +1925,7 @@ class TestDatasetRead(object):
 
 
 @pytest.mark.usefixtures('non_clean_db')
-class TestCollaborators(object):
+class TestCollaborators:
 
     def test_collaborators_tab_not_shown(self, app, sysadmin):
         dataset = factories.Dataset()
@@ -1978,7 +1977,7 @@ class TestCollaborators(object):
 
 
 @pytest.mark.usefixtures('clean_db')
-class TestResourceListing(object):
+class TestResourceListing:
     def test_resource_listing_premissions_sysadmin(self, app, sysadmin):
         org = factories.Organization()
         pkg = factories.Dataset(owner_org=org["id"])
@@ -2028,7 +2027,7 @@ class TestNonActivePackages:
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestReadOnly(object):
+class TestReadOnly:
     def test_read_nonexistentpackage(self, app):
         name = "anonexistentpackage"
         url = url_for("dataset.read", id=name)

@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import re
 
@@ -111,7 +110,7 @@ def sysadmin():
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestUser(object):
+class TestUser:
 
     @pytest.mark.ckan_config("ckan.auth.create_user_via_web", True)
     def test_register_a_user(self, app):
@@ -288,7 +287,7 @@ class TestUser(object):
     def test_not_logged_in_dashboard(self, app):
         for route in ["organizations", "datasets", "groups"]:
             response = app.get(
-                url=url_for(u"dashboard.{}".format(route)),
+                url=url_for(f"dashboard.{route}"),
                 follow_redirects=False,
             )
             assert response.status_code == 302
@@ -845,7 +844,7 @@ class TestUser(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserImage(object):
+class TestUserImage:
     def test_image_url_is_shown(self, app):
 
         user = factories.User(

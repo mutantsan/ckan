@@ -1,11 +1,10 @@
-# encoding: utf-8
 
 import pytest
 
 from ckan.lib.helpers import url_for as url_for
 
 
-class TestUtil(object):
+class TestUtil:
     def test_redirect_ok(self, app):
         response = app.get(
             url=url_for("util.internal_redirect"),

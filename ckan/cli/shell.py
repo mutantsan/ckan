@@ -1,10 +1,10 @@
-# encoding: utf-8
 import click
 import logging
 
 import ckan.model as model
 
-from typing import Any, Mapping
+from typing import Any
+from collections.abc import Mapping
 
 from ckan.plugins import toolkit
 

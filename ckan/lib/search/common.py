@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import datetime
@@ -57,10 +56,7 @@ def make_connection(decode_dates: bool = True) -> Solr:
         assert match
         protocol = match.group()
         solr_url = re.sub(protocol, '', solr_url)
-        solr_url = "{}{}:{}@{}".format(protocol,
-                                       quote_plus(solr_user),
-                                       quote_plus(solr_password),
-                                       solr_url)
+        solr_url = f"{protocol}{quote_plus(solr_user)}:{quote_plus(solr_password)}@{solr_url}"
 
     timeout = config.get('solr_timeout')
 

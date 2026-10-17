@@ -1,4 +1,3 @@
-# encoding: utf-8
 """005 Add authorization tables
 
 Revision ID: 12c2232c15f5

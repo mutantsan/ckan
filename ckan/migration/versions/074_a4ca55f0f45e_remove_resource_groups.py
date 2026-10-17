@@ -1,4 +1,3 @@
-# encoding: utf-8
 """074 Remove resource groups
 
 Revision ID: a4ca55f0f45e

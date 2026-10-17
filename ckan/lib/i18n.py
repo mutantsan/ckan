@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 '''
 Internationalization utilities.
@@ -63,14 +62,14 @@ log = logging.getLogger(__name__)
 LOCALE_ALIASES['pt'] = 'pt_BR'
 
 # CKAN root directory
-_CKAN_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), u'..'))
+_CKAN_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 
 def get_ckan_i18n_dir() -> str:
-    path = config.get(u'ckan.i18n_directory') or os.path.join(
-        _CKAN_DIR, u'i18n')
-    if os.path.isdir(os.path.join(path, u'i18n')):
-        path = os.path.join(path, u'i18n')
+    path = config.get('ckan.i18n_directory') or os.path.join(
+        _CKAN_DIR, 'i18n')
+    if os.path.isdir(os.path.join(path, 'i18n')):
+        path = os.path.join(path, 'i18n')
 
     return path
 
@@ -151,10 +150,10 @@ def _get_locales() -> list[str]:
     return ordered_list
 
 
-available_locales: Optional[list[Locale]] = None
-locales: Optional[list[str]] = None
-locales_dict: Optional[dict[str, Optional[Locale]]] = None
-_non_translated_locals: Optional[list[str]] = None
+available_locales: list[Locale] | None = None
+locales: list[str] | None = None
+locales_dict: dict[str, Locale | None] | None = None
+_non_translated_locals: list[str] | None = None
 
 
 def get_locales() -> list[str]:
@@ -177,7 +176,7 @@ def non_translated_locals() -> list[str]:
     return _non_translated_locals
 
 
-def get_locales_dict() -> dict[str, Optional[Locale]]:
+def get_locales_dict() -> dict[str, Locale | None]:
     ''' Get a dict of the available locales
     e.g.  { 'en' : Locale('en'), 'de' : Locale('de'), ... } '''
     global locales_dict
@@ -262,7 +261,7 @@ def _get_js_translation_entries(filename: str) -> set[str]:
         if entry.obsolete:
             continue
         for occ in entry.occurrences:
-            if occ[0].endswith(u'.js'):
+            if occ[0].endswith('.js'):
                 js_entries.add(entry.msgid)
     return js_entries
 
@@ -288,10 +287,10 @@ def _build_js_translation(
     pos = [polib.pofile(fn) for fn in source_filenames]
 
     result = {}
-    result[u''] = {}
-    result[u''][u'plural-forms'] = pos[0].metadata[u'Plural-Forms']
-    result[u''][u'lang'] = lang
-    result[u''][u'domain'] = u'ckan'
+    result[''] = {}
+    result['']['plural-forms'] = pos[0].metadata['Plural-Forms']
+    result['']['lang'] = lang
+    result['']['domain'] = 'ckan'
 
     for po in pos:
         for entry in po:
@@ -305,7 +304,7 @@ def _build_js_translation(
                     entry.msgstr_plural.items())
                 for _, msgstr in ordered_plural:
                     plural.append(msgstr)
-    with open(dest_filename, u'w', encoding='utf-8') as f:
+    with open(dest_filename, 'w', encoding='utf-8') as f:
         s = json.dumps(
             result, sort_keys=True, ensure_ascii=False, separators=(',', ':')
         )
@@ -327,7 +326,7 @@ def build_js_translations() -> None:
     ``ckan.i18n_directory``. These include only those translation
     strings that are actually used in JS files.
     '''
-    log.debug(u'Generating JavaScript translations')
+    log.debug('Generating JavaScript translations')
     ckan_i18n_dir = get_ckan_i18n_dir()
     dest_dir = get_js_translations_dir()
     _check_js_translations_dest_dir()
@@ -336,7 +335,7 @@ def build_js_translations() -> None:
     # language that isn't supported by CKAN core, yet).
     langs = set()
     i18n_dirs: dict[str, str] = collections.OrderedDict([
-        (ckan_i18n_dir, u'ckan')])
+        (ckan_i18n_dir, 'ckan')])
     for item in os.listdir(ckan_i18n_dir):
         if os.path.isdir(os.path.join(ckan_i18n_dir, item)):
             langs.add(item)
@@ -349,7 +348,7 @@ def build_js_translations() -> None:
     # (even those for which no translation exists, yet).
     js_entries = set()
     for i18n_dir, domain in i18n_dirs.items():
-        pot_file = os.path.join(i18n_dir, domain + u'.pot')
+        pot_file = os.path.join(i18n_dir, domain + '.pot')
         if os.path.isfile(pot_file):
             js_entries.update(_get_js_translation_entries(pot_file))
 
@@ -360,8 +359,8 @@ def build_js_translations() -> None:
                 os.path.join(
                     i18n_dir,
                     lang,
-                    u'LC_MESSAGES',
-                    domain + u'.po'
+                    'LC_MESSAGES',
+                    domain + '.po'
                 )
                 for i18n_dir, domain in i18n_dirs.items()
             ) if os.path.isfile(fn)
@@ -370,7 +369,7 @@ def build_js_translations() -> None:
             continue
 
         latest = max(os.path.getmtime(fn) for fn in po_files)
-        dest_file = os.path.join(dest_dir, lang + u'.js')
+        dest_file = os.path.join(dest_dir, lang + '.js')
 
         if (not os.path.isfile(dest_file) or
                 os.path.getmtime(dest_file) < latest):

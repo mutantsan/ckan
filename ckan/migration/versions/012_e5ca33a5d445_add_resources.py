@@ -1,4 +1,3 @@
-# encoding: utf-8
 """012 Add resources
 
 Revision ID: e5ca33a5d445

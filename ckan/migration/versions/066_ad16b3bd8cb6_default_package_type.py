@@ -1,4 +1,3 @@
-# encoding: utf-8
 """066 Default package type
 
 Revision ID: ad16b3bd8cb6

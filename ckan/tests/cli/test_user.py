@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import pytest
 
@@ -9,18 +8,18 @@ from ckan.tests import factories
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserAdd(object):
+class TestUserAdd:
 
     def test_cli_user_add_valid_args(self, cli):
         """Command shouldn't raise SystemExit when valid args are provided.
         """
         args = [
-            u"user",
-            u"add",
+            "user",
+            "add",
             factories.User.stub().name,
-            u"password=password123",
-            u"fullname=Berty Guffball",
-            u"email=" + factories.User.stub().email,
+            "password=password123",
+            "fullname=Berty Guffball",
+            "email=" + factories.User.stub().email,
         ]
         result = cli.invoke(ckan, args)
 
@@ -29,18 +28,18 @@ class TestUserAdd(object):
     def test_cli_user_add_no_args(self, cli):
         """Command with no args raises SystemExit.
         """
-        result = cli.invoke(ckan, [u'user', u'add'])
+        result = cli.invoke(ckan, ['user', 'add'])
         assert result.exit_code
 
     def test_cli_user_add_no_fullname(self, cli):
         """Command shouldn't raise SystemExit when fullname arg not present.
         """
         args = [
-            u"user",
-            u"add",
+            "user",
+            "add",
             factories.User.stub().name,
-            u"password=password123",
-            u"email=" + factories.User.stub().email,
+            "password=password123",
+            "email=" + factories.User.stub().email,
         ]
         result = cli.invoke(ckan, args)
 
@@ -52,12 +51,12 @@ class TestUserAdd(object):
         characters outside of the ascii characterset.
         """
         args = [
-            u"user",
-            u"add",
+            "user",
+            "add",
             factories.User.stub().name,
-            u"password=password123",
-            u"fullname=Harold Müffintøp",
-            u"email=" + factories.User.stub().email,
+            "password=password123",
+            "fullname=Harold Müffintøp",
+            "email=" + factories.User.stub().email,
         ]
         result = cli.invoke(ckan, args)
         assert not result.exit_code, result.output
@@ -68,23 +67,23 @@ class TestUserAdd(object):
         characters outside of the ascii characterset.
         """
         args = [
-            u"user",
-            u"add",
+            "user",
+            "add",
             factories.User.stub().name,
-            u"password=password123",
-            u"fullname=Harold Müffintøp",
-            u"email=" + factories.User.stub().email,
+            "password=password123",
+            "fullname=Harold Müffintøp",
+            "email=" + factories.User.stub().email,
         ]
         result = cli.invoke(ckan, args)
         assert not result.exit_code, result.output
 
 
-@pytest.mark.usefixtures(u"non_clean_db")
-class TestApiToken(object):
+@pytest.mark.usefixtures("non_clean_db")
+class TestApiToken:
 
     def test_revoke(self, cli):
         user = factories.User()
-        call_action(u"api_token_create", user=user[u"id"], name=u"first token")
+        call_action("api_token_create", user=user["id"], name="first token")
         tid = model.Session.query(model.ApiToken).first().id
 
         # tid must be prefixed by --. When it starts with a hyphen it treated
@@ -92,21 +91,21 @@ class TestApiToken(object):
         args = ["user", "token", "revoke", "--", tid]
         result = cli.invoke(ckan, args)
         assert not result.exit_code, result.output
-        assert u"API Token has been revoked" in result.output
+        assert "API Token has been revoked" in result.output
 
         result = cli.invoke(ckan, args)
         assert result.exit_code == 1
-        assert u"API Token not found" in result.output
+        assert "API Token not found" in result.output
 
     def test_list(self, cli):
         user = factories.User()
-        call_action(u"api_token_create", user=user[u"id"], name=u"first token")
-        call_action(u"api_token_create", user=user[u"id"], name=u"second token")
+        call_action("api_token_create", user=user["id"], name="first token")
+        call_action("api_token_create", user=user["id"], name="second token")
         args = [
-            u"user",
-            u"token",
-            u"list",
-            user[u"name"],
+            "user",
+            "token",
+            "list",
+            user["name"],
         ]
         result = cli.invoke(ckan, args)
         assert not result.exit_code, result.output
@@ -119,12 +118,12 @@ class TestApiToken(object):
         """
         user = factories.User()
         args = [
-            u"user",
-            u"token",
-            u"add",
-            user[u"name"],
-            u"new_token",
-            u"""--json={"x": "y"}""",
+            "user",
+            "token",
+            "add",
+            user["name"],
+            "new_token",
+            """--json={"x": "y"}""",
         ]
 
         initial = model.Session.query(model.ApiToken).count()
@@ -133,13 +132,13 @@ class TestApiToken(object):
         assert model.Session.query(model.ApiToken).count() == initial + 1
 
         args = [
-            u"user",
-            u"token",
-            u"add",
-            user[u"name"],
-            u"new_token",
-            u"x=1",
-            u"y=2"
+            "user",
+            "token",
+            "add",
+            user["name"],
+            "new_token",
+            "x=1",
+            "y=2"
         ]
 
         result = cli.invoke(ckan, args)
@@ -147,13 +146,13 @@ class TestApiToken(object):
         assert model.Session.query(model.ApiToken).count() == initial + 2
 
         args = [
-            u"user",
-            u"token",
-            u"add",
-            user[u"name"],
-            u"new_token",
-            u"x",
-            u"y=2"
+            "user",
+            "token",
+            "add",
+            user["name"],
+            "new_token",
+            "x",
+            "y=2"
         ]
 
         result = cli.invoke(ckan, args)

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """045 User name unique
 
 Revision ID: 54e3f155d945

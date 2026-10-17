@@ -1,4 +1,3 @@
-# encoding: utf-8
 """031 Move openid to new_field
 
 Revision ID: 1b05245167d6

@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 from ckan.cli.translation import (
     check_po_file,

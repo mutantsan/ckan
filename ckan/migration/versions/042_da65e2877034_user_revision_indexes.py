@@ -1,4 +1,3 @@
-# encoding: utf-8
 """042 User revision indexes
 
 Revision ID: da65e2877034

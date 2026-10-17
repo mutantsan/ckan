@@ -78,9 +78,7 @@ def users(force: bool):
         return
 
     for user in invalid:
-        msg = "User {} has an invalid image: {}".format(
-            user.name, user.image_url
-        )
+        msg = f"User {user.name} has an invalid image: {user.image_url}"
         click.echo(msg)
 
     if not force:
@@ -104,9 +102,7 @@ def users(force: bool):
             # user, but because files are not tracked yet, there will be no way
             # to identify orphaned files in future. So, let's keep user for now
             click.echo(str(err))
-            msg = "Cannot remove {}. User will not be deleted.".format(
-                filename
-            )
+            msg = f"Cannot remove {filename}. User will not be deleted."
             click.echo(msg)
             continue
 

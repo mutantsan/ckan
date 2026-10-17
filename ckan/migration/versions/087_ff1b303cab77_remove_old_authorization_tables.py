@@ -1,4 +1,3 @@
-# encoding: utf-8
 """087 Remove old authorization tables
 
 Revision ID: ff1b303cab77

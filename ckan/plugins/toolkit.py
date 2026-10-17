@@ -1,4 +1,3 @@
-# encoding: utf-8
 """This module is intended to make functions/objects consistently available to
 plugins, whilst giving core CKAN developers the ability move code around or
 change underlying frameworks etc.
@@ -165,7 +164,7 @@ validator_args = schema.validator_args
 
 # Wrapper for the render_snippet function as it uses keywords rather than
 # dict to pass data.
-def render_snippet(template: str, data: Optional[dict[str, Any]] = None):
+def render_snippet(template: str, data: dict[str, Any] | None = None):
     """Render a template snippet and return the output.
 
     See :doc:`/theming/index`.
@@ -245,7 +244,7 @@ def add_resource(path: str, name: str):
 
 
 def check_ckan_version(
-        min_version: Optional[str] = None, max_version: Optional[str] = None):
+        min_version: str | None = None, max_version: str | None = None):
     """Return ``True`` if the CKAN version is greater than or equal to
     ``min_version`` and less than or equal to ``max_version``,
     return ``False`` otherwise.
@@ -288,7 +287,7 @@ def check_ckan_version(
     return at_least_min and at_most_max
 
 
-def requires_ckan_version(min_version: str, max_version: Optional[str] = None):
+def requires_ckan_version(min_version: str, max_version: str | None = None):
     """Raise :py:exc:`~ckan.plugins.toolkit.CkanVersionException` if the
     CKAN version is not greater than or equal to ``min_version`` and
     less then or equal to ``max_version``.
@@ -315,13 +314,11 @@ def requires_ckan_version(min_version: str, max_version: Optional[str] = None):
         if not max_version:
             error = "Requires ckan version %s or higher" % min_version
         else:
-            error = "Requires ckan version between {0} and {1}".format(
-                min_version, max_version
-            )
+            error = f"Requires ckan version between {min_version} and {max_version}"
         raise CkanVersionException(error)
 
 
-def get_endpoint() -> Union[tuple[str, str], tuple[None, None]]:
+def get_endpoint() -> tuple[str, str] | tuple[None, None]:
     """Returns tuple in format: (blueprint, view)."""
     # skip CLI requests and requests with unallowed method
     if not request or not request.endpoint:

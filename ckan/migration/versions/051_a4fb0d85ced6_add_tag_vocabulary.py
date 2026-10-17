@@ -1,4 +1,3 @@
-# encoding: utf-8
 """051 Add tag vocabulary
 
 Revision ID: a4fb0d85ced6

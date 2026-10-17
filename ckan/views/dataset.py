@@ -1,13 +1,13 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import logging
 import inspect
 from collections import OrderedDict
 from functools import partial
-from typing_extensions import TypeAlias
+from typing import TypeAlias
 from urllib.parse import urlencode
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Optional, Union
+from collections.abc import Iterable
 
 from flask import Blueprint
 from flask.views import MethodView
@@ -45,23 +45,23 @@ flatten_to_string_key = logic.flatten_to_string_key
 log = logging.getLogger(__name__)
 
 dataset = Blueprint(
-    u'dataset',
+    'dataset',
     __name__,
-    url_prefix=u'/dataset',
-    url_defaults={u'package_type': u'dataset'}
+    url_prefix='/dataset',
+    url_defaults={'package_type': 'dataset'}
 )
 
 
 def _setup_template_variables(context: Context,
                               data_dict: dict[str, Any],
-                              package_type: Optional[str] = None) -> None:
+                              package_type: str | None = None) -> None:
     return lookup_package_plugin(package_type).setup_template_variables(
         context, data_dict
     )
 
 
 def _get_pkg_template(template_type: str,
-                      package_type: Optional[str] = None) -> str:
+                      package_type: str | None = None) -> str:
     pkg_plugin = lookup_package_plugin(package_type)
     method = getattr(pkg_plugin, template_type)
     signature = inspect.signature(method)
@@ -72,7 +72,7 @@ def _get_pkg_template(template_type: str,
 
 
 def _encode_params(params: Iterable[tuple[str, Any]]):
-    return [(k, v.encode(u'utf-8') if isinstance(v, str) else str(v))
+    return [(k, v.encode('utf-8') if isinstance(v, str) else str(v))
             for k, v in params]
 
 
@@ -81,23 +81,23 @@ Params: TypeAlias = "list[tuple[str, Any]]"
 
 def url_with_params(url: str, params: Params) -> str:
     params = _encode_params(params)
-    return url + u'?' + urlencode(params)
+    return url + '?' + urlencode(params)
 
 
-def search_url(params: Params, package_type: Optional[str] = None) -> str:
+def search_url(params: Params, package_type: str | None = None) -> str:
     if not package_type:
-        package_type = u'dataset'
-    url = h.url_for(u'{0}.search'.format(package_type))
+        package_type = 'dataset'
+    url = h.url_for(f'{package_type}.search')
     return url_with_params(url, params)
 
 
-def remove_field(package_type: Optional[str],
+def remove_field(package_type: str | None,
                  key: str,
-                 value: Optional[str] = None,
-                 replace: Optional[str] = None):
+                 value: str | None = None,
+                 replace: str | None = None):
     if not package_type:
-        package_type = u'dataset'
-    url = h.url_for(u'{0}.search'.format(package_type))
+        package_type = 'dataset'
+    url = h.url_for(f'{package_type}.search')
     return h.remove_url_param(
         key,
         value=value,
@@ -117,17 +117,17 @@ def _sort_by(params_nosort: Params, package_type: str,
     params = params_nosort[:]
 
     if fields:
-        sort_string = u', '.join(u'%s %s' % f for f in fields)
-        params.append((u'sort', sort_string))
+        sort_string = ', '.join('%s %s' % f for f in fields)
+        params.append(('sort', sort_string))
     return search_url(params, package_type)
 
 
 def _pager_url(params_nopage: Params,
                package_type: str,
                q: Any = None,  # noqa
-               page: Optional[int] = None) -> str:
+               page: int | None = None) -> str:
     params = list(params_nopage)
-    params.append((u'page', page))
+    params.append(('page', page))
     return search_url(params, package_type)
 
 
@@ -135,32 +135,32 @@ def _tag_string_to_list(tag_string: str) -> list[dict[str, str]]:
     """This is used to change tags from a string to a list of dicts.
     """
     out: list[dict[str, str]] = []
-    for tag in tag_string.split(u','):
+    for tag in tag_string.split(','):
         tag = tag.strip()
         if tag:
-            out.append({u'name': tag, u'state': u'active'})
+            out.append({'name': tag, 'state': 'active'})
     return out
 
 
 def _form_save_redirect(pkg_name: str,
                         action: str,
-                        package_type: Optional[str] = None) -> Response:
+                        package_type: str | None = None) -> Response:
     """This redirects the user to the CKAN package/read page,
     unless there is request parameter giving an alternate location,
     perhaps an external website.
     @param pkg_name - Name of the package just edited
     @param action - What the action of the edit was
     """
-    assert action in (u'new', u'edit')
-    url = request.args.get(u'return_to') or config.get(
-        u'package_%s_return_url' % action
+    assert action in ('new', 'edit')
+    url = request.args.get('return_to') or config.get(
+        'package_%s_return_url' % action
     )
     if url:
-        url = url.replace(u'<NAME>', pkg_name)
+        url = url.replace('<NAME>', pkg_name)
     else:
         if not package_type:
-            package_type = u'dataset'
-        url = h.url_for(u'{0}.read'.format(package_type), id=pkg_name)
+            package_type = 'dataset'
+        url = h.url_for(f'{package_type}.read', id=pkg_name)
     return h.redirect_to(url)
 
 
@@ -171,26 +171,26 @@ def _get_package_type(id: str) -> str:
     """
     pkg = model.Package.get(id)
     if pkg:
-        return pkg.type or u'dataset'
-    return u'dataset'
+        return pkg.type or 'dataset'
+    return 'dataset'
 
 
 def _get_search_details() -> dict[str, Any]:
-    fq = u''
+    fq = ''
 
     # fields_grouped will contain a dict of params containing
     # a list of values eg {u'tags':[u'tag1', u'tag2']}
 
     fields = []
     fields_grouped = {}
-    search_extras: 'MultiDict[str, Any]' = MultiDict()
+    search_extras: MultiDict[str, Any] = MultiDict()
 
     for (param, value) in request.args.items(multi=True):
-        if param not in [u'q', u'page', u'sort'] \
-                and len(value) and not param.startswith(u'_'):
-            if not param.startswith(u'ext_'):
+        if param not in ['q', 'page', 'sort'] \
+                and len(value) and not param.startswith('_'):
+            if not param.startswith('ext_'):
                 fields.append((param, value))
-                fq += u' %s:"%s"' % (param, value)
+                fq += ' %s:"%s"' % (param, value)
                 if param not in fields_grouped:
                     fields_grouped[param] = [value]
                 else:
@@ -203,10 +203,10 @@ def _get_search_details() -> dict[str, Any]:
         for k, v in search_extras.lists()
     ])
     return {
-        u'fields': fields,
-        u'fields_grouped': fields_grouped,
-        u'fq': fq,
-        u'search_extras': extras,
+        'fields': fields,
+        'fields_grouped': fields_grouped,
+        'fq': fq,
+        'search_extras': extras,
     }
 
 
@@ -218,43 +218,43 @@ def search(package_type: str) -> str:
     extra_vars['query_error'] = False
     page = h.get_page_number(request.args)
 
-    limit = config.get(u'ckan.datasets_per_page')
+    limit = config.get('ckan.datasets_per_page')
 
     # most search operations should reset the page counter:
     params_nopage = [(k, v) for k, v in request.args.items(multi=True)
-                     if k != u'page']
+                     if k != 'page']
 
-    extra_vars[u'remove_field'] = partial(remove_field, package_type)
+    extra_vars['remove_field'] = partial(remove_field, package_type)
 
-    sort_by = request.args.get(u'sort', None)
-    params_nosort = [(k, v) for k, v in params_nopage if k != u'sort']
+    sort_by = request.args.get('sort', None)
+    params_nosort = [(k, v) for k, v in params_nopage if k != 'sort']
 
-    extra_vars[u'sort_by'] = partial(_sort_by, params_nosort, package_type)
+    extra_vars['sort_by'] = partial(_sort_by, params_nosort, package_type)
 
     if not sort_by:
         sort_by_fields = []
     else:
-        sort_by_fields = [field.split()[0] for field in sort_by.split(u',')]
-    extra_vars[u'sort_by_fields'] = sort_by_fields
+        sort_by_fields = [field.split()[0] for field in sort_by.split(',')]
+    extra_vars['sort_by_fields'] = sort_by_fields
 
     pager_url = partial(_pager_url, params_nopage, package_type)
 
     details = _get_search_details()
-    extra_vars[u'fields'] = details[u'fields']
-    extra_vars[u'fields_grouped'] = details[u'fields_grouped']
-    fq = details[u'fq']
-    search_extras = details[u'search_extras']
+    extra_vars['fields'] = details['fields']
+    extra_vars['fields_grouped'] = details['fields_grouped']
+    fq = details['fq']
+    search_extras = details['search_extras']
 
     context: Context = {
-        u'user': current_user.name,
-        u'for_view': True,
-        u'auth_user_obj': current_user
+        'user': current_user.name,
+        'for_view': True,
+        'auth_user_obj': current_user
     }
 
     # Unless changed via config options, don't show other dataset
     # types any search page. Potential alternatives are do show them
     # on the default search page (dataset) or on one other search page
-    search_all_type = config.get(u'ckan.search.show_all_types')
+    search_all_type = config.get('ckan.search.show_all_types')
     search_all = False
 
     try:
@@ -262,33 +262,33 @@ def search(package_type: str) -> str:
         # and we know that no type was specified, so use traditional
         # behaviour of applying this only to dataset type
         search_all = asbool(search_all_type)
-        search_all_type = u'dataset'
+        search_all_type = 'dataset'
     # Otherwise we treat as a string representing a type
     except ValueError:
         search_all = True
 
     if not search_all or package_type != search_all_type:
         # Only show datasets of this particular type
-        fq += u' +dataset_type:{type}'.format(type=package_type)
+        fq += f' +dataset_type:{package_type}'
 
     facets: dict[str, str] = OrderedDict()
 
     org_label = h.humanize_entity_type(
-        u'organization',
-        h.default_group_type(u'organization'),
-        u'facet label') or _(u'Organizations')
+        'organization',
+        h.default_group_type('organization'),
+        'facet label') or _('Organizations')
 
     group_label = h.humanize_entity_type(
-        u'group',
-        h.default_group_type(u'group'),
-        u'facet label') or _(u'Groups')
+        'group',
+        h.default_group_type('group'),
+        'facet label') or _('Groups')
 
     default_facet_titles = {
-        u'organization': org_label,
-        u'groups': group_label,
-        u'tags': _(u'Tags'),
-        u'res_format': _(u'Formats'),
-        u'license_id': _(u'Licenses'),
+        'organization': org_label,
+        'groups': group_label,
+        'tags': _('Tags'),
+        'res_format': _('Formats'),
+        'license_id': _('Licenses'),
     }
 
     for facet in h.facets():
@@ -301,40 +301,40 @@ def search(package_type: str) -> str:
     for plugin in plugins.PluginImplementations(plugins.IFacets):
         facets = plugin.dataset_facets(facets, package_type)
 
-    extra_vars[u'facet_titles'] = facets
+    extra_vars['facet_titles'] = facets
     data_dict: dict[str, Any] = {
-        u'q': q,
-        u'fq': fq.strip(),
-        u'facet.field': list(facets.keys()),
-        u'rows': limit,
-        u'start': (page - 1) * limit,
-        u'sort': sort_by,
-        u'extras': search_extras,
-        u'include_private': config.get(
-            u'ckan.search.default_include_private'),
+        'q': q,
+        'fq': fq.strip(),
+        'facet.field': list(facets.keys()),
+        'rows': limit,
+        'start': (page - 1) * limit,
+        'sort': sort_by,
+        'extras': search_extras,
+        'include_private': config.get(
+            'ckan.search.default_include_private'),
     }
     try:
-        query = get_action(u'package_search')(context, data_dict)
+        query = get_action('package_search')(context, data_dict)
 
-        extra_vars[u'sort_by_selected'] = query[u'sort']
+        extra_vars['sort_by_selected'] = query['sort']
 
-        extra_vars[u'page'] = Page(
-            collection=query[u'results'],
+        extra_vars['page'] = Page(
+            collection=query['results'],
             page=page,
             url=pager_url,
-            item_count=query[u'count'],
+            item_count=query['count'],
             items_per_page=limit
         )
-        extra_vars[u'search_facets'] = query[u'search_facets']
-        extra_vars[u'page'].items = query[u'results']
+        extra_vars['search_facets'] = query['search_facets']
+        extra_vars['page'].items = query['results']
     except SearchQueryError as se:
         # User's search parameters are invalid, in such a way that is not
         # achievable with the web interface, so return a proper error to
         # discourage spiders which are the main cause of this.
-        log.info(u'Dataset search query rejected: %r', se.args)
+        log.info('Dataset search query rejected: %r', se.args)
         base.abort(
             400,
-            _(u'Invalid search query: {error_message}')
+            _('Invalid search query: {error_message}')
             .format(error_message=str(se))
         )
     except (SearchError, SolrConnectionError) as se:
@@ -344,14 +344,14 @@ def search(package_type: str) -> str:
         # May be bad input from the user, but may also be more serious like
         # bad code causing a SOLR syntax error, or a problem connecting to
         # SOLR
-        log.error(u'Dataset search error: %r', se.args)
-        extra_vars[u'query_error'] = True
-        extra_vars[u'search_facets'] = {}
-        extra_vars[u'page'] = Page(collection=[])
+        log.error('Dataset search error: %r', se.args)
+        extra_vars['query_error'] = True
+        extra_vars['search_facets'] = {}
+        extra_vars['page'] = Page(collection=[])
 
     _setup_template_variables(context, {}, package_type=package_type)
 
-    extra_vars[u'dataset_type'] = package_type
+    extra_vars['dataset_type'] = package_type
 
     # TODO: remove
     for key, value in extra_vars.items():
@@ -364,80 +364,80 @@ def search(package_type: str) -> str:
         )
 
     return base.render(
-        _get_pkg_template(u'search_template', package_type), extra_vars
+        _get_pkg_template('search_template', package_type), extra_vars
     )
 
 
-def resources(package_type: str, id: str) -> Union[Response, str]:
+def resources(package_type: str, id: str) -> Response | str:
     context: Context = {
-        u'user': current_user.name,
-        u'for_view': True,
-        u'auth_user_obj': current_user
+        'user': current_user.name,
+        'for_view': True,
+        'auth_user_obj': current_user
     }
     data_dict: dict[str, Any] = {'id': id}
 
     try:
-        check_access(u'package_update', context, data_dict)
+        check_access('package_update', context, data_dict)
     except NotFound:
-        return base.abort(404, _(u'Dataset not found'))
+        return base.abort(404, _('Dataset not found'))
     except NotAuthorized:
         return base.abort(
             403,
-            _(u'User %r not authorized to edit %s') % (current_user.name, id)
+            _('User %r not authorized to edit %s') % (current_user.name, id)
         )
     # check if package exists
     try:
-        pkg_dict = get_action(u'package_show')(context, data_dict)
-        pkg = context[u'package']
+        pkg_dict = get_action('package_show')(context, data_dict)
+        pkg = context['package']
     except (NotFound, NotAuthorized):
-        return base.abort(404, _(u'Dataset not found'))
+        return base.abort(404, _('Dataset not found'))
 
-    package_type = pkg_dict[u'type'] or u'dataset'
-    _setup_template_variables(context, {u'id': id}, package_type=package_type)
+    package_type = pkg_dict['type'] or 'dataset'
+    _setup_template_variables(context, {'id': id}, package_type=package_type)
 
     # TODO: remove
     g.pkg_dict = pkg_dict
     g.pkg = pkg
 
     return base.render(
-        u'package/resources.html', {
-            u'dataset_type': package_type,
-            u'pkg_dict': pkg_dict,
-            u'pkg': pkg
+        'package/resources.html', {
+            'dataset_type': package_type,
+            'pkg_dict': pkg_dict,
+            'pkg': pkg
         }
     )
 
 
-def read(package_type: str, id: str) -> Union[Response, str]:
+def read(package_type: str, id: str) -> Response | str:
     context: Context = {
-        u'user': current_user.name,
-        u'for_view': True,
-        u'auth_user_obj': current_user
+        'user': current_user.name,
+        'for_view': True,
+        'auth_user_obj': current_user
     }
     data_dict = {'id': id}
 
     # check if package exists
     try:
-        pkg_dict = get_action(u'package_show')(context, data_dict)
-        pkg = context[u'package']
+        pkg_dict = get_action('package_show')(context, data_dict)
+        pkg = context['package']
     except NotFound:
         return base.abort(
             404,
-            _(u'Dataset not found or you have no permission to view it')
+            _('Dataset not found or you have no permission to view it')
         )
     except NotAuthorized:
-        if config.get(u'ckan.auth.reveal_private_datasets'):
+        if config.get('ckan.auth.reveal_private_datasets'):
             if current_user.is_authenticated:
                 return base.abort(
-                    403, _(u'Unauthorized to read package %s') % id)
+                    403, _('Unauthorized to read package %s') % id)
             else:
                 return h.redirect_to(
                     "user.login",
-                    came_from=h.url_for('{}.read'.format(package_type), id=id)
+                    came_from=h.url_for(f'{package_type}.read', id=id)
                 )
         return base.abort(
             404,
-            _(u'Dataset not found or you have no permission to view it')
+            _('Dataset not found or you have no permission to view it')
         )
 
     g.pkg_dict = pkg_dict
@@ -454,17 +454,17 @@ def read(package_type: str, id: str) -> Union[Response, str]:
     # if the user specified a package id, redirect to the package name
     if data_dict['id'] == pkg_dict['id'] and \
             data_dict['id'] != pkg_dict['name']:
-        return h.redirect_to(u'{}.read'.format(package_type),
+        return h.redirect_to(f'{package_type}.read',
                              id=pkg_dict['name'])
 
     # can the resources be previewed?
-    for resource in pkg_dict[u'resources']:
-        resource_views = get_action(u'resource_view_list')(
+    for resource in pkg_dict['resources']:
+        resource_views = get_action('resource_view_list')(
             context, {
-                u'id': resource[u'id']
+                'id': resource['id']
             }
         )
-        resource[u'has_views'] = len(resource_views) > 0
+        resource['has_views'] = len(resource_views) > 0
     try:
         am_following = logic.get_action('am_following_dataset')(
             {"user": current_user.name}, {'id': id}
@@ -473,10 +473,10 @@ def read(package_type: str, id: str) -> Union[Response, str]:
         # AnonymousUser
         am_following = False
 
-    package_type = pkg_dict[u'type'] or package_type
-    _setup_template_variables(context, {u'id': id}, package_type=package_type)
+    package_type = pkg_dict['type'] or package_type
+    _setup_template_variables(context, {'id': id}, package_type=package_type)
 
-    template = _get_pkg_template(u'read_template', package_type)
+    template = _get_pkg_template('read_template', package_type)
     try:
         return base.render(
             template, {
@@ -487,94 +487,92 @@ def read(package_type: str, id: str) -> Union[Response, str]:
         )
     except TemplateNotFound as e:
         msg = _(
-            u"Viewing datasets of type \"{package_type}\" is "
-            u"not supported ({file_!r}).".format(
-                package_type=package_type, file_=e.message
-            )
+            f"Viewing datasets of type \"{package_type}\" is "
+            f"not supported ({e.message!r})."
         )
         return base.abort(404, msg)
 
 
 class CreateView(MethodView):
     def _is_save(self) -> bool:
-        return u'save' in request.form
+        return 'save' in request.form
 
     def _prepare(self) -> Context:  # noqa
 
         context: Context = {
-            u'user': current_user.name,
-            u'auth_user_obj': current_user,
-            u'save': self._is_save()
+            'user': current_user.name,
+            'auth_user_obj': current_user,
+            'save': self._is_save()
         }
         try:
-            check_access(u'package_create', context)
+            check_access('package_create', context)
         except NotAuthorized:
-            return base.abort(403, _(u'Unauthorized to create a package'))
+            return base.abort(403, _('Unauthorized to create a package'))
         return context
 
-    def post(self, package_type: str) -> Union[Response, str]:
+    def post(self, package_type: str) -> Response | str:
         # The staged add dataset used the new functionality when the dataset is
         # partially created so we need to know if we actually are updating or
         # this is a real new.
         context = self._prepare()
         is_an_update = False
-        ckan_phase = request.form.get(u'_ckan_phase')
+        ckan_phase = request.form.get('_ckan_phase')
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
         except dict_fns.DataError:
-            return base.abort(400, _(u'Integrity Error'))
+            return base.abort(400, _('Integrity Error'))
         try:
             if ckan_phase:
                 # sort the tags
-                if u'tag_string' in data_dict:
-                    data_dict[u'tags'] = _tag_string_to_list(
-                        data_dict[u'tag_string']
+                if 'tag_string' in data_dict:
+                    data_dict['tags'] = _tag_string_to_list(
+                        data_dict['tag_string']
                     )
-                if data_dict.get(u'pkg_name'):
+                if data_dict.get('pkg_name'):
                     is_an_update = True
                     # This is actually an update not a save
-                    data_dict[u'id'] = data_dict[u'pkg_name']
-                    del data_dict[u'pkg_name']
+                    data_dict['id'] = data_dict['pkg_name']
+                    del data_dict['pkg_name']
                     # don't change the dataset state
-                    data_dict[u'state'] = u'draft'
+                    data_dict['state'] = 'draft'
                     # this is actually an edit not a save
-                    pkg_dict = get_action(u'package_update')(
+                    pkg_dict = get_action('package_update')(
                         context, data_dict
                     )
 
                     # redirect to add dataset resources
                     try:
-                        last_added_resource = pkg_dict[u'resources'][-1]
+                        last_added_resource = pkg_dict['resources'][-1]
                     except IndexError:
                         last_added_resource = None
-                    if last_added_resource and request.form[u'save'] == "go-resources":
+                    if last_added_resource and request.form['save'] == "go-resources":
                         url = h.url_for(
-                            u'{}_resource.edit'.format(package_type),
+                            f'{package_type}_resource.edit',
                             id=pkg_dict.get('id'),
                             resource_id=last_added_resource.get('id'))
-                    elif request.form[u'save'] == "go-metadata-preview":
+                    elif request.form['save'] == "go-metadata-preview":
                         url = h.url_for(
-                            u'{}.read'.format(package_type),
+                            f'{package_type}.read',
                             id=pkg_dict.get('id')
                         )
                     else:
                         url = h.url_for(
-                            u'{}_resource.new'.format(package_type),
-                            id=pkg_dict[u'name']
+                            f'{package_type}_resource.new',
+                            id=pkg_dict['name']
                         )
                     return h.redirect_to(url)
                 # Make sure we don't index this dataset
-                if request.form[u'save'] not in [
-                    u'go-resource', u'go-metadata'
+                if request.form['save'] not in [
+                    'go-resource', 'go-metadata'
                 ]:
-                    data_dict[u'state'] = u'draft'
+                    data_dict['state'] = 'draft'
                 # allow the state to be changed
-                context[u'allow_state_change'] = True
+                context['allow_state_change'] = True
 
-            data_dict[u'type'] = package_type
-            pkg_dict = get_action(u'package_create')(context, data_dict)
+            data_dict['type'] = package_type
+            pkg_dict = get_action('package_create')(context, data_dict)
 
             create_on_ui_requires_resources = config.get(
                 'ckan.dataset.create_on_ui_requires_resources'
@@ -584,27 +582,27 @@ class CreateView(MethodView):
                     # redirect to add dataset resources if
                     # create_on_ui_requires_resources is set to true
                     url = h.url_for(
-                        u'{}_resource.new'.format(package_type),
-                        id=pkg_dict[u'name']
+                        f'{package_type}_resource.new',
+                        id=pkg_dict['name']
                     )
                     return h.redirect_to(url)
 
-                get_action(u'package_update')(
+                get_action('package_update')(
                     Context(context, allow_state_change=True),
-                    dict(pkg_dict, state=u'active')
+                    dict(pkg_dict, state='active')
                 )
                 return h.redirect_to(
-                    u'{}.read'.format(package_type),
+                    f'{package_type}.read',
                     id=pkg_dict["id"]
                 )
 
             return _form_save_redirect(
-                pkg_dict[u'name'], u'new', package_type=package_type
+                pkg_dict['name'], 'new', package_type=package_type
             )
         except NotAuthorized:
-            return base.abort(403, _(u'Unauthorized to read package'))
+            return base.abort(403, _('Unauthorized to read package'))
         except NotFound:
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _('Dataset not found'))
         except SearchIndexError as e:
             try:
                 exc_str = str(repr(e.args))
@@ -612,7 +610,7 @@ class CreateView(MethodView):
                 exc_str = str(str(e))
             return base.abort(
                 500,
-                _(u'Unable to add package to search index.') + exc_str
+                _('Unable to add package to search index.') + exc_str
             )
         except ValidationError as e:
             errors = e.error_dict
@@ -620,26 +618,26 @@ class CreateView(MethodView):
             if is_an_update:
                 # we need to get the state of the dataset to show the stage we
                 # are on.
-                pkg_dict = get_action(u'package_show')(context, data_dict)
-                data_dict[u'state'] = pkg_dict[u'state']
+                pkg_dict = get_action('package_show')(context, data_dict)
+                data_dict['state'] = pkg_dict['state']
                 return EditView().get(
                     package_type,
-                    data_dict[u'id'],
+                    data_dict['id'],
                     data_dict,
                     errors,
                     error_summary
                 )
-            data_dict[u'state'] = u'none'
+            data_dict['state'] = 'none'
             return self.get(package_type, data_dict, errors, error_summary)
 
     def get(self,
             package_type: str,
-            data: Optional[dict[str, Any]] = None,
-            errors: Optional[dict[str, Any]] = None,
-            error_summary: Optional[dict[str, Any]] = None) -> str:
+            data: dict[str, Any] | None = None,
+            errors: dict[str, Any] | None = None,
+            error_summary: dict[str, Any] | None = None) -> str:
         context = self._prepare()
-        if data and u'type' in data:
-            package_type = data[u'type']
+        if data and 'type' in data:
+            package_type = data['type']
 
         data = data or clean_dict(
             dict_fns.unflatten(
@@ -648,38 +646,38 @@ class CreateView(MethodView):
                 )
             )
         )
-        resources_json = h.dump_json(data.get(u'resources', []))
+        resources_json = h.dump_json(data.get('resources', []))
         # convert tags if not supplied in data
-        if data and not data.get(u'tag_string'):
-            data[u'tag_string'] = u', '.join(
-                h.dict_list_reduce(data.get(u'tags', {}), u'name')
+        if data and not data.get('tag_string'):
+            data['tag_string'] = ', '.join(
+                h.dict_list_reduce(data.get('tags', {}), 'name')
             )
 
         errors = errors or {}
         error_summary = error_summary or {}
         # in the phased add dataset we need to know that
         # we have already completed stage 1
-        stage = [u'active']
-        if data.get(u'state', u'').startswith(u'draft'):
-            stage = [u'active', u'complete']
+        stage = ['active']
+        if data.get('state', '').startswith('draft'):
+            stage = ['active', 'complete']
 
         # if we are creating from a group then this allows the group to be
         # set automatically
         data[
-            u'group_id'
-        ] = request.args.get(u'group') or request.args.get(u'groups__0__id')
+            'group_id'
+        ] = request.args.get('group') or request.args.get('groups__0__id')
 
         form_snippet = _get_pkg_template(
-            u'package_form', package_type=package_type
+            'package_form', package_type=package_type
         )
         form_vars: dict[str, Any] = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary,
-            u'action': u'new',
-            u'stage': stage,
-            u'dataset_type': package_type,
-            u'form_style': u'new'
+            'data': data,
+            'errors': errors,
+            'error_summary': error_summary,
+            'action': 'new',
+            'stage': stage,
+            'dataset_type': package_type,
+            'form_style': 'new'
         }
         errors_json = h.dump_json(errors)
 
@@ -689,15 +687,15 @@ class CreateView(MethodView):
 
         _setup_template_variables(context, {}, package_type=package_type)
 
-        new_template = _get_pkg_template(u'new_template', package_type)
+        new_template = _get_pkg_template('new_template', package_type)
         return base.render(
             new_template,
             extra_vars={
-                u'form_vars': form_vars,
-                u'form_snippet': form_snippet,
-                u'dataset_type': package_type,
-                u'resources_json': resources_json,
-                u'errors_json': errors_json
+                'form_vars': form_vars,
+                'form_snippet': form_snippet,
+                'dataset_type': package_type,
+                'resources_json': resources_json,
+                'errors_json': errors_json
             }
         )
 
@@ -705,43 +703,43 @@ class CreateView(MethodView):
 class EditView(MethodView):
     def _prepare(self) -> Context:
         context: Context = {
-            u'user': current_user.name,
-            u'auth_user_obj': current_user,
-            u'save': u'save' in request.form
+            'user': current_user.name,
+            'auth_user_obj': current_user,
+            'save': 'save' in request.form
         }
         return context
 
-    def post(self, package_type: str, id: str) -> Union[Response, str]:
+    def post(self, package_type: str, id: str) -> Response | str:
         context = self._prepare()
         package_type = _get_package_type(id) or package_type
-        log.debug(u'Package save request name: %s POST: %r', id, request.form)
+        log.debug('Package save request name: %s POST: %r', id, request.form)
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
         except dict_fns.DataError:
-            return base.abort(400, _(u'Integrity Error'))
+            return base.abort(400, _('Integrity Error'))
         try:
-            if u'_ckan_phase' in data_dict:
-                if u'tag_string' in data_dict:
-                    data_dict[u'tags'] = _tag_string_to_list(
-                        data_dict[u'tag_string']
+            if '_ckan_phase' in data_dict:
+                if 'tag_string' in data_dict:
+                    data_dict['tags'] = _tag_string_to_list(
+                        data_dict['tag_string']
                     )
-                del data_dict[u'_ckan_phase']
-                del data_dict[u'save']
+                del data_dict['_ckan_phase']
+                del data_dict['save']
             data_dict['id'] = id
-            if request.form.get(u'save', None) == u'go-metadata-unpublish':
-                data_dict[u'state'] = u'draft'
+            if request.form.get('save', None) == 'go-metadata-unpublish':
+                data_dict['state'] = 'draft'
 
-            pkg_dict = get_action(u'package_update')(context, data_dict)
+            pkg_dict = get_action('package_update')(context, data_dict)
 
             return _form_save_redirect(
-                pkg_dict[u'name'], u'edit', package_type=package_type
+                pkg_dict['name'], 'edit', package_type=package_type
             )
         except NotAuthorized:
-            return base.abort(403, _(u'Unauthorized to read package %s') % id)
+            return base.abort(403, _('Unauthorized to read package %s') % id)
         except NotFound:
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _('Dataset not found'))
         except SearchIndexError as e:
             try:
                 exc_str = str(repr(e.args))
@@ -749,7 +747,7 @@ class EditView(MethodView):
                 exc_str = str(str(e))
             return base.abort(
                 500,
-                _(u'Unable to update search index.') + exc_str
+                _('Unable to update search index.') + exc_str
             )
         except ValidationError as e:
             errors = e.error_dict
@@ -759,31 +757,31 @@ class EditView(MethodView):
     def get(self,
             package_type: str,
             id: str,
-            data: Optional[dict[str, Any]] = None,
-            errors: Optional[dict[str, Any]] = None,
-            error_summary: Optional[dict[str, Any]] = None
-            ) -> Union[Response, str]:
+            data: dict[str, Any] | None = None,
+            errors: dict[str, Any] | None = None,
+            error_summary: dict[str, Any] | None = None
+            ) -> Response | str:
         context = self._prepare()
         package_type = _get_package_type(id) or package_type
         try:
             view_context = context.copy()
             view_context['for_view'] = True
-            pkg_dict = get_action(u'package_show')(
-                view_context, {u'id': id})
-            context[u'for_edit'] = True
-            old_data = get_action(u'package_show')(context, {u'id': id})
+            pkg_dict = get_action('package_show')(
+                view_context, {'id': id})
+            context['for_edit'] = True
+            old_data = get_action('package_show')(context, {'id': id})
             # old data is from the database and data is passed from the
             # user if there is a validation error. Use users data if there.
             if data:
                 old_data.update(data)
             data = old_data
         except (NotFound, NotAuthorized):
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _('Dataset not found'))
         assert data is not None
         # are we doing a multiphase add?
-        if data.get(u'state', u'').startswith(u'draft'):
-            g.form_action = h.url_for(u'{}.new'.format(package_type))
-            g.form_style = u'new'
+        if data.get('state', '').startswith('draft'):
+            g.form_action = h.url_for(f'{package_type}.new')
+            g.form_style = 'new'
 
             return CreateView().get(
                 package_type,
@@ -792,8 +790,8 @@ class EditView(MethodView):
                 error_summary=error_summary
             )
 
-        pkg = context.get(u"package")
-        resources_json = h.dump_json(data.get(u'resources', []))
+        pkg = context.get("package")
+        resources_json = h.dump_json(data.get('resources', []))
         user = current_user.name
         try:
             check_access(
@@ -804,24 +802,24 @@ class EditView(MethodView):
         except NotAuthorized:
             return base.abort(
                 403,
-                _(u'User %r not authorized to edit %s') % (user, id)
+                _('User %r not authorized to edit %s') % (user, id)
             )
         # convert tags if not supplied in data
-        if data and not data.get(u'tag_string'):
-            data[u'tag_string'] = u', '.join(
-                h.dict_list_reduce(pkg_dict.get(u'tags', {}), u'name')
+        if data and not data.get('tag_string'):
+            data['tag_string'] = ', '.join(
+                h.dict_list_reduce(pkg_dict.get('tags', {}), 'name')
             )
         errors = errors or {}
         form_snippet = _get_pkg_template(
-            u'package_form', package_type=package_type
+            'package_form', package_type=package_type
         )
         form_vars: dict[str, Any] = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary,
-            u'action': u'edit',
-            u'dataset_type': package_type,
-            u'form_style': u'edit'
+            'data': data,
+            'errors': errors,
+            'error_summary': error_summary,
+            'action': 'edit',
+            'dataset_type': package_type,
+            'form_style': 'edit'
         }
         errors_json = h.dump_json(errors)
 
@@ -831,25 +829,25 @@ class EditView(MethodView):
         g.errors_json = errors_json
 
         _setup_template_variables(
-            context, {u'id': id}, package_type=package_type
+            context, {'id': id}, package_type=package_type
         )
 
         # we have already completed stage 1
-        form_vars[u'stage'] = [u'active']
-        if data.get(u'state', u'').startswith(u'draft'):
-            form_vars[u'stage'] = [u'active', u'complete']
+        form_vars['stage'] = ['active']
+        if data.get('state', '').startswith('draft'):
+            form_vars['stage'] = ['active', 'complete']
 
-        edit_template = _get_pkg_template(u'edit_template', package_type)
+        edit_template = _get_pkg_template('edit_template', package_type)
         return base.render(
             edit_template,
             extra_vars={
-                u'form_vars': form_vars,
-                u'form_snippet': form_snippet,
-                u'dataset_type': package_type,
-                u'pkg_dict': pkg_dict,
-                u'pkg': pkg,
-                u'resources_json': resources_json,
-                u'errors_json': errors_json
+                'form_vars': form_vars,
+                'form_snippet': form_snippet,
+                'dataset_type': package_type,
+                'pkg_dict': pkg_dict,
+                'pkg': pkg,
+                'resources_json': resources_json,
+                'errors_json': errors_json
             }
         )
 
@@ -857,54 +855,54 @@ class EditView(MethodView):
 class DeleteView(MethodView):
     def _prepare(self) -> Context:
         context: Context = {
-            u'user': current_user.name,
-            u'auth_user_obj': current_user
+            'user': current_user.name,
+            'auth_user_obj': current_user
         }
         return context
 
     def post(self, package_type: str, id: str) -> Response:
-        if u'cancel' in request.form:
-            return h.redirect_to(u'{}.edit'.format(package_type), id=id)
+        if 'cancel' in request.form:
+            return h.redirect_to(f'{package_type}.edit', id=id)
         context = self._prepare()
         try:
-            get_action(u'package_delete')(context, {u'id': id})
+            get_action('package_delete')(context, {'id': id})
         except NotFound:
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _('Dataset not found'))
         except NotAuthorized:
             return base.abort(
                 403,
-                _(u'Unauthorized to delete package %s') % u''
+                _('Unauthorized to delete package %s') % ''
             )
 
-        h.flash_notice(_(u'Dataset has been deleted.'))
-        return h.redirect_to(package_type + u'.search')
+        h.flash_notice(_('Dataset has been deleted.'))
+        return h.redirect_to(package_type + '.search')
 
-    def get(self, package_type: str, id: str) -> Union[Response, str]:
+    def get(self, package_type: str, id: str) -> Response | str:
         context = self._prepare()
         try:
-            pkg_dict = get_action(u'package_show')(context, {u'id': id})
+            pkg_dict = get_action('package_show')(context, {'id': id})
         except NotFound:
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _('Dataset not found'))
         except NotAuthorized:
             return base.abort(
                 403,
-                _(u'Unauthorized to delete package %s') % u''
+                _('Unauthorized to delete package %s') % ''
             )
 
-        dataset_type = pkg_dict[u'type'] or package_type
+        dataset_type = pkg_dict['type'] or package_type
 
         # TODO: remove
         g.pkg_dict = pkg_dict
 
         return base.render(
-            u'package/confirm_delete.html', {
-                u'pkg_dict': pkg_dict,
-                u'dataset_type': dataset_type
+            'package/confirm_delete.html', {
+                'pkg_dict': pkg_dict,
+                'dataset_type': dataset_type
             }
         )
 
 
-def follow(package_type: str, id: str) -> Union[Response, str]:
+def follow(package_type: str, id: str) -> Response | str:
     """Start following this dataset."""
     am_following: bool = False
     error_message: str = ""
@@ -931,7 +929,7 @@ def follow(package_type: str, id: str) -> Union[Response, str]:
     return base.render('package/snippets/info.html', extra_vars)
 
 
-def unfollow(package_type: str, id: str) -> Union[Response, str]:
+def unfollow(package_type: str, id: str) -> Response | str:
     """Stop following this dataset."""
     am_following = True
     error_message = ""
@@ -959,28 +957,28 @@ def unfollow(package_type: str, id: str) -> Union[Response, str]:
 
 
 def followers(package_type: str,
-              id: Optional[str] = None) -> Union[Response, str]:
+              id: str | None = None) -> Response | str:
     context: Context = {
-        u'user': current_user.name,
-        u'for_view': True,
-        u'auth_user_obj': current_user
+        'user': current_user.name,
+        'for_view': True,
+        'auth_user_obj': current_user
     }
 
-    data_dict = {u'id': id}
+    data_dict = {'id': id}
     try:
-        pkg_dict = get_action(u'package_show')(context, data_dict)
-        pkg = context[u'package']
-        followers = get_action(u'dataset_follower_list')(
+        pkg_dict = get_action('package_show')(context, data_dict)
+        pkg = context['package']
+        followers = get_action('dataset_follower_list')(
             context, {
-                u'id': pkg_dict[u'id']
+                'id': pkg_dict['id']
             }
         )
 
         dataset_type = pkg.type or package_type
     except NotFound:
-        return base.abort(404, _(u'Dataset not found'))
+        return base.abort(404, _('Dataset not found'))
     except NotAuthorized:
-        return base.abort(403, _(u'Unauthorized to read package %s') % id)
+        return base.abort(403, _('Unauthorized to read package %s') % id)
 
     # TODO: remove
     g.pkg_dict = pkg_dict
@@ -988,11 +986,11 @@ def followers(package_type: str,
     g.followers = followers
 
     return base.render(
-        u'package/followers.html', {
-            u'dataset_type': dataset_type,
-            u'pkg_dict': pkg_dict,
-            u'pkg': pkg,
-            u'followers': followers
+        'package/followers.html', {
+            'dataset_type': dataset_type,
+            'pkg_dict': pkg_dict,
+            'pkg': pkg,
+            'followers': followers
         }
     )
 
@@ -1000,126 +998,126 @@ def followers(package_type: str,
 class GroupView(MethodView):
     def _prepare(self, id: str) -> tuple[Context, dict[str, Any]]:
         context: Context = {
-            u'user': current_user.name,
-            u'for_view': True,
-            u'auth_user_obj': current_user,
-            u'use_cache': False
+            'user': current_user.name,
+            'for_view': True,
+            'auth_user_obj': current_user,
+            'use_cache': False
         }
 
         try:
-            pkg_dict = get_action(u'package_show')(context, {u'id': id})
+            pkg_dict = get_action('package_show')(context, {'id': id})
         except (NotFound, NotAuthorized):
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _('Dataset not found'))
         return context, pkg_dict
 
     def post(self, package_type: str, id: str) -> Response:
         context = self._prepare(id)[0]
-        new_group = request.form.get(u'group_added')
+        new_group = request.form.get('group_added')
         if new_group:
             data_dict = {
-                u"id": new_group,
-                u"object": id,
-                u"object_type": u'package',
-                u"capacity": u'public'
+                "id": new_group,
+                "object": id,
+                "object_type": 'package',
+                "capacity": 'public'
             }
             try:
-                get_action(u'member_create')(context, data_dict)
+                get_action('member_create')(context, data_dict)
             except NotFound:
-                return base.abort(404, _(u'Group not found'))
+                return base.abort(404, _('Group not found'))
 
         removed_group = None
         for param in request.form:
-            if param.startswith(u'group_remove'):
-                removed_group = param.split(u'.')[-1]
+            if param.startswith('group_remove'):
+                removed_group = param.split('.')[-1]
                 break
         if removed_group:
             data_dict = {
-                u"id": removed_group,
-                u"object": id,
-                u"object_type": u'package'
+                "id": removed_group,
+                "object": id,
+                "object_type": 'package'
             }
 
             try:
-                get_action(u'member_delete')(context, data_dict)
+                get_action('member_delete')(context, data_dict)
             except NotFound:
-                return base.abort(404, _(u'Group not found'))
-        return h.redirect_to(u'{}.groups'.format(package_type), id=id)
+                return base.abort(404, _('Group not found'))
+        return h.redirect_to(f'{package_type}.groups', id=id)
 
     def get(self, package_type: str, id: str) -> str:
         context, pkg_dict = self._prepare(id)
-        dataset_type = pkg_dict[u'type'] or package_type
-        context[u'is_member'] = True
-        users_groups = get_action(u'group_list_authz')(context, {u'id': id})
+        dataset_type = pkg_dict['type'] or package_type
+        context['is_member'] = True
+        users_groups = get_action('group_list_authz')(context, {'id': id})
 
         pkg_group_ids = set(
-            group[u'id'] for group in pkg_dict.get(u'groups', [])
+            group['id'] for group in pkg_dict.get('groups', [])
         )
 
-        user_group_ids = set(group[u'id'] for group in users_groups)
+        user_group_ids = set(group['id'] for group in users_groups)
 
-        group_dropdown = [[group[u'id'], group[u'display_name']]
+        group_dropdown = [[group['id'], group['display_name']]
                           for group in users_groups
-                          if group[u'id'] not in pkg_group_ids]
+                          if group['id'] not in pkg_group_ids]
 
-        for group in pkg_dict.get(u'groups', []):
-            group[u'user_member'] = (group[u'id'] in user_group_ids)
+        for group in pkg_dict.get('groups', []):
+            group['user_member'] = (group['id'] in user_group_ids)
 
         # TODO: remove
         g.pkg_dict = pkg_dict
         g.group_dropdown = group_dropdown
 
         return base.render(
-            u'package/group_list.html', {
-                u'dataset_type': dataset_type,
-                u'pkg_dict': pkg_dict,
-                u'group_dropdown': group_dropdown
+            'package/group_list.html', {
+                'dataset_type': dataset_type,
+                'pkg_dict': pkg_dict,
+                'group_dropdown': group_dropdown
             }
         )
 
 
 def collaborators_read(package_type: str, id: str) -> Union[Response, str]:  # noqa
     context: Context = {'user': current_user.name}
-    data_dict = {u'id': id}
+    data_dict = {'id': id}
 
     try:
-        check_access(u'package_collaborator_list', context, data_dict)
+        check_access('package_collaborator_list', context, data_dict)
         # needed to ckan_extend package/edit_base.html
-        pkg_dict = get_action(u'package_show')(context, data_dict)
+        pkg_dict = get_action('package_show')(context, data_dict)
     except NotAuthorized:
-        message = _(u'Unauthorized to read collaborators {}').format(id)
+        message = _('Unauthorized to read collaborators {}').format(id)
         return base.abort(401, message)
     except NotFound:
-        return base.abort(404, _(u'Dataset not found'))
+        return base.abort(404, _('Dataset not found'))
 
-    return base.render(u'package/collaborators/collaborators.html', {
-        u'pkg_dict': pkg_dict})
+    return base.render('package/collaborators/collaborators.html', {
+        'pkg_dict': pkg_dict})
 
 
 def collaborator_delete(package_type: str,
                         id: str, user_id: str) -> Union[Response, str]:  # noqa
     context: Context = {'user': current_user.name}
 
-    if u'cancel' in request.form:
-        return h.redirect_to(u'{}.collaborators_read'
-                             .format(package_type), id=id)
+    if 'cancel' in request.form:
+        return h.redirect_to(f'{package_type}.collaborators_read'
+                             , id=id)
 
     try:
-        if request.method == u'POST':
-            get_action(u'package_collaborator_delete')(context, {
-                u'id': id,
-                u'user_id': user_id
+        if request.method == 'POST':
+            get_action('package_collaborator_delete')(context, {
+                'id': id,
+                'user_id': user_id
             })
-        user_dict = logic.get_action(u'user_show')(context, {u'id': user_id})
+        user_dict = logic.get_action('user_show')(context, {'id': user_id})
     except NotAuthorized:
-        message = _(u'Unauthorized to delete collaborators {}').format(id)
+        message = _('Unauthorized to delete collaborators {}').format(id)
         return base.abort(401, _(message))
     except NotFound as e:
         return base.abort(404, _(e.message))
 
-    if request.method == u'POST':
-        h.flash_success(_(u'User removed from collaborators'))
+    if request.method == 'POST':
+        h.flash_success(_('User removed from collaborators'))
 
-        return h.redirect_to(u'dataset.collaborators_read', id=id)
+        return h.redirect_to('dataset.collaborators_read', id=id)
 
     # TODO: Remove
     # ckan 2.9: Adding variables that were removed from c object for
@@ -1129,13 +1127,13 @@ def collaborator_delete(package_type: str,
     g.package_id = id
 
     extra_vars = {
-        u"user_id": user_id,
-        u"user_dict": user_dict,
-        u"package_id": id,
-        u"package_type": package_type
+        "user_id": user_id,
+        "user_dict": user_dict,
+        "package_id": id,
+        "package_type": package_type
     }
     return base.render(
-        u'package/collaborators/confirm_delete.html', extra_vars)
+        'package/collaborators/confirm_delete.html', extra_vars)
 
 
 class CollaboratorEditView(MethodView):
@@ -1149,116 +1147,116 @@ class CollaboratorEditView(MethodView):
                     logic.tuplize_dict(
                         logic.parse_params(request.form))))
 
-            user = get_action(u'user_show')(
-                context, {u'id': form_dict[u'username']}
+            user = get_action('user_show')(
+                context, {'id': form_dict['username']}
             )
 
             data_dict: dict[str, Any] = {
-                u'id': id,
-                u'user_id': user[u'id'],
-                u'capacity': form_dict[u'capacity']
+                'id': id,
+                'user_id': user['id'],
+                'capacity': form_dict['capacity']
             }
 
-            get_action(u'package_collaborator_create')(
+            get_action('package_collaborator_create')(
                 context, data_dict)
 
         except dict_fns.DataError:
-            return base.abort(400, _(u'Integrity Error'))
+            return base.abort(400, _('Integrity Error'))
         except NotAuthorized:
-            message = _(u'Unauthorized to edit collaborators {}').format(id)
+            message = _('Unauthorized to edit collaborators {}').format(id)
             return base.abort(401, _(message))
         except NotFound:
             h.flash_error(_('User not found'))
-            return h.redirect_to(u'dataset.new_collaborator', id=id)
+            return h.redirect_to('dataset.new_collaborator', id=id)
         except ValidationError as e:
             h.flash_error(e.error_summary)
-            return h.redirect_to(u'dataset.new_collaborator', id=id)
+            return h.redirect_to('dataset.new_collaborator', id=id)
         else:
-            h.flash_success(_(u'User added to collaborators'))
+            h.flash_success(_('User added to collaborators'))
 
-        return h.redirect_to(u'dataset.collaborators_read', id=id)
+        return h.redirect_to('dataset.collaborators_read', id=id)
 
     def get(self, package_type: str, id: str) -> Union[Response, str]:  # noqa
         context: Context = {'user': current_user.name}
-        data_dict = {u'id': id}
+        data_dict = {'id': id}
 
         try:
-            check_access(u'package_collaborator_list', context, data_dict)
+            check_access('package_collaborator_list', context, data_dict)
             # needed to ckan_extend package/edit_base.html
-            pkg_dict = get_action(u'package_show')(context, data_dict)
+            pkg_dict = get_action('package_show')(context, data_dict)
         except NotAuthorized:
-            message = u'Unauthorized to read collaborators {}'.format(id)
+            message = f'Unauthorized to read collaborators {id}'
             return base.abort(401, _(message))
         except NotFound:
-            return base.abort(404, _(u'Resource not found'))
+            return base.abort(404, _('Resource not found'))
 
-        user = request.args.get(u'user_id')
-        user_capacity = u'member'
+        user = request.args.get('user_id')
+        user_capacity = 'member'
 
         if user:
-            collaborators = get_action(u'package_collaborator_list')(
+            collaborators = get_action('package_collaborator_list')(
                 context, data_dict)
             for c in collaborators:
-                if c[u'user_id'] == user:
-                    user_capacity = c[u'capacity']
-            user = get_action(u'user_show')(context, {u'id': user})
+                if c['user_id'] == user:
+                    user_capacity = c['capacity']
+            user = get_action('user_show')(context, {'id': user})
 
         capacities: list[dict[str, str]] = []
-        if authz.check_config_permission(u'allow_admin_collaborators'):
-            capacities.append({u'name': u'admin', u'value': u'admin'})
+        if authz.check_config_permission('allow_admin_collaborators'):
+            capacities.append({'name': 'admin', 'value': 'admin'})
         capacities.extend([
-            {u'name': u'editor', u'value': u'editor'},
-            {u'name': u'member', u'value': u'member'}
+            {'name': 'editor', 'value': 'editor'},
+            {'name': 'member', 'value': 'member'}
         ])
 
         extra_vars: dict[str, Any] = {
-            u'capacities': capacities,
-            u'user_capacity': user_capacity,
-            u'user': user,
-            u'pkg_dict': pkg_dict,
+            'capacities': capacities,
+            'user_capacity': user_capacity,
+            'user': user,
+            'pkg_dict': pkg_dict,
         }
 
         return base.render(
-            u'package/collaborators/collaborator_new.html', extra_vars)
+            'package/collaborators/collaborator_new.html', extra_vars)
 
 
 def register_dataset_plugin_rules(blueprint: Blueprint):
-    blueprint.add_url_rule(u'/', view_func=search, strict_slashes=False)
-    blueprint.add_url_rule(u'/new', view_func=CreateView.as_view(str(u'new')))
-    blueprint.add_url_rule(u'/<id>', view_func=read)
-    blueprint.add_url_rule(u'/resources/<id>', view_func=resources)
+    blueprint.add_url_rule('/', view_func=search, strict_slashes=False)
+    blueprint.add_url_rule('/new', view_func=CreateView.as_view('new'))
+    blueprint.add_url_rule('/<id>', view_func=read)
+    blueprint.add_url_rule('/resources/<id>', view_func=resources)
     blueprint.add_url_rule(
-        u'/edit/<id>', view_func=EditView.as_view(str(u'edit'))
+        '/edit/<id>', view_func=EditView.as_view('edit')
     )
     blueprint.add_url_rule(
-        u'/delete/<id>', view_func=DeleteView.as_view(str(u'delete'))
+        '/delete/<id>', view_func=DeleteView.as_view('delete')
     )
     blueprint.add_url_rule(
-        u'/follow/<id>', view_func=follow, methods=(u'POST', )
+        '/follow/<id>', view_func=follow, methods=('POST', )
     )
     blueprint.add_url_rule(
-        u'/unfollow/<id>', view_func=unfollow, methods=(u'POST', )
+        '/unfollow/<id>', view_func=unfollow, methods=('POST', )
     )
-    blueprint.add_url_rule(u'/followers/<id>', view_func=followers)
+    blueprint.add_url_rule('/followers/<id>', view_func=followers)
     blueprint.add_url_rule(
-        u'/groups/<id>', view_func=GroupView.as_view(str(u'groups'))
+        '/groups/<id>', view_func=GroupView.as_view('groups')
     )
 
-    if authz.check_config_permission(u'allow_dataset_collaborators'):
+    if authz.check_config_permission('allow_dataset_collaborators'):
         blueprint.add_url_rule(
-            rule=u'/collaborators/<id>',
+            rule='/collaborators/<id>',
             view_func=collaborators_read,
             methods=['GET', ]
         )
 
         blueprint.add_url_rule(
-            rule=u'/collaborators/<id>/new',
-            view_func=CollaboratorEditView.as_view(str(u'new_collaborator')),
-            methods=[u'GET', u'POST', ]
+            rule='/collaborators/<id>/new',
+            view_func=CollaboratorEditView.as_view('new_collaborator'),
+            methods=['GET', 'POST', ]
         )
 
         blueprint.add_url_rule(
-            rule=u'/collaborators/<id>/delete/<user_id>',
+            rule='/collaborators/<id>/delete/<user_id>',
             view_func=collaborator_delete, methods=['POST', 'GET']
         )
 

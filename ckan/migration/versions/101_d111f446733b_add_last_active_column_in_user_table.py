@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """Add last_active column in user table
 

@@ -1,6 +1,4 @@
-# encoding: utf-8
 
-from __future__ import with_statement
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 # from logging.config import fileConfig
@@ -63,7 +61,7 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option(u"sqlalchemy.url")
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True,
         include_name=include_name,
@@ -82,7 +80,7 @@ def run_migrations_online():
     """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
-        prefix=u'sqlalchemy.',
+        prefix='sqlalchemy.',
         poolclass=pool.NullPool
     )
     connection = connectable.connect()

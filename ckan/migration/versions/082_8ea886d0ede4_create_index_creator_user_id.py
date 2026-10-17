@@ -1,4 +1,3 @@
-# encoding: utf-8
 """082 Create index creator user_id
 
 Revision ID: 8ea886d0ede4

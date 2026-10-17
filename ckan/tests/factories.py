@@ -1,4 +1,3 @@
-# encoding: utf-8
 # type: ignore
 """This is a collection of factory classes for building CKAN users, datasets,
 etc.
@@ -112,7 +111,7 @@ import ckan.tests.helpers as helpers
 fake = Faker()
 
 
-def _get_action_user_name(kwargs: dict[str, Any]) -> Optional[str]:
+def _get_action_user_name(kwargs: dict[str, Any]) -> str | None:
     """Return the name of the user in kwargs, defaulting to the site user
 
     It can be overridden by explicitly setting {'user': None} in the keyword
@@ -141,7 +140,7 @@ def _get_action_user_name(kwargs: dict[str, Any]) -> Optional[str]:
 def _generate_reset_key(user):
     """Return a reset key for the given User factory stub object."""
 
-    return "{0}_reset_key".format(user.name).lower()
+    return f"{user.name}_reset_key".lower()
 
 
 def _name(type_):
@@ -397,7 +396,7 @@ class SystemInfo(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = ckan.model.SystemInfo
 
-    key = factory.Sequence(lambda n: "test_config_{0:02d}".format(n))
+    key = factory.Sequence(lambda n: f"test_config_{n:02d}")
     value = factory.LazyFunction(fake.pystr)
 
     @classmethod

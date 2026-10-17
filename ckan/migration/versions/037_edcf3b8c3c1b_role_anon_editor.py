@@ -1,4 +1,3 @@
-# encoding: utf-8
 """037 Role anon_editor
 
 Revision ID: edcf3b8c3c1b

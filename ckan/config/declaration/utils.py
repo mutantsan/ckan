@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 
-from typing import Any, Callable, Dict, Generic, TypeVar
+from typing import Any, Dict, Generic, TypeVar
+from collections.abc import Callable
 
 
 T = TypeVar("T", bound=Callable[..., Any])
@@ -26,7 +26,7 @@ class FormatHandler(Generic[T]):
 
     """
     __slots__ = "_types"
-    _types: Dict[str, T]
+    _types: dict[str, T]
 
     def __init__(self):
         self._types = {}
@@ -45,8 +45,6 @@ class FormatHandler(Generic[T]):
             handler = self._types[fmt]
         except KeyError:
             raise TypeError(
-                "Cannot handle {}. Allowed formats are: {}".format(
-                    fmt, list(self._types.keys())
-                )
+                f"Cannot handle {fmt}. Allowed formats are: {list(self._types.keys())}"
             )
         return handler(subject, *args, **kwargs)

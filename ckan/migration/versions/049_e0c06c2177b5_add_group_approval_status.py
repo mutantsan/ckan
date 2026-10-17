@@ -1,4 +1,3 @@
-# encoding: utf-8
 """049 Add group approval status
 
 Revision ID: e0c06c2177b5

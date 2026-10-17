@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 import os
 from typing import Any
-from typing_extensions import Literal, TypedDict, assert_never
+from typing_extensions import TypedDict, assert_never
+from typing import Literal
 
 from markupsafe import Markup
 from webassets.env import Environment

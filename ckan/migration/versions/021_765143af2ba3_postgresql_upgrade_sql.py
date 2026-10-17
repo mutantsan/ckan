@@ -1,4 +1,3 @@
-# encoding: utf-8
 """021 Postgresql upgrade.sql
 
 Revision ID: 765143af2ba3

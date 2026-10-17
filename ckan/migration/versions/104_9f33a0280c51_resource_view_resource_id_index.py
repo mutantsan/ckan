@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """resource_view resource_id index
 
@@ -19,9 +18,9 @@ depends_on = None
 
 def upgrade():
     op.create_index(
-        u'idx_view_resource_id', u'resource_view', [u'resource_id']
+        'idx_view_resource_id', 'resource_view', ['resource_id']
     )
 
 
 def downgrade():
-    op.drop_index(u'idx_view_resource_id')
+    op.drop_index('idx_view_resource_id')

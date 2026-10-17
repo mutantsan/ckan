@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import datetime
 import pytz
@@ -18,7 +17,7 @@ def localised_nice_date(datetime_: datetime.datetime,
                         show_date: bool = False,
                         with_hours: bool = False,
                         with_seconds: bool = False,
-                        format: Optional[str] = None) -> str:
+                        format: str | None = None) -> str:
     ''' Returns a friendly localised unicode representation of a datetime.
     e.g. '31 minutes ago'
          '1 day ago'

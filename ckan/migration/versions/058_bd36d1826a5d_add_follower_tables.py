@@ -1,4 +1,3 @@
-# encoding: utf-8
 """058 Add follower tables
 
 Revision ID: bd36d1826a5d

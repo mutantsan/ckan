@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """Unit tests for ckan/lib/navl/validators.py.
 
@@ -48,10 +47,8 @@ def returns_none(function):
         result = function(*args, **kwargs)
 
         assert result is None, (
-            "Should return None when called with args: {args} and "
-            "kwargs: {kwargs}".format(
-                args=original_args, kwargs=original_kwargs
-            )
+            f"Should return None when called with args: {original_args} and "
+            f"kwargs: {original_kwargs}"
         )
         return result
 
@@ -110,13 +107,8 @@ def does_not_modify_data_dict(validator):
 
         assert data == original_data, (
             "Should not modify data dict when called with "
-            "key: {key}, data: {data}, errors: {errors}, "
-            "context: {context}".format(
-                key=key,
-                data=original_data,
-                errors=original_errors,
-                context=original_context,
-            )
+            f"key: {key}, data: {original_data}, errors: {original_errors}, "
+            f"context: {original_context}"
         )
         return result
 
@@ -150,13 +142,8 @@ def removes_key_from_data_dict(validator):
 
         assert key not in data, (
             "Should remove key from data dict when called with: "
-            "key: {key}, data: {data}, errors: {errors}, "
-            "context: {context} ".format(
-                key=key,
-                data=original_data,
-                errors=original_errors,
-                context=original_context,
-            )
+            f"key: {key}, data: {original_data}, errors: {original_errors}, "
+            f"context: {original_context} "
         )
         return result
 
@@ -199,24 +186,14 @@ def does_not_modify_other_keys_in_data_dict(validator):
 
         assert data.keys() == original_data.keys(), (
             "Should not add or remove keys from data dict when called with "
-            "key: {key}, data: {data}, errors: {errors}, "
-            "context: {context}".format(
-                key=key,
-                data=original_data,
-                errors=original_errors,
-                context=original_context,
-            )
+            f"key: {key}, data: {original_data}, errors: {original_errors}, "
+            f"context: {original_context}"
         )
         for key_ in data:
             assert data[key_] == original_data[key_], (
                 "Should not modify other keys in data dict when called with "
-                "key: {key}, data: {data}, errors: {errors}, "
-                "context: {context}".format(
-                    key=key,
-                    data=original_data,
-                    errors=original_errors,
-                    context=original_context,
-                )
+                f"key: {key}, data: {original_data}, errors: {original_errors}, "
+                f"context: {original_context}"
             )
         return result
 
@@ -249,21 +226,16 @@ def does_not_modify_errors_dict(validator):
         result = validator(key, data, errors, context=context)
 
         assert errors == original_errors, (
-            "Should not modify errors dict when called with key: {key}, "
-            "data: {data}, errors: {errors}, "
-            "context: {context}".format(
-                key=key,
-                data=original_data,
-                errors=original_errors,
-                context=original_context,
-            )
+            f"Should not modify errors dict when called with key: {key}, "
+            f"data: {original_data}, errors: {original_errors}, "
+            f"context: {original_context}"
         )
         return result
 
     return call_and_assert
 
 
-class TestValidators(object):
+class TestValidators:
     def test_ignore_missing_with_value_missing(self):
         """ignore_missing() should raise StopOnError if:
 
@@ -317,7 +289,7 @@ class TestValidators(object):
         call_validator(key=key, data=data, errors=errors, context={})
 
 
-class TestDefault(object):
+class TestDefault:
     def test_key_doesnt_exist(self):
         dict_ = {}
         validators.default("default_value")("key", dict_, {}, {})
@@ -346,7 +318,7 @@ class TestDefault(object):
         assert dict_ == {"key": "original"}
 
 
-class TestNotEmpty(object):
+class TestNotEmpty:
 
     def test_not_empty_passes(self):
         dict_ = {"key": "some value"}

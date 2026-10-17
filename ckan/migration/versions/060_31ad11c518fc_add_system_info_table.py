@@ -1,4 +1,3 @@
-# encoding: utf-8
 """060 Add system info table
 
 Revision ID: 31ad11c518fc

@@ -10,7 +10,8 @@ from __future__ import annotations
 import sys
 
 from typing import Any
-from typing_extensions import ClassVar, TypeVar
+from typing_extensions import TypeVar
+from typing import ClassVar
 
 TSingleton = TypeVar("TSingleton", bound="SingletonPlugin")
 

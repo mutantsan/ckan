@@ -1,9 +1,8 @@
-# encoding: utf-8
 
 from ckan.plugins import Plugin, SingletonPlugin
 
 
-class _MockPlugin(object):
+class _MockPlugin:
     """
     MockPlugin tracks method calls via __getattr__ for rapid mocking of
     plugins.
@@ -12,7 +11,7 @@ class _MockPlugin(object):
     call information
     """
 
-    class MockMethod(object):
+    class MockMethod:
         registry = {}
 
         def __init__(self, boundto, name):

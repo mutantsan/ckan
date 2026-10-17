@@ -1,4 +1,3 @@
-# encoding: utf-8
 """026 Authorization group user pk
 
 Revision ID: 3615b25af443

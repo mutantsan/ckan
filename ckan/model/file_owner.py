@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing_extensions import Annotated, ClassVar
+from typing import Annotated, ClassVar
 
 from ckan.lib.dictization import table_dictize
 from ckan.model.types import make_uuid
@@ -66,7 +66,7 @@ class FileOwner:
 
     pinned: Mapped[bool] = mapped_column(default=False)
 
-    files: Mapped[list["File"]] = relationship(
+    files: Mapped[list[File]] = relationship(
         back_populates="owner",
         init=False,
         compare=False,

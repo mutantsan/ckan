@@ -1,4 +1,3 @@
-# encoding: utf-8
 """013 Add hash
 
 Revision ID: 8a3a5af39797

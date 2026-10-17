@@ -1,4 +1,3 @@
-# encoding: utf-8
 """**All auth functions should have tests.**
 
 Most auth function tests should be unit tests that test the auth function in

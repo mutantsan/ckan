@@ -4,17 +4,16 @@ from functools import partial
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
-    Iterable,
-    Mapping,
     Optional,
     Union,
     Generic,
     Literal,
 )
+from collections.abc import Callable, Iterable, Mapping
 
-from typing_extensions import Protocol, TypeAlias, TypedDict, TypeVar
+from typing_extensions import Protocol, TypedDict, TypeVar
+from typing import TypeAlias
 from blinker import Signal
 from flask.ctx import RequestContext
 from flask.wrappers import Response, Request
@@ -52,21 +51,21 @@ __all__ = [
 
 AlchemySession = ScopedSession[Any]
 
-Config: TypeAlias = Dict[str, Union[str, Mapping[str, str]]]
+Config: TypeAlias = dict[str, str | Mapping[str, str]]
 CKANApp: TypeAlias = "CKANFlask"
 
 # dictionary passed to actions
-DataDict: TypeAlias = "dict[str, Any]"
+DataDict: TypeAlias = dict[str, Any]
 # dictionary passed to the ValidationError
 ErrorDict: TypeAlias = (
-    "dict[str, Union[int, str, list[str], list[Union[str, dict[str, Any]]]]]"
+    "dict[str, int | str | list[str] | list[str | dict[str, Any]]]"
 )
 
 FlattenKey: TypeAlias = "tuple[Any, ...]"
 FlattenDataDict: TypeAlias = "dict[FlattenKey, Any]"
 FlattenErrorDict: TypeAlias = "dict[FlattenKey, list[str]]"
 
-SignalMapping: TypeAlias = Dict[Signal, Iterable[Union[Any, Dict[str, Any]]]]
+SignalMapping: TypeAlias = dict[Signal, Iterable[Any | dict[str, Any]]]
 
 
 class Context(TypedDict, total=False):
@@ -86,8 +85,8 @@ class Context(TypedDict, total=False):
     user_obj: model.User
 
     schema_keys: list[Any]
-    revision_id: Optional[Any]
-    revision_date: Optional[Any]
+    revision_id: Any | None
+    revision_date: Any | None
 
     connection: Any
     check_access: Callable[..., Any]
@@ -117,7 +116,7 @@ class Context(TypedDict, total=False):
     extras_as_string: bool
     with_private: bool
     group_type: str
-    parent: Optional[str]
+    parent: str | None
 
     keep_email: bool
     keep_apikey: bool
@@ -125,12 +124,12 @@ class Context(TypedDict, total=False):
     validate: bool
     count_private_and_draft_datasets: bool
 
-    schema: "Schema"
+    schema: Schema
     group: model.Group
     package: model.Package
     vocabulary: model.Vocabulary
     tag: model.Tag
-    activity: "Activity"
+    activity: Activity
     task_status: model.TaskStatus
     resource: model.Resource
     resource_view: model.ResourceView
@@ -151,7 +150,7 @@ class AuthResult(TypedDict, total=False):
     """Result of any access check
     """
     success: bool
-    msg: Optional[str]
+    msg: str | None
 
 
 # Simplest validator that accepts only validated value.
@@ -165,7 +164,7 @@ DataValidator = Callable[
 Validator = Union[ValueValidator, ContextValidator, DataValidator]
 ValidatorFactory = Callable[..., Validator]
 
-Schema: TypeAlias = "dict[str, Union[list[Validator], Schema]]"
+Schema: TypeAlias = "dict[str, list[Validator] | Schema]"
 
 # Function that accepts arbitrary number of validators(decorated by
 # ckan.logic.schema.validator_args) and returns Schema dictionary
@@ -175,7 +174,7 @@ ComplexSchemaFunc = Callable[..., Schema]
 PlainSchemaFunc = Callable[[], Schema]
 
 AuthFunctionWithOptionalDataDict = Callable[
-    [Context, Optional[DataDict]], AuthResult
+    [Context, DataDict | None], AuthResult
 ]
 AuthFunctionWithMandatoryDataDict = Callable[[Context, DataDict], AuthResult]
 AuthFunction = Union[
@@ -184,7 +183,7 @@ AuthFunction = Union[
     'partial[AuthResult]',
 ]
 ChainedAuthFunction = Callable[
-    [AuthFunction, Context, Optional[DataDict]], AuthResult
+    [AuthFunction, Context, DataDict | None], AuthResult
 ]
 
 Action = Callable[[Context, DataDict], Any]
@@ -208,14 +207,14 @@ class PFeedFactory(Protocol):
         feed_title: str,
         feed_link: str,
         feed_description: str,
-        language: Optional[str],
-        author_name: Optional[str],
-        feed_guid: Optional[str],
-        feed_url: Optional[str],
-        previous_page: Optional[str],
-        next_page: Optional[str],
-        first_page: Optional[str],
-        last_page: Optional[str],
+        language: str | None,
+        author_name: str | None,
+        feed_guid: str | None,
+        feed_url: str | None,
+        previous_page: str | None,
+        next_page: str | None,
+        first_page: str | None,
+        last_page: str | None,
     ) -> PFeed:
         ...
 
@@ -225,7 +224,7 @@ class PUploader(Protocol):
     """
 
     def __init__(
-        self, object_type: str, old_filename: Optional[str] = None
+        self, object_type: str, old_filename: str | None = None
     ) -> None:
         ...
 
@@ -246,7 +245,7 @@ class PResourceUploader(Protocol):
     """Contract for IUploader.get_uploader
     """
 
-    mimetype: Optional[str]
+    mimetype: str | None
     filesize: int
 
     def __init__(self, resource: dict[str, Any]) -> None:

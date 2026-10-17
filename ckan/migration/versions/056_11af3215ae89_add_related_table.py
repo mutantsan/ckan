@@ -1,4 +1,3 @@
-# encoding: utf-8
 """056 Add related table
 
 Revision ID: 11af3215ae89

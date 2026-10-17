@@ -1,4 +1,3 @@
-# encoding: utf-8
 """025 Add authorization groups
 
 Revision ID: b581622ad327

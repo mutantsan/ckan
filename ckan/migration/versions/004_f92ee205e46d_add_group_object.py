@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Add group object
 
 Revision ID: f92ee205e46d

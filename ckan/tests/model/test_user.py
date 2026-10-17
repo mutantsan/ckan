@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import os
 
@@ -64,7 +63,7 @@ class TestPasswordUpgrade:
 
     def test_upgrade_from_sha_with_wrong_password_fails_to_upgrade(self):
         user = factories.User()
-        password = u"testpassword"
+        password = "testpassword"
         user_obj = model.User.by_name(user["name"])
 
         old_hash = _set_password(password)
@@ -82,7 +81,7 @@ class TestPasswordUpgrade:
         passlib, ckan should upgrade the password hashes for people without
         involvement from users"""
         user = factories.User()
-        password = u"testpassword"
+        password = "testpassword"
         user_obj = model.User.by_name(user["name"])
 
         # setup hash with salt/rounds less than the default
@@ -104,7 +103,7 @@ class TestPasswordUpgrade:
 
     def test_upgrade_from_pbkdf2_fails_with_wrong_password(self):
         user = factories.User()
-        password = u"testpassword"
+        password = "testpassword"
         user_obj = model.User.by_name(user["name"])
 
         # setup hash with salt/rounds less than the default
@@ -119,7 +118,7 @@ class TestPasswordUpgrade:
 
     def test_pbkdf2_password_auth(self):
         user = factories.User()
-        password = u"testpassword"
+        password = "testpassword"
         user_obj = model.User.by_name(user["name"])
 
         user_obj._set_password(password)
@@ -128,7 +127,7 @@ class TestPasswordUpgrade:
 
     def test_pbkdf2_password_auth_unicode(self):
         user = factories.User()
-        password = u"testpassword\xc2\xa0"
+        password = "testpassword\xc2\xa0"
         user_obj = model.User.by_name(user["name"])
         user_obj._set_password(password)
         user_obj.save()
@@ -181,10 +180,10 @@ class TestUser:
         sandra = factories.User(fullname="Sandra")
 
         out = model.User.get(brian["name"])
-        assert out.fullname == u"Brian"
+        assert out.fullname == "Brian"
 
         out = model.User.get(sandra["name"])
-        assert out.fullname == u"Sandra"
+        assert out.fullname == "Sandra"
 
     def test_is_deleted(self):
         data = factories.User()

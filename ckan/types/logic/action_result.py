@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
+from collections.abc import Sequence
 
-from typing_extensions import TypeAlias, TypedDict
+from typing_extensions import TypedDict
+from typing import TypeAlias
 
 if TYPE_CHECKING:
     import ckan.model as model
@@ -13,50 +15,50 @@ AnyDict: TypeAlias = "dict[str, Any]"
 #                                     get                                     #
 ###############################################################################
 PackageList = Sequence[str]
-CurrentPackageListWithResources = List[AnyDict]
-MemberList = List[Tuple[Any, ...]]
-PackageCollaboratorList = List[AnyDict]
+CurrentPackageListWithResources = list[AnyDict]
+MemberList = list[tuple[Any, ...]]
+PackageCollaboratorList = list[AnyDict]
 PackageCollaboratorListForUser = PackageCollaboratorList
-GroupList = List[AnyDict]
-OrganizationList = List[AnyDict]
-GroupListAuthz = List[AnyDict]
-OrganizationListForUser = List[AnyDict]
-LicenseList = List[AnyDict]
-TagList = Union[List[AnyDict], List[str]]
-UserList = Union[List[AnyDict], List[str], "Query[model.User]"]
-PackageRelationshipsList = List[AnyDict]
+GroupList = list[AnyDict]
+OrganizationList = list[AnyDict]
+GroupListAuthz = list[AnyDict]
+OrganizationListForUser = list[AnyDict]
+LicenseList = list[AnyDict]
+TagList = Union[list[AnyDict], list[str]]
+UserList = Union[list[AnyDict], list[str], "Query[model.User]"]
+PackageRelationshipsList = list[AnyDict]
 PackageShow = AnyDict
 ResourceShow = AnyDict
 ResourceViewShow = AnyDict
-ResourceViewList = List[AnyDict]
+ResourceViewList = list[AnyDict]
 GroupShow = AnyDict
 OrganizationShow = AnyDict
-GroupPackageShow = List[AnyDict]
+GroupPackageShow = list[AnyDict]
 TagShow = AnyDict
 UserShow = AnyDict
-PackageAutocomplete = List[AnyDict]
-FormatAutocomplete = List[str]
-UserAutocomplete = List[AnyDict]
-GroupAutocomplete = List[AnyDict]
-OrganizationAutocomplete = List[AnyDict]
+PackageAutocomplete = list[AnyDict]
+FormatAutocomplete = list[str]
+UserAutocomplete = list[AnyDict]
+GroupAutocomplete = list[AnyDict]
+OrganizationAutocomplete = list[AnyDict]
 PackageSearch = AnyDict
 ResourceSearch = AnyDict
 TagSearch = AnyDict
-TagAutocomplete = List[str]
+TagAutocomplete = list[str]
 TaskStatusShow = AnyDict
-TermTranslationShow = List[AnyDict]
+TermTranslationShow = list[AnyDict]
 GetSiteUser = AnyDict
 StatusShow = AnyDict
-VocabularyList = List[AnyDict]
+VocabularyList = list[AnyDict]
 VocabularyShow = AnyDict
 UserFollowerCount = int
 DatasetFollowerCount = int
 GroupFollowerCount = int
 OrganizationFollowerCount = int
-UserFollowerList = List[AnyDict]
-DatasetFollowerList = List[AnyDict]
-GroupFollowerList = List[AnyDict]
-OrganizationFollowerList = List[AnyDict]
+UserFollowerList = list[AnyDict]
+DatasetFollowerList = list[AnyDict]
+GroupFollowerList = list[AnyDict]
+OrganizationFollowerList = list[AnyDict]
 AmFollowingUser = bool
 AmFollowingDataset = bool
 AmFollowingGroup = bool
@@ -65,19 +67,19 @@ UserFolloweeCount = int
 DatasetFolloweeCount = int
 GroupFolloweeCount = int
 OrganizationFolloweeCount = int
-FolloweeList = List[AnyDict]
-UserFolloweeList = List[AnyDict]
-DatasetFolloweeList = List[AnyDict]
-GroupFolloweeList = List[AnyDict]
-OrganizationFolloweeList = List[AnyDict]
+FolloweeList = list[AnyDict]
+UserFolloweeList = list[AnyDict]
+DatasetFolloweeList = list[AnyDict]
+GroupFolloweeList = list[AnyDict]
+OrganizationFolloweeList = list[AnyDict]
 DashboardNewActivitiesCount = int
-MemberRolesList = List[AnyDict]
+MemberRolesList = list[AnyDict]
 HelpShow = Optional[str]
 ConfigOptionShow = Any
-ConfigOptionList = List[str]
-JobList = Union[List[AnyDict], List[str]]
+ConfigOptionList = list[str]
+JobList = Union[list[AnyDict], list[str]]
 JobShow = AnyDict
-ApiTokenList = List[AnyDict]
+ApiTokenList = list[AnyDict]
 
 ###############################################################################
 #                                    create                                   #
@@ -85,8 +87,8 @@ ApiTokenList = List[AnyDict]
 PackageCreate = Union[AnyDict, str]
 ResourceCreate = AnyDict
 ResourceViewCreate = AnyDict
-ResourceCreateDefaultResourceViews = List[AnyDict]
-PackageCreateDefaultResourceViews = List[AnyDict]
+ResourceCreateDefaultResourceViews = list[AnyDict]
+PackageCreateDefaultResourceViews = list[AnyDict]
 PackageRelationshipCreate = AnyDict
 MemberCreate = AnyDict
 PackageCollaboratorCreate = AnyDict

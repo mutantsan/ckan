@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import codecs
@@ -10,7 +9,8 @@ import logging
 import mimetypes
 from urllib.parse import urlparse
 from time import time
-from typing import Any, Iterable, Optional, Tuple, Union, IO
+from typing import Any, Optional, Tuple, Union, IO
+from collections.abc import Iterable
 
 from email.message import EmailMessage
 from email import utils
@@ -26,10 +26,10 @@ from ckan.lib.base import render
 
 log = logging.getLogger(__name__)
 AttachmentWithType = Union[
-    Tuple[str, IO[str], str],
-    Tuple[str, IO[bytes], str]
+    tuple[str, IO[str], str],
+    tuple[str, IO[bytes], str]
 ]
-AttachmentWithoutType = Union[Tuple[str, IO[str]], Tuple[str, IO[bytes]]]
+AttachmentWithoutType = Union[tuple[str, IO[str]], tuple[str, IO[bytes]]]
 Attachment = Union[AttachmentWithType, AttachmentWithoutType]
 
 
@@ -40,9 +40,9 @@ class MailerException(Exception):
 def _mail_recipient(
         recipient_name: str, recipient_email: str, sender_name: str,
         sender_url: str, subject: Any, body: Any,
-        body_html: Optional[Any] = None,
-        headers: Optional[dict[str, Any]] = None,
-        attachments: Optional[Iterable[Attachment]] = None) -> None:
+        body_html: Any | None = None,
+        headers: dict[str, Any] | None = None,
+        attachments: Iterable[Attachment] | None = None) -> None:
 
     if not headers:
         headers = {}
@@ -112,7 +112,7 @@ def _mail_recipient(
 
     try:
         smtp_connection = smtplib.SMTP(host, port)
-    except (socket.error, smtplib.SMTPConnectError) as e:
+    except (OSError, smtplib.SMTPConnectError) as e:
         log.exception(e)
         raise MailerException('SMTP server could not be connected to: "%s" %s'
                               % (smtp_server, e))
@@ -171,9 +171,9 @@ def mail_recipient(recipient_name: str,
                    recipient_email: str,
                    subject: str,
                    body: str,
-                   body_html: Optional[str] = None,
-                   headers: Optional[dict[str, Any]] = None,
-                   attachments: Optional[Iterable[Attachment]] = None) -> None:
+                   body_html: str | None = None,
+                   headers: dict[str, Any] | None = None,
+                   attachments: Iterable[Attachment] | None = None) -> None:
 
     '''Sends an email to a an email address.
 
@@ -235,9 +235,9 @@ def mail_recipient(recipient_name: str,
 def mail_user(recipient: model.User,
               subject: str,
               body: str,
-              body_html: Optional[str] = None,
-              headers: Optional[dict[str, Any]] = None,
-              attachments: Optional[Iterable[Attachment]] = None) -> None:
+              body_html: str | None = None,
+              headers: dict[str, Any] | None = None,
+              attachments: Iterable[Attachment] | None = None) -> None:
     '''Sends an email to a CKAN user.
 
     You need to set up the :ref:`email-settings` to able to send emails.
@@ -268,8 +268,8 @@ def get_reset_link_body(user: model.User) -> str:
 
 
 def get_invite_body(user: model.User,
-                    group_dict: Optional[dict[str, Any]] = None,
-                    role: Optional[str] = None) -> str:
+                    group_dict: dict[str, Any] | None = None,
+                    role: str | None = None) -> str:
     extra_vars = {
         'reset_link': get_reset_link(user),
         'site_title': config.get('ckan.site_title'),
@@ -312,8 +312,8 @@ def send_reset_link(user: model.User) -> None:
 
 def send_invite(
         user: model.User,
-        group_dict: Optional[dict[str, Any]] = None,
-        role: Optional[str] = None) -> None:
+        group_dict: dict[str, Any] | None = None,
+        role: str | None = None) -> None:
     create_reset_key(user)
     body = get_invite_body(user, group_dict, role)
     extra_vars = {
@@ -336,7 +336,7 @@ def make_key():
     return codecs.encode(os.urandom(16), 'hex').decode()
 
 
-def verify_reset_link(user: model.User, key: Optional[str]) -> bool:
+def verify_reset_link(user: model.User, key: str | None) -> bool:
     if not key:
         return False
     if not user.reset_key or len(user.reset_key) < 5:

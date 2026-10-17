@@ -5,8 +5,9 @@ from __future__ import annotations
 
 import logging
 from contextlib import contextmanager
-from typing import Generic, Iterator, TypeVar
-from typing_extensions import TypeGuard
+from typing import Generic, TypeVar
+from collections.abc import Iterator
+from typing import TypeGuard
 from importlib.metadata import entry_points
 
 

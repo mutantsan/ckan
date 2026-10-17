@@ -1,4 +1,3 @@
-# encoding: utf-8
 """delete extrase which are deleted state
 
 Revision ID: 3537d5420e0e
@@ -9,18 +8,18 @@ Create Date: 2019-05-09 13:38:22.072361
 from alembic import op
 from sqlalchemy import text
 # revision identifiers, used by Alembic.
-revision = u'3537d5420e0e'
-down_revision = u'ff1b303cab77'
+revision = '3537d5420e0e'
+down_revision = 'ff1b303cab77'
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.drop_constraint(
-        u'package_extra_revision_continuity_id_fkey', u'package_extra_revision'
+        'package_extra_revision_continuity_id_fkey', 'package_extra_revision'
     )
     op.drop_constraint(
-        u'group_extra_revision_continuity_id_fkey', u'group_extra_revision'
+        'group_extra_revision_continuity_id_fkey', 'group_extra_revision'
     )
 
     conn = op.get_bind()
@@ -32,11 +31,11 @@ def upgrade():
 
 def downgrade():
     op.create_foreign_key(
-        u'package_extra_revision_continuity_id_fkey',
-        u'package_extra_revision', u'package_extra', [u'continuity_id'],
-        [u'id']
+        'package_extra_revision_continuity_id_fkey',
+        'package_extra_revision', 'package_extra', ['continuity_id'],
+        ['id']
     )
     op.create_foreign_key(
-        u'group_extra_revision_continuity_id_fkey', u'group_extra_revision',
-        u'group_extra', [u'group_id'], [u'id']
+        'group_extra_revision_continuity_id_fkey', 'group_extra_revision',
+        'group_extra', ['group_id'], ['id']
     )

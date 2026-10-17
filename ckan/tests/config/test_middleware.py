@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -24,7 +23,7 @@ class BlueprintPlugin(p.SingletonPlugin):
         bp1.add_url_rule(
             "/view_translated",
             "view_translated",
-            lambda: _(u"Dataset")
+            lambda: _("Dataset")
         )
 
         bp2 = Blueprint("bp2", self.__module__)
@@ -57,30 +56,30 @@ def patched_app(app):
     flask_app = app.flask_app
 
     def test_view():
-        return u"This was served from Flask"
+        return "This was served from Flask"
 
     flask_app.add_url_rule(
-        u"/flask_core", view_func=test_view, endpoint=u"flask_core.index"
+        "/flask_core", view_func=test_view, endpoint="flask_core.index"
     )
     return app
 
 
 def test_flask_core_route_is_served(patched_app):
-    res = patched_app.get(u"/")
+    res = patched_app.get("/")
     assert res.status_code == 200
 
-    res = patched_app.get(u"/flask_core")
+    res = patched_app.get("/flask_core")
     assert res.get_data(as_text=True) == "This was served from Flask"
 
 
-@pytest.mark.ckan_config(u"SECRET_KEY", "some_secret")
+@pytest.mark.ckan_config("SECRET_KEY", "some_secret")
 def test_secret_key_is_used_if_present(app):
     """Flask app reads SECRET_KEY from CKAN config
     """
     assert app.flask_app.config["SECRET_KEY"] == "some_secret"
 
 
-@pytest.mark.ckan_config(u"SECRET_KEY", None)
+@pytest.mark.ckan_config("SECRET_KEY", None)
 def test_missing_secret_crashes_applicaiton(make_app):
     """Application instance cannot be created without SECRET_KEY.
     """
@@ -88,8 +87,8 @@ def test_missing_secret_crashes_applicaiton(make_app):
         make_app()
 
 
-@pytest.mark.ckan_config(u"ckan.plugins", u"test_blueprint_plugin")
-@pytest.mark.usefixtures(u"with_plugins")
+@pytest.mark.ckan_config("ckan.plugins", "test_blueprint_plugin")
+@pytest.mark.usefixtures("with_plugins")
 def test_all_plugin_blueprints_are_registered(app):
     url = url_for("bp1.plugin_view_endpoint")
     assert url == "/simple_url"
@@ -124,7 +123,7 @@ def test_no_wtf_secret_falls_back_to_secret_key(app):
     assert config["WTF_CSRF_SECRET_KEY"] == config["SECRET_KEY"]
 
 
-@pytest.mark.ckan_config(u"ckan.plugins", u"test_middleware_plugin")
-@pytest.mark.usefixtures(u"with_plugins")
+@pytest.mark.ckan_config("ckan.plugins", "test_middleware_plugin")
+@pytest.mark.usefixtures("with_plugins")
 def test_custom_middleware_does_not_break_the_app(app):
     app.get("/", status=200)

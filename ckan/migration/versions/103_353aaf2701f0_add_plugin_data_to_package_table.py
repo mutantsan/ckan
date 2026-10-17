@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """Add plugin_data to package table
 
@@ -21,13 +20,13 @@ depends_on = None
 
 def upgrade():
     op.add_column(
-        u'package',
+        'package',
         sa.Column(
-            u'plugin_data',
+            'plugin_data',
             postgresql.JSONB(astext_type=sa.Text()),
             nullable=True)
     )
 
 
 def downgrade():
-    op.drop_column(u'package', u'plugin_data')
+    op.drop_column('package', 'plugin_data')

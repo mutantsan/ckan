@@ -1,4 +1,3 @@
-# encoding: utf-8
 """054 Add resource created date
 
 Revision ID: da21b38da4db

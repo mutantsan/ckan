@@ -1,4 +1,3 @@
-# encoding: utf-8
 """020 Add changeset
 
 Revision ID: 69a0b0efc609

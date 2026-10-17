@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 from ckan.lib.helpers import url_for
@@ -7,7 +6,7 @@ from bs4 import BeautifulSoup
 from ckan.tests import factories
 
 
-class TestHome(object):
+class TestHome:
     def test_home_renders(self, app):
         response = app.get(url_for("home.index"))
         assert "Welcome to CKAN" in response.body
@@ -62,7 +61,7 @@ class TestHome(object):
         assert "Welcome to CKAN" in response.body
 
 
-class TestI18nURLs(object):
+class TestI18nURLs:
     def test_right_urls_are_rendered_on_language_selector(self, app):
 
         response = app.get(url_for("home.index"))
@@ -70,13 +69,13 @@ class TestI18nURLs(object):
 
         select = html.find(id="field-lang-select")
         for option in select.find_all("option"):
-            if option.text.strip() == u"English":
+            if option.text.strip() == "English":
                 assert option["value"] == "/en/"
-            elif option.text.strip() == u"čeština (Česká republika)":
+            elif option.text.strip() == "čeština (Česká republika)":
                 assert option["value"] == "/cs_CZ/"
-            elif option.text.strip() == u"português (Brasil)":
+            elif option.text.strip() == "português (Brasil)":
                 assert option["value"] == "/pt_BR/"
-            elif option.text.strip() == u"srpski (latinica)":
+            elif option.text.strip() == "srpski (latinica)":
                 assert option["value"] == "/sr_Latn/"
 
     def test_default_english_option_is_selected_on_language_selector(

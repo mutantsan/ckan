@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import datetime
 import operator
@@ -351,7 +350,7 @@ class TestPackageDictize:
         result_dict = self.remove_changable_values(result_dict)
         superfluous_keys = set(result_dict) - set(expected_dict)
         assert not superfluous_keys, "Did not expect key: %s" % " ".join(
-            ("%s=%s" % (k, result_dict[k]) for k in superfluous_keys)
+            "%s=%s" % (k, result_dict[k]) for k in superfluous_keys
         )
         for key in expected_dict:
             assert (
@@ -445,21 +444,21 @@ class TestPackageDictize:
 
         assert_equal_for_keys(result["resources"][0], resource, "name", "url")
         expected_dict = {
-            u"cache_last_updated": resource["cache_last_updated"],
-            u"cache_url": resource["cache_url"],
-            u"description": resource["description"],
-            u"format": resource["format"],
-            u"hash": resource["hash"],
-            u"last_modified": resource["last_modified"],
-            u"mimetype": resource["mimetype"],
-            u"mimetype_inner": resource["mimetype_inner"],
-            u"name": resource["name"],
-            u"position": resource["position"],
-            u"resource_type": resource["resource_type"],
-            u"size": resource["size"],
-            u"state": resource["state"],
-            u"url": resource["url"],
-            u"url_type": resource["url_type"],
+            "cache_last_updated": resource["cache_last_updated"],
+            "cache_url": resource["cache_url"],
+            "description": resource["description"],
+            "format": resource["format"],
+            "hash": resource["hash"],
+            "last_modified": resource["last_modified"],
+            "mimetype": resource["mimetype"],
+            "mimetype_inner": resource["mimetype_inner"],
+            "name": resource["name"],
+            "position": resource["position"],
+            "resource_type": resource["resource_type"],
+            "size": resource["size"],
+            "state": resource["state"],
+            "url": resource["url"],
+            "url_type": resource["url_type"],
         }
         self.assert_equals_expected(expected_dict, result["resources"][0])
 
@@ -474,7 +473,7 @@ class TestPackageDictize:
 
         result, _change = model_save.resource_dict_save(resource, context)
 
-        expected_dict = {u"url": u"some_filename.csv", u"url_type": u"upload"}
+        expected_dict = {"url": "some_filename.csv", "url_type": "upload"}
         assert expected_dict["url"] == result.url
 
     def test_package_dictize_resource_upload_with_url_and_striped(self):
@@ -488,7 +487,7 @@ class TestPackageDictize:
 
         result, _change = model_save.resource_dict_save(resource, context)
 
-        expected_dict = {u"url": u"some_filename.csv", u"url_type": u"upload"}
+        expected_dict = {"url": "some_filename.csv", "url_type": "upload"}
         assert expected_dict["url"] == result.url
 
     def test_package_dictize_tags(self):
@@ -502,8 +501,8 @@ class TestPackageDictize:
         assert result["tags"][0]["name"] == tag
         expected_dict = {
             "display_name": tag,
-            u"name": tag,
-            u"state": u"active",
+            "name": tag,
+            "state": "active",
         }
         self.assert_equals_expected(expected_dict, result["tags"][0])
 
@@ -517,8 +516,8 @@ class TestPackageDictize:
 
         assert_equal_for_keys(result["extras"][0], extras_dict, "key", "value")
         expected_dict = {
-            u"key": u"latitude",
-            u"value": u"54.6",
+            "key": "latitude",
+            "value": "54.6",
         }
         self.assert_equals_expected(expected_dict, result["extras"][0])
 
@@ -534,18 +533,18 @@ class TestPackageDictize:
 
         assert_equal_for_keys(result["groups"][0], group, "name")
         expected_dict = {
-            u"approval_status": group["approval_status"],
-            u"capacity": "public",
-            u"description": group["description"],
+            "approval_status": group["approval_status"],
+            "capacity": "public",
+            "description": group["description"],
             "display_name": group["display_name"],
             "image_display_url": group["image_display_url"],
-            u"image_url": group["image_url"],
-            u"is_organization": group["is_organization"],
-            u"name": group["name"],
-            u"state": group["state"],
-            u"title": group["title"],
-            u"type": group["type"],
-            u"member_count": 1,
+            "image_url": group["image_url"],
+            "is_organization": group["is_organization"],
+            "name": group["name"],
+            "state": group["state"],
+            "title": group["title"],
+            "type": group["type"],
+            "member_count": 1,
         }
         self.assert_equals_expected(expected_dict, result["groups"][0])
 
@@ -560,14 +559,14 @@ class TestPackageDictize:
         assert result["owner_org"] == org["id"]
         assert_equal_for_keys(result["organization"], org, "name")
         expected_dict = {
-            u"approval_status": org["approval_status"],
-            u"description": org["description"],
-            u"image_url": org["image_url"],
-            u"is_organization": org["is_organization"],
-            u"name": org["name"],
-            u"state": org["state"],
-            u"title": org["title"],
-            u"type": org["type"],
+            "approval_status": org["approval_status"],
+            "description": org["description"],
+            "image_url": org["image_url"],
+            "is_organization": org["is_organization"],
+            "name": org["name"],
+            "state": org["state"],
+            "title": org["title"],
+            "type": org["type"],
         }
         self.assert_equals_expected(expected_dict, result["organization"])
 
@@ -584,7 +583,7 @@ def assert_equal_for_keys(dict1, dict2, *keys):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestTagDictize(object):
+class TestTagDictize:
     """Unit tests for the tag_dictize() function."""
 
     def test_tag_dictize_including_datasets(self):
@@ -612,7 +611,7 @@ class TestTagDictize(object):
         assert not tag_dict.get("packages")
 
 
-class TestVocabularyDictize(object):
+class TestVocabularyDictize:
     """Unit tests for the vocabulary_dictize() function."""
 
     def test_vocabulary_dictize_including_datasets(self):
@@ -654,7 +653,7 @@ class TestVocabularyDictize(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageSchema(object):
+class TestPackageSchema:
     def remove_changable_columns(self, dict):
         for key, value in list(dict.items()):
             if key.endswith("id") and key != "license_id":
@@ -674,34 +673,34 @@ class TestPackageSchema(object):
         second_name = factories.Dataset.stub().name
         expected_data = {
             "extras": [
-                {"key": u"genre", "value": u"romantic novel"},
-                {"key": u"original media", "value": u"book"},
+                {"key": "genre", "value": "romantic novel"},
+                {"key": "original media", "value": "book"},
             ],
             "groups": [
-                {u"name": group1["name"], u"title": group1["title"]},
-                {u"name": group2["name"], u"title": group2["title"]},
+                {"name": group1["name"], "title": group1["title"]},
+                {"name": group2["name"], "title": group2["title"]},
             ],
-            "license_id": u"other-open",
+            "license_id": "other-open",
             "name": first_name,
-            "type": u"dataset",
-            "notes": u"Some test notes\n\n### A 3rd level heading\n\n**Some bolded text.**\n\n*Some italicized text.*\n\nForeign characters:\nu with umlaut \xfc\n66-style quote \u201c\nforeign word: th\xfcmb\n\nNeeds escaping:\nleft arrow <\n\n<http://ckan.net/>\n\n",
+            "type": "dataset",
+            "notes": "Some test notes\n\n### A 3rd level heading\n\n**Some bolded text.**\n\n*Some italicized text.*\n\nForeign characters:\nu with umlaut \xfc\n66-style quote \u201c\nforeign word: th\xfcmb\n\nNeeds escaping:\nleft arrow <\n\n<http://ckan.net/>\n\n",
             "private": False,
             "resources": [
                 {
-                    "alt_url": u"alt123",
-                    "description": u'Full text. Needs escaping: " Umlaut: \xfc',
-                    "format": u"plain text",
-                    "hash": u"abc123",
-                    "size_extra": u"123",
-                    "url": u"http://datahub.io/download/x=1&y=2",
+                    "alt_url": "alt123",
+                    "description": 'Full text. Needs escaping: " Umlaut: \xfc',
+                    "format": "plain text",
+                    "hash": "abc123",
+                    "size_extra": "123",
+                    "url": "http://datahub.io/download/x=1&y=2",
                 },
                 {
-                    "alt_url": u"alt345",
-                    "description": u"Index of the novel",
-                    "format": u"JSON",
-                    "hash": u"def456",
-                    "size_extra": u"345",
-                    "url": u"http://datahub.io/index.json",
+                    "alt_url": "alt345",
+                    "description": "Index of the novel",
+                    "format": "JSON",
+                    "hash": "def456",
+                    "size_extra": "345",
+                    "url": "http://datahub.io/index.json",
                 },
             ],
             "tags": sorted([
@@ -709,9 +708,9 @@ class TestPackageSchema(object):
                 {"name": factories.Tag.stub().name},
                 {"name": factories.Tag.stub().name},
             ], key=operator.itemgetter("name")),
-            "title": u"A Novel By Tolstoy",
-            "url": u"http://datahub.io",
-            "version": u"0.7a",
+            "title": "A Novel By Tolstoy",
+            "url": "http://datahub.io",
+            "version": "0.7a",
             "relationships_as_subject": [],
             "relationships_as_object": [],
         }
@@ -742,7 +741,7 @@ class TestPackageSchema(object):
             data, default_create_package_schema(), context
         )
 
-        assert errors == {"name": [u"That URL is already in use."]}, pformat(
+        assert errors == {"name": ["That URL is already in use."]}, pformat(
             errors
         )
 
@@ -754,7 +753,7 @@ class TestPackageSchema(object):
         )
         assert errors == {
             "name": [
-                u"Must be purely lowercase alphanumeric (ascii) "
+                "Must be purely lowercase alphanumeric (ascii) "
                 "characters and these symbols: -_"
             ]
         }, pformat(errors)
@@ -787,7 +786,7 @@ class TestPackageSchema(object):
             "id": group.id,
             "name": group.name,
             "is_organization": False,
-            "type": u"group",
+            "type": "group",
             "image_url": group.image_url,
             "image_display_url": group.image_url,
             "packages": sorted(
@@ -806,7 +805,7 @@ class TestPackageSchema(object):
                 key=operator.itemgetter("id"),
             ),
             "title": group.title,
-            "approval_status": u"approved",
+            "approval_status": "approved",
         }
 
         assert converted_data == expected, pformat(converted_data)
@@ -833,7 +832,7 @@ class TestTagSchema:
         ignored = ""
         context = {"model": model, "session": model.Session}
         data = {
-            "name": u"with space",
+            "name": "with space",
             "revision_timestamp": ignored,
             "state": ignored,
         }
@@ -845,7 +844,7 @@ class TestTagSchema:
         ignored = ""
         context = {"model": model, "session": model.Session}
         data = {
-            "name": u".-_",
+            "name": ".-_",
             "revision_timestamp": ignored,
             "state": ignored,
         }
@@ -857,7 +856,7 @@ class TestTagSchema:
         ignored = ""
         context = {"model": model, "session": model.Session}
         data = {
-            "name": u"CAPITALS",
+            "name": "CAPITALS",
             "revision_timestamp": ignored,
             "state": ignored,
         }

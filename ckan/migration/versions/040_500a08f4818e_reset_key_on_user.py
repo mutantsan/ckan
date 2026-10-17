@@ -1,4 +1,3 @@
-# encoding: utf-8
 """040 Reset key on user
 
 Revision ID: 500a08f4818e

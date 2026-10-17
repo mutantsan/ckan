@@ -37,12 +37,12 @@ def default_authenticate(
                 client_ip_address = request.remote_addr or 'Unknown IP Address'
                 captcha.check_recaptcha_v2_base(
                     client_ip_address,
-                    request.form.get(u'g-recaptcha-response', '')
+                    request.form.get('g-recaptcha-response', '')
                 )
                 return user_obj
             except captcha.CaptchaError:
                 log.warning('Login as %r failed - failed reCAPTCHA', login)
-                request.environ[u'captchaFailed'] = True
+                request.environ['captchaFailed'] = True
         else:
             return user_obj
     signals.failed_login.send(login)

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """053 Add group logo
 
 Revision ID: 9d051a099097

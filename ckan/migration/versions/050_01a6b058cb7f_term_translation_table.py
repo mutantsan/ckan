@@ -1,4 +1,3 @@
-# encoding: utf-8
 """050 Term translation table
 
 Revision ID: 01a6b058cb7f

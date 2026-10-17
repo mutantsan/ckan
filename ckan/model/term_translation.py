@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 from sqlalchemy import Column, Table, Index
 from sqlalchemy.types import UnicodeText

@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import re
 from unittest import mock
@@ -75,7 +74,7 @@ class TestDelete:
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestDeleteResource(object):
+class TestDeleteResource:
     def test_01_delete_resource(self):
         res = factories.Resource()
         pkg = helpers.call_action("package_show", id=res["package_id"])
@@ -102,7 +101,7 @@ class TestDeleteResource(object):
 
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestDeleteResourceViews(object):
+class TestDeleteResourceViews:
     def test_resource_view_delete(self):
         resource_view = factories.ResourceView()
 
@@ -135,7 +134,7 @@ class TestDeleteResourceViews(object):
 @pytest.mark.ckan_config("ckan.plugins", "image_view datatables_view")
 @pytest.mark.ckan_config("ckan.views.default_views", "")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestClearResourceViews(object):
+class TestClearResourceViews:
     def test_resource_view_clear(self):
         initial = model.Session.query(model.ResourceView).count()
 
@@ -180,14 +179,14 @@ class TestClearResourceViews(object):
             assert view_type[0] == "datatables_view"
 
 
-class TestDeleteTags(object):
+class TestDeleteTags:
     def test_tag_delete_with_unicode_returns_unicode_error(self):
         # There is not a lot of call for it, but in theory there could be
         # unicode in the ActionError error message, so ensure that comes
         # through in NotFound as unicode.
         with pytest.raises(logic.NotFound) as e:
-            helpers.call_action("tag_delete", id=u"Delta symbol: \u0394")
-        assert u"Delta symbol: \u0394" in e.value.message
+            helpers.call_action("tag_delete", id="Delta symbol: \u0394")
+        assert "Delta symbol: \u0394" in e.value.message
 
     def test_no_id(self):
         with pytest.raises(logic.ValidationError):
@@ -224,7 +223,7 @@ class TestDeleteTags(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroupPurge(object):
+class TestGroupPurge:
     def test_a_non_sysadmin_cant_purge_group(self):
         user = factories.User()
         group = factories.Group(user=user)
@@ -316,7 +315,7 @@ class TestGroupPurge(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationDelete(object):
+class TestOrganizationDelete:
     @pytest.mark.ckan_config("ckan.auth.create_unowned_dataset", False)
     def test_delete_org_without_datasets(self):
         user = factories.User()
@@ -332,7 +331,7 @@ class TestOrganizationDelete(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationPurge(object):
+class TestOrganizationPurge:
     def test_a_non_sysadmin_cant_purge_org(self):
         user = factories.User()
         org = factories.Organization(user=user)
@@ -427,7 +426,7 @@ class TestOrganizationPurge(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestDatasetPurge(object):
+class TestDatasetPurge:
     def test_a_non_sysadmin_cant_purge_dataset(self):
         user = factories.User()
         dataset = factories.Dataset(user=user)
@@ -584,84 +583,84 @@ class TestDatasetPurge(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserDelete(object):
+class TestUserDelete:
     def test_user_delete(self):
         user = factories.User()
         context = {}
-        params = {u"id": user[u"id"]}
+        params = {"id": user["id"]}
 
-        helpers.call_action(u"user_delete", context, **params)
+        helpers.call_action("user_delete", context, **params)
 
         # It is still there but with state=deleted
-        user_obj = model.User.get(user[u"id"])
-        assert user_obj.state == u"deleted"
+        user_obj = model.User.get(user["id"])
+        assert user_obj.state == "deleted"
 
     def test_user_delete_but_user_doesnt_exist(self):
         context = {}
-        params = {u"id": "unknown"}
+        params = {"id": "unknown"}
 
         with pytest.raises(logic.NotFound):
-            helpers.call_action(u"user_delete", context, **params)
+            helpers.call_action("user_delete", context, **params)
 
     def test_user_delete_removes_memberships(self):
         user = factories.User()
         factories.Organization(
-            users=[{u"name": user[u"id"], u"capacity": u"admin"}]
+            users=[{"name": user["id"], "capacity": "admin"}]
         )
 
-        factories.Group(users=[{u"name": user[u"id"], u"capacity": u"admin"}])
+        factories.Group(users=[{"name": user["id"], "capacity": "admin"}])
 
         user_memberships = (
             model.Session.query(model.Member)
-            .filter(model.Member.table_id == user[u"id"])
+            .filter(model.Member.table_id == user["id"])
             .all()
         )
 
         assert len(user_memberships) == 2
 
-        assert [m.state for m in user_memberships] == [u"active", u"active"]
+        assert [m.state for m in user_memberships] == ["active", "active"]
 
         context = {}
-        params = {u"id": user[u"id"]}
+        params = {"id": user["id"]}
 
-        helpers.call_action(u"user_delete", context, **params)
+        helpers.call_action("user_delete", context, **params)
 
         user_memberships = (
             model.Session.query(model.Member)
-            .filter(model.Member.table_id == user[u"id"])
+            .filter(model.Member.table_id == user["id"])
             .all()
         )
 
         # Member objects are still there, but flagged as deleted
         assert len(user_memberships) == 2
 
-        assert [m.state for m in user_memberships] == [u"deleted", u"deleted"]
+        assert [m.state for m in user_memberships] == ["deleted", "deleted"]
 
     def test_user_delete_removes_memberships_when_using_name(self):
         user = factories.User()
         factories.Organization(
-            users=[{u"name": user[u"id"], u"capacity": u"admin"}]
+            users=[{"name": user["id"], "capacity": "admin"}]
         )
 
-        factories.Group(users=[{u"name": user[u"id"], u"capacity": u"admin"}])
+        factories.Group(users=[{"name": user["id"], "capacity": "admin"}])
 
         context = {}
-        params = {u"id": user[u"name"]}
+        params = {"id": user["name"]}
 
-        helpers.call_action(u"user_delete", context, **params)
+        helpers.call_action("user_delete", context, **params)
 
         user_memberships = (
             model.Session.query(model.Member)
-            .filter(model.Member.table_id == user[u"id"])
+            .filter(model.Member.table_id == user["id"])
             .all()
         )
 
         # Member objects are still there, but flagged as deleted
         assert len(user_memberships) == 2
 
-        assert [m.state for m in user_memberships] == [u"deleted", u"deleted"]
+        assert [m.state for m in user_memberships] == ["deleted", "deleted"]
 
-    @pytest.mark.ckan_config(u"ckan.auth.allow_dataset_collaborators", True)
+    @pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
     def test_user_delete_removes_collaborations(self):
         user = factories.User()
         dataset = factories.Dataset()
@@ -682,9 +681,9 @@ class TestUserDelete(object):
         )
 
         context = {}
-        params = {u"id": user[u"id"]}
+        params = {"id": user["id"]}
 
-        helpers.call_action(u"user_delete", context, **params)
+        helpers.call_action("user_delete", context, **params)
 
         assert (
             len(
@@ -702,11 +701,11 @@ class TestJobClear(helpers.FunctionalRQTestBase):
         Test clearing all queues.
         """
         self.enqueue()
-        self.enqueue(queue=u"q")
-        self.enqueue(queue=u"q")
-        self.enqueue(queue=u"q")
-        queues = helpers.call_action(u"job_clear")
-        assert {jobs.DEFAULT_QUEUE_NAME, u"q"} == set(queues)
+        self.enqueue(queue="q")
+        self.enqueue(queue="q")
+        self.enqueue(queue="q")
+        queues = helpers.call_action("job_clear")
+        assert {jobs.DEFAULT_QUEUE_NAME, "q"} == set(queues)
         all_jobs = self.all_jobs()
         assert len(all_jobs) == 0
 
@@ -715,17 +714,17 @@ class TestJobClear(helpers.FunctionalRQTestBase):
         Test clearing specific queues.
         """
         job1 = self.enqueue()
-        self.enqueue(queue=u"q1")
-        self.enqueue(queue=u"q1")
-        self.enqueue(queue=u"q2")
-        with helpers.recorded_logs(u"ckan.logic") as logs:
-            queues = helpers.call_action(u"job_clear", queues=[u"q1", u"q2"])
-        assert {u"q1", u"q2"} == set(queues)
+        self.enqueue(queue="q1")
+        self.enqueue(queue="q1")
+        self.enqueue(queue="q2")
+        with helpers.recorded_logs("ckan.logic") as logs:
+            queues = helpers.call_action("job_clear", queues=["q1", "q2"])
+        assert {"q1", "q2"} == set(queues)
         all_jobs = self.all_jobs()
         assert len(all_jobs) == 1
         assert all_jobs[0] == job1
-        logs.assert_log(u"info", u"q1")
-        logs.assert_log(u"info", u"q2")
+        logs.assert_log("info", "q1")
+        logs.assert_log("info", "q2")
 
 
 class TestJobCancel(helpers.FunctionalRQTestBase):
@@ -733,75 +732,75 @@ class TestJobCancel(helpers.FunctionalRQTestBase):
         """
         Test cancelling an existing job.
         """
-        job1 = self.enqueue(queue=u"q")
-        job2 = self.enqueue(queue=u"q")
-        with helpers.recorded_logs(u"ckan.logic") as logs:
-            helpers.call_action(u"job_cancel", id=job1.id)
+        job1 = self.enqueue(queue="q")
+        job2 = self.enqueue(queue="q")
+        with helpers.recorded_logs("ckan.logic") as logs:
+            helpers.call_action("job_cancel", id=job1.id)
         all_jobs = self.all_jobs()
         assert len(all_jobs) == 1
         assert all_jobs[0] == job2
         with pytest.raises(KeyError):
             jobs.job_from_id(job1.id)
-        logs.assert_log(u"info", re.escape(job1.id))
+        logs.assert_log("info", re.escape(job1.id))
 
     def test_not_existing_job(self):
         with pytest.raises(logic.NotFound):
-            helpers.call_action(u"job_cancel", id=u"does-not-exist")
+            helpers.call_action("job_cancel", id="does-not-exist")
 
 
-@pytest.mark.usefixtures(u"non_clean_db")
-class TestApiToken(object):
+@pytest.mark.usefixtures("non_clean_db")
+class TestApiToken:
     def test_token_revoke(self):
         user = factories.User()
         token = helpers.call_action(
-            u"api_token_create",
-            context={u"model": model, u"user": user[u"name"]},
-            user=user[u"name"],
+            "api_token_create",
+            context={"model": model, "user": user["name"]},
+            user=user["name"],
             name="token-name",
         )["token"]
         token2 = helpers.call_action(
-            u"api_token_create",
-            context={u"model": model, u"user": user[u"name"]},
-            user=user[u"name"],
+            "api_token_create",
+            context={"model": model, "user": user["name"]},
+            user=user["name"],
             name="token-name-2",
         )["token"]
 
         tokens = helpers.call_action(
-            u"api_token_list",
-            context={u"model": model, u"user": user[u"name"]},
-            user_id=user[u"name"],
+            "api_token_list",
+            context={"model": model, "user": user["name"]},
+            user_id=user["name"],
         )
         assert len(tokens) == 2
 
         helpers.call_action(
-            u"api_token_revoke",
-            context={u"model": model, u"user": user[u"name"]},
+            "api_token_revoke",
+            context={"model": model, "user": user["name"]},
             token=token,
         )
 
         tokens = helpers.call_action(
-            u"api_token_list",
-            context={u"model": model, u"user": user[u"name"]},
-            user_id=user[u"name"],
+            "api_token_list",
+            context={"model": model, "user": user["name"]},
+            user_id=user["name"],
         )
         assert len(tokens) == 1
 
         helpers.call_action(
-            u"api_token_revoke",
-            context={u"model": model, u"user": user[u"name"]},
-            jti=api_token.decode(token2)[u"jti"],
+            "api_token_revoke",
+            context={"model": model, "user": user["name"]},
+            jti=api_token.decode(token2)["jti"],
         )
 
         tokens = helpers.call_action(
-            u"api_token_list",
-            context={u"model": model, u"user": user[u"name"]},
-            user_id=user[u"name"],
+            "api_token_list",
+            context={"model": model, "user": user["name"]},
+            user_id=user["name"],
         )
         assert len(tokens) == 0
 
 
 @pytest.mark.usefixtures("non_clean_db")
-@pytest.mark.ckan_config(u"ckan.auth.allow_dataset_collaborators", False)
+@pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", False)
 def test_delete_package_collaborator_when_config_disabled():
 
     dataset = factories.Dataset()
@@ -814,8 +813,8 @@ def test_delete_package_collaborator_when_config_disabled():
 
 
 @pytest.mark.usefixtures("non_clean_db")
-@pytest.mark.ckan_config(u"ckan.auth.allow_dataset_collaborators", True)
-class TestPackageMemberDelete(object):
+@pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
+class TestPackageMemberDelete:
     def test_delete(self):
 
         dataset = factories.Dataset()
@@ -871,7 +870,7 @@ class TestPackageMemberDelete(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-@pytest.mark.ckan_config(u"ckan.auth.allow_dataset_collaborators", True)
+@pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
 def test_package_delete_removes_collaborations():
 
     user = factories.User()
@@ -893,9 +892,9 @@ def test_package_delete_removes_collaborations():
     )
 
     context = {}
-    params = {u"id": dataset[u"id"]}
+    params = {"id": dataset["id"]}
 
-    helpers.call_action(u"package_delete", context, **params)
+    helpers.call_action("package_delete", context, **params)
 
     assert (
         len(
@@ -907,7 +906,7 @@ def test_package_delete_removes_collaborations():
     )
 
 
-class TestVocabularyDelete(object):
+class TestVocabularyDelete:
     @pytest.mark.usefixtures("non_clean_db")
     def test_basic(self):
         vocab = factories.Vocabulary()

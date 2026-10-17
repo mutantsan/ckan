@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 # This file contains commonly used parts of external libraries. The idea is
 # to help in removing helpers from being used as a dependency by many files
@@ -15,7 +14,7 @@ from collections.abc import MutableMapping, Iterable
 from typing import (
     Any, Optional, TYPE_CHECKING,
     TypeVar, cast, overload, Union)
-from typing_extensions import Literal
+from typing import Literal
 
 import flask
 
@@ -54,7 +53,7 @@ def logout_user():
 
 
 def streaming_response(data: Iterable[Any],
-                       mimetype: str = u'application/octet-stream',
+                       mimetype: str = 'application/octet-stream',
                        with_context: bool = False) -> flask.Response:
     iter_data = iter(data)
 
@@ -77,7 +76,7 @@ def ungettext(*args: Any, **kwargs: Any) -> str:
 
 
 class CKANConfig(MutableMapping):
-    u'''Main CKAN configuration object
+    '''Main CKAN configuration object
 
     This is a dict-like object that also proxies any changes to the
     Flask and Pylons configuration objects.
@@ -146,7 +145,7 @@ def _get_request():
     return flask.request
 
 
-class HtmxDetails(object):
+class HtmxDetails:
     """Object to access htmx properties from the request headers.
 
     This object will be added to the CKAN `request` object
@@ -226,7 +225,7 @@ def asbool(obj: Any) -> bool:
         elif obj in falsy:
             return False
         else:
-            raise ValueError(u"String is not true/false: {}".format(obj))
+            raise ValueError(f"String is not true/false: {obj}")
     return bool(obj)
 
 
@@ -241,7 +240,7 @@ def asint(obj: Any) -> int:
     try:
         return int(obj)
     except (TypeError, ValueError):
-        raise ValueError(u"Bad integer value: {}".format(obj))
+        raise ValueError(f"Bad integer value: {obj}")
 
 
 T = TypeVar('T')
@@ -250,26 +249,26 @@ SequenceT = TypeVar('SequenceT', "list[Any]", "tuple[Any]")
 
 @overload
 def aslist(obj: str,
-           sep: Optional[str] = None,
+           sep: str | None = None,
            strip: bool = True) -> list[str]:
     ...
 
 
 @overload
 def aslist(obj: SequenceT,
-           sep: Optional[str] = None,
+           sep: str | None = None,
            strip: bool = True) -> SequenceT:
     ...
 
 
 @overload
 def aslist(obj: Literal[None],
-           sep: Optional[str] = None,
+           sep: str | None = None,
            strip: bool = True) -> list[str]:
     ...
 
 
-def aslist(obj: Any, sep: Optional[str] = None, strip: bool = True) -> Any:
+def aslist(obj: Any, sep: str | None = None, strip: bool = True) -> Any:
     """Convert a space-separated string into a list.
 
     Example::
@@ -305,7 +304,7 @@ def repr_untrusted(danger: Any):
 local = Local()
 
 # This a proxy to the bounded config object
-local(u'config')
+local('config')
 
 # Thread-local safe objects
 config = local.config = CKANConfig()
@@ -320,5 +319,5 @@ g: Any = LocalProxy(_get_c)
 c = g
 session: Any = LocalProxy(_get_session)
 
-truthy = frozenset([u'true', u'yes', u'on', u'y', u't', u'1'])
-falsy = frozenset([u'false', u'no', u'off', u'n', u'f', u'0'])
+truthy = frozenset(['true', 'yes', 'on', 'y', 't', '1'])
+falsy = frozenset(['false', 'no', 'off', 'n', 'f', '0'])

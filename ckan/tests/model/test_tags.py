@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -6,8 +5,8 @@ from ckan import model
 from ckan.tests import factories
 
 
-@pytest.mark.usefixtures(u"non_clean_db")
-class TestTags(object):
+@pytest.mark.usefixtures("non_clean_db")
+class TestTags:
     def test_create_package_with_tags(self):
         pkg = model.Package(name=factories.Dataset.stub().name)
 
@@ -22,7 +21,7 @@ class TestTags(object):
         pkg.add_tag(tag2)
 
         # method 3
-        pkg.add_tag_by_name(u"energy")
+        pkg.add_tag_by_name("energy")
 
         model.Session.add_all([pkg, package_tag1, package_tag2])
         model.Session.commit()
@@ -30,7 +29,7 @@ class TestTags(object):
 
         pkg = model.Package.by_name(pkg.name)
         assert set([tag.name for tag in pkg.get_tags()]) == set(
-            [tag1.name, tag2.name, u"energy"]
+            [tag1.name, tag2.name, "energy"]
         )
 
     def test_delete_tag(self):
@@ -40,12 +39,12 @@ class TestTags(object):
 
         dataset = factories.Dataset(
             tags=[
-                {u"name": tag_name1},
-                {u"name": tag_name2},
-                {u"name": tag_name3},
+                {"name": tag_name1},
+                {"name": tag_name2},
+                {"name": tag_name3},
             ]
         )
-        pkg = model.Package.by_name(dataset[u"name"])
+        pkg = model.Package.by_name(dataset["name"])
 
         # method 1 - unused by ckan core
         tag = model.Tag.by_name(tag_name1)
@@ -58,12 +57,12 @@ class TestTags(object):
             .filter(model.Tag.name == tag_name2)
             .one()
         )
-        package_tag.state = u"deleted"
+        package_tag.state = "deleted"
 
         model.Session.commit()
         model.Session.remove()
 
-        pkg = model.Package.by_name(dataset[u"name"])
+        pkg = model.Package.by_name(dataset["name"])
         tags = set([tag.name for tag in pkg.get_tags()])
         assert tag_name3 in tags
         assert tag_name1 not in tags

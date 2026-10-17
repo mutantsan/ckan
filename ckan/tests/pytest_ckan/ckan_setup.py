@@ -26,7 +26,7 @@ def pytest_addoption(parser):
     already added by the external pytest-ckan package
     """
     try:
-        parser.addoption(u"--ckan-ini", action=u"store")
+        parser.addoption("--ckan-ini", action="store")
     except ValueError as e:
         if str(e) == 'option names {\'--ckan-ini\'} already added':
             pass

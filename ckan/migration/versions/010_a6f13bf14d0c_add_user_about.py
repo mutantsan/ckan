@@ -1,4 +1,3 @@
-# encoding: utf-8
 """010 Add user about
 
 Revision ID: a6f13bf14d0c

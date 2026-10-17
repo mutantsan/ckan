@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import uuid
 import unittest.mock as mock
@@ -12,7 +11,7 @@ from ckan.tests import factories
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestGroupController(object):
+class TestGroupController:
     def test_bulk_process_throws_403_for_nonexistent_org(self, app):
         """Returns 403, not 404, because access check cannot be passed.
         """
@@ -73,7 +72,7 @@ def user():
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestGroupControllerNew(object):
+class TestGroupControllerNew:
     def test_not_logged_in(self, app):
         app.get(url=url_for("group.new"), status=403)
 
@@ -90,14 +89,14 @@ class TestGroupControllerNew(object):
         url = url_for("group.new")
         app.post(url=url, headers=headers, data=form)
 
-        group = model.Group.by_name(u"saved")
-        assert group.title == u""
+        group = model.Group.by_name("saved")
+        assert group.title == ""
         assert group.type == "group"
         assert group.state == "active"
 
     def test_all_fields_saved(self, app, user):
         form = {
-            "name": u"all-fields-saved",
+            "name": "all-fields-saved",
             "title": "Science",
             "description": "Sciencey datasets",
             "image_url": "http://example.com/image.png",
@@ -107,8 +106,8 @@ class TestGroupControllerNew(object):
         url = url_for("group.new")
         app.post(url=url, headers=headers, data=form)
 
-        group = model.Group.by_name(u"all-fields-saved")
-        assert group.title == u"Science"
+        group = model.Group.by_name("all-fields-saved")
+        assert group.title == "Science"
         assert group.description == "Sciencey datasets"
 
     def test_form_without_initial_data(self, app, user):
@@ -134,7 +133,7 @@ class TestGroupControllerNew(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroupControllerEdit(object):
+class TestGroupControllerEdit:
     def test_not_logged_in(self, app):
         app.get(url=url_for("group.new"), status=403)
 
@@ -157,7 +156,7 @@ class TestGroupControllerEdit(object):
         group = factories.Group(user=user)
 
         form = {
-            "name": u"all-fields-edited-test-group",
+            "name": "all-fields-edited-test-group",
             "title": "Science Test Group Test",
             "description": "Sciencey datasets",
             "image_url": "http://example.com/image.png",
@@ -166,8 +165,8 @@ class TestGroupControllerEdit(object):
         url = url_for("group.edit", id=group["id"])
         app.post(url=url, headers=headers, data=form)
 
-        group = model.Group.by_name(u"all-fields-edited-test-group")
-        assert group.title == u"Science Test Group Test"
+        group = model.Group.by_name("all-fields-edited-test-group")
+        assert group.title == "Science Test Group Test"
         assert group.description == "Sciencey datasets"
         assert group.image_url == "http://example.com/image.png"
 
@@ -201,7 +200,7 @@ class TestGroupControllerEdit(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroupRead(object):
+class TestGroupRead:
     def test_group_read(self, app):
         group = factories.Group()
         response = app.get(url=url_for("group.read", id=group["name"]))
@@ -247,7 +246,7 @@ class TestGroupRead(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroupDelete(object):
+class TestGroupDelete:
 
     def test_owner_delete(self, app, user):
         headers = {"Authorization": user["token"]}
@@ -307,7 +306,7 @@ class TestGroupDelete(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroupMembership(object):
+class TestGroupMembership:
     def _create_group(self, owner_username, users=None):
         """Create a group with the owner defined by owner_username and
         optionally with a list of other users."""
@@ -634,7 +633,7 @@ class TestGroupFollow:
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestGroupSearch(object):
+class TestGroupSearch:
     """Test searching for groups."""
 
     def test_group_search(self, app):
@@ -688,7 +687,7 @@ class TestGroupSearch(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestGroupInnerSearch(object):
+class TestGroupInnerSearch:
     """Test searching within an group."""
 
     def test_group_search_within_org(self, app):
@@ -783,14 +782,14 @@ class TestGroupInnerSearch(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestGroupIndex(object):
+class TestGroupIndex:
     def test_group_index(self, app):
 
         for i in range(1, 26):
             _i = "0" + str(i) if i < 10 else i
             factories.Group(
-                name="test-group-{0}".format(_i),
-                title="Test Group {0}".format(_i),
+                name=f"test-group-{_i}",
+                title=f"Test Group {_i}",
             )
 
         url = url_for("group.index")
@@ -798,7 +797,7 @@ class TestGroupIndex(object):
 
         for i in range(1, 21):
             _i = "0" + str(i) if i < 10 else i
-            assert "Test Group {0}".format(_i) in response
+            assert f"Test Group {_i}" in response
 
         assert "Test Group 21" not in response
 
@@ -807,7 +806,7 @@ class TestGroupIndex(object):
 
         for i in range(1, 21):
             _i = "0" + str(i) if i < 10 else i
-            assert "Test Group {0}".format(_i) in response
+            assert f"Test Group {_i}" in response
 
         assert "Test Group 21" not in response
 
@@ -815,6 +814,6 @@ class TestGroupIndex(object):
         response = app.get(url)
 
         for i in range(21, 26):
-            assert "Test Group {0}".format(i) in response
+            assert f"Test Group {i}" in response
 
         assert "Test Group 20" not in response

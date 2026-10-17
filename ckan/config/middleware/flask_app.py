@@ -260,7 +260,7 @@ def make_flask_stack() -> CKANApp:
         storage_folder = [os.path.join(storage, 'storage')]
 
     # Static files folders (core and extensions)
-    public_folder = config.get(u'ckan.base_public_folder')
+    public_folder = config.get('ckan.base_public_folder')
     app.static_folder = config.get(
         'extra_public_paths'
     ).split(',') + config.get('plugin_public_paths', []) + [
@@ -339,7 +339,7 @@ def make_flask_stack() -> CKANApp:
     _ckan_i18n_dir = i18n.get_ckan_i18n_dir()
 
     pairs = [
-        cast("tuple[str, str]", (_ckan_i18n_dir, u'ckan'))
+        cast("tuple[str, str]", (_ckan_i18n_dir, 'ckan'))
     ] + [
         (p.i18n_directory(), p.i18n_domain())
         for p in PluginImplementations(ITranslation)
@@ -347,9 +347,9 @@ def make_flask_stack() -> CKANApp:
 
     i18n_dirs, i18n_domains = zip(*pairs)
 
-    app.config[u'BABEL_TRANSLATION_DIRECTORIES'] = ';'.join(i18n_dirs)
-    app.config[u'BABEL_DOMAIN'] = ';'.join(i18n_domains)
-    app.config[u'BABEL_DEFAULT_TIMEZONE'] = str(h.get_display_timezone())
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = ';'.join(i18n_dirs)
+    app.config['BABEL_DOMAIN'] = ';'.join(i18n_domains)
+    app.config['BABEL_DEFAULT_TIMEZONE'] = str(h.get_display_timezone())
 
     Babel(app, locale_selector=get_locale)
 
@@ -478,18 +478,18 @@ def _get_user_for_apitoken() -> model.User | None:
 
 
 def get_locale() -> str:
-    u'''
+    '''
     Return the value of the `CKAN_LANG` key of the WSGI environ,
     set by the I18nMiddleware based on the URL.
     If no value is defined, it defaults to `ckan.locale_default` or `en`.
     '''
     return request.environ.get(
-        u'CKAN_LANG',
-        config.get(u'ckan.locale_default'))
+        'CKAN_LANG',
+        config.get('ckan.locale_default'))
 
 
-def ckan_before_request() -> Optional[Response]:
-    u'''
+def ckan_before_request() -> Response | None:
+    '''
     Common handler executed before all Flask requests
 
     If a response is returned by any of the functions called (
@@ -531,7 +531,7 @@ def ckan_before_request() -> Optional[Response]:
 
 
 def ckan_after_request(response: Response) -> Response:
-    u'''Common handler executed after all Flask requests'''
+    '''Common handler executed after all Flask requests'''
 
     # Dispose of the SQLALchemy session
     model.Session.remove()
@@ -587,7 +587,7 @@ def _register_plugins_blueprints(app: CKANApp):
 
 
 def _register_core_blueprints(app: CKANApp):
-    u'''Register all blueprints defined in the `views` folder
+    '''Register all blueprints defined in the `views` folder
     '''
     def is_blueprint(mm: Any):
         return isinstance(mm, Blueprint) and getattr(mm, 'auto_register', True)
@@ -610,7 +610,7 @@ def _register_core_blueprints(app: CKANApp):
 
 
 def _register_error_handler(app: CKANApp):
-    u'''Register error handler'''
+    '''Register error handler'''
 
     def error_handler(e: Exception) -> tuple[str, int]:
         debug = config.get('debug')
@@ -624,17 +624,17 @@ def _register_error_handler(app: CKANApp):
                 e
             ) in (Unauthorized, Forbidden)
             extra_vars = {
-                u'code': e.code,
-                u'content': e.description,
-                u'name': e.name,
-                u'show_login_redirect_link': show_login_redirect_link
+                'code': e.code,
+                'content': e.description,
+                'name': e.name,
+                'show_login_redirect_link': show_login_redirect_link
             }
             return base.render(
                 'error_document_template.html', extra_vars), e.code or 500
 
         log.error(e, exc_info=sys.exc_info)  # type: ignore
-        extra_vars = {u'code': [500], u'content': u'Internal server error'}
-        return base.render(u'error_document_template.html', extra_vars), 500
+        extra_vars = {'code': [500], 'content': 'Internal server error'}
+        return base.render('error_document_template.html', extra_vars), 500
 
     for code in default_exceptions:
         app.register_error_handler(code, error_handler)

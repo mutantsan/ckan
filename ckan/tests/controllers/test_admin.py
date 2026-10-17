@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 from bs4 import BeautifulSoup
@@ -46,7 +45,7 @@ def test_index(app, user_headers, sysadmin_headers):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestConfig(object):
+class TestConfig:
     """View tests to go along with 'Customizing look and feel' docs."""
 
     def test_site_title(self, app, sysadmin_headers):
@@ -58,7 +57,7 @@ class TestConfig(object):
         index_response = app.get("/")
         assert "Welcome - CKAN" in index_response
 
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
 
         # change site title
         form = {"ckan.site_title": "Test Site Title", "save": ""}
@@ -80,7 +79,7 @@ class TestConfig(object):
         index_response = app.get("/")
         assert "main.css" in index_response or "main.min.css" in index_response
 
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
 
         # set new style css
         form = {"ckan.theme": "css/main-rtl", "save": ""}
@@ -96,7 +95,7 @@ class TestConfig(object):
         index_response = app.get("/")
         assert "Special Tagline" not in index_response
 
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
 
         # set new tagline css
         form = {"ckan.site_description": "Special Tagline", "save": ""}
@@ -106,7 +105,7 @@ class TestConfig(object):
         new_index_response = app.get("/")
         assert "Special Tagline" not in new_index_response
 
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
         # remove logo
         form = {"ckan.site_logo": "", "save": ""}
         app.post(url, data=form, headers=sysadmin_headers)
@@ -128,7 +127,7 @@ class TestConfig(object):
         assert "My special about text" not in about_response
 
         # set new about
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
         form = {"ckan.site_about": "My special about text", "save": ""}
         app.post(url, headers=sysadmin_headers, data=form)
 
@@ -149,7 +148,7 @@ class TestConfig(object):
         assert "My special intro text" not in intro_response
 
         # set new intro
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
         form = {"ckan.site_intro_text": "My special intro text", "save": ""}
         app.post(url, headers=sysadmin_headers, data=form)
 
@@ -170,7 +169,7 @@ class TestConfig(object):
         assert len(style_tag) == 0
 
         # set new tagline css
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
         form = {
             "ckan.site_custom_css": "body {background-color:red}",
             "save": "",
@@ -191,7 +190,7 @@ class TestConfig(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestTrashView(object):
+class TestTrashView:
     """View tests for permanently deleting datasets with Admin Trash."""
 
     def test_trash_view_anon_user(self, app):
@@ -523,9 +522,9 @@ class TestTrashView(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestAdminConfigUpdate(object):
+class TestAdminConfigUpdate:
     def _update_config_option(self, app, sysadmin_headers):
-        url = url_for(u"admin.config")
+        url = url_for("admin.config")
         form = {"ckan.site_title": "My Updated Site Title", "save": ""}
         return app.post(url, headers=sysadmin_headers, data=form)
 

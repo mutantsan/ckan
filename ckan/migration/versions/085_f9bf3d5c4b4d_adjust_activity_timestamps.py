@@ -1,4 +1,3 @@
-# encoding: utf-8
 """085 Adjust activity timestamps
 
 Revision ID: f9bf3d5c4b4d

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """071 Add state column to_user_table
 
 Revision ID: c16f081ef73a

@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import os
@@ -7,7 +6,8 @@ import html
 import io
 import datetime
 
-from typing import Any, Callable, Optional, Union
+from typing import Any, Optional, Union
+from collections.abc import Callable
 
 from flask import Blueprint, make_response
 
@@ -31,10 +31,10 @@ from ckan.types import Context, Response, ActionResult
 log = logging.getLogger(__name__)
 
 CONTENT_TYPES = {
-    u'text': u'text/plain;charset=utf-8',
-    u'html': u'text/html;charset=utf-8',
-    u'json': u'application/json;charset=utf-8',
-    u'javascript': u'application/javascript;charset=utf-8',
+    'text': 'text/plain;charset=utf-8',
+    'html': 'text/html;charset=utf-8',
+    'json': 'application/json;charset=utf-8',
+    'javascript': 'application/javascript;charset=utf-8',
 }
 
 API_REST_DEFAULT_VERSION = 1
@@ -42,7 +42,7 @@ API_REST_DEFAULT_VERSION = 1
 API_DEFAULT_VERSION = 3
 API_MAX_VERSION = 3
 
-api = Blueprint(u'api', __name__, url_prefix=u'/api')
+api = Blueprint('api', __name__, url_prefix='/api')
 
 
 def _json_serial(obj: Any):
@@ -53,9 +53,9 @@ def _json_serial(obj: Any):
 
 def _finish(status_int: int,
             response_data: Any = None,
-            content_type: str = u'text',
-            headers: Optional[dict[str, Any]] = None) -> Response:
-    u'''When a controller method has completed, call this method
+            content_type: str = 'text',
+            headers: dict[str, Any] | None = None) -> Response:
+    '''When a controller method has completed, call this method
     to prepare the response.
 
     :param status_int: The HTTP status code to return
@@ -72,12 +72,12 @@ def _finish(status_int: int,
         e.g. return _finish(404, 'Dataset not found')
     '''
     assert isinstance(status_int, int)
-    response_msg = u''
+    response_msg = ''
     if headers is None:
         headers = {}
     if response_data is not None:
-        headers[u'Content-Type'] = CONTENT_TYPES[content_type]
-        if content_type == u'json':
+        headers['Content-Type'] = CONTENT_TYPES[content_type]
+        if content_type == 'json':
             response_msg = json.dumps(
                 response_data,
                 default=_json_serial,   # handle datetime objects
@@ -85,19 +85,19 @@ def _finish(status_int: int,
         else:
             response_msg = response_data
         # Support JSONP callback.
-        if (status_int == 200 and u'callback' in request.args and
-                request.method == u'GET'):
+        if (status_int == 200 and 'callback' in request.args and
+                request.method == 'GET'):
             # escape callback to remove '<', '&', '>' chars
-            callback = html.escape(request.args[u'callback'])
+            callback = html.escape(request.args['callback'])
             response_msg = _wrap_jsonp(callback, response_msg)
-            headers[u'Content-Type'] = CONTENT_TYPES[u'javascript']
+            headers['Content-Type'] = CONTENT_TYPES['javascript']
     return make_response((response_msg, status_int, headers))
 
 
 def _finish_ok(response_data: Any = None,
-               content_type: str = u'json',
-               resource_location: Optional[str] = None) -> Response:
-    u'''If a controller method has completed successfully then
+               content_type: str = 'json',
+               resource_location: str | None = None) -> Response:
+    '''If a controller method has completed successfully then
     calling this method will prepare the response.
 
     :param response_data: The body of the response
@@ -120,29 +120,29 @@ def _finish_ok(response_data: Any = None,
             resource_location = str(resource_location)
         except Exception as inst:
             msg = \
-                u"Couldn't convert '%s' header value '%s' to string: %s" % \
-                (u'Location', resource_location, inst)
+                "Couldn't convert '%s' header value '%s' to string: %s" % \
+                ('Location', resource_location, inst)
             raise Exception(msg)
-        headers = {u'Location': resource_location}
+        headers = {'Location': resource_location}
 
     return _finish(status_int, response_data, content_type, headers)
 
 
-def _finish_bad_request(extra_msg: Optional[str] = None) -> Response:
-    response_data = _(u'Bad request')
+def _finish_bad_request(extra_msg: str | None = None) -> Response:
+    response_data = _('Bad request')
     if extra_msg:
         response_data = _('Bad request: %s') % extra_msg
     else:
         response_data = _('Bad request')
-    return _finish(400, response_data, u'json')
+    return _finish(400, response_data, 'json')
 
 
 def _wrap_jsonp(callback: str, response_msg: str) -> str:
-    return u'{0}({1});'.format(callback, response_msg)
+    return f'{callback}({response_msg});'
 
 
 def _get_request_data(try_url_params: bool = False) -> dict[str, Any]:
-    u'''Returns a dictionary, extracted from a request.
+    '''Returns a dictionary, extracted from a request.
 
     If there is no data, None or "" is returned.
     ValueError will be raised if the data is not a JSON-formatted dict.
@@ -163,8 +163,8 @@ def _get_request_data(try_url_params: bool = False) -> dict[str, Any]:
         be a list of strings, otherwise just a string.
 
     '''
-    def mixed(multi_dict: "MultiDict[str, Any]") -> dict[str, Any]:
-        u'''Return a dict with values being lists if they have more than one
+    def mixed(multi_dict: MultiDict[str, Any]) -> dict[str, Any]:
+        '''Return a dict with values being lists if they have more than one
            item or a string otherwise
         '''
         out: dict[str, Any] = {}
@@ -172,21 +172,21 @@ def _get_request_data(try_url_params: bool = False) -> dict[str, Any]:
             out[key] = value[0] if len(value) == 1 else value
         return out
 
-    if not try_url_params and request.method == u'GET':
-        raise ValueError(u'Invalid request. Please use POST method '
+    if not try_url_params and request.method == 'GET':
+        raise ValueError('Invalid request. Please use POST method '
                          'for your request')
 
-    request_data: Union[dict[str, Any], Any] = {}
-    if request.method in [u'POST', u'PUT'] and request.form:
+    request_data: dict[str, Any] | Any = {}
+    if request.method in ['POST', 'PUT'] and request.form:
         values = list(request.form.values())
         if (len(values) == 1 and
-                values[0] in [u'1', u'']):
+                values[0] in ['1', '']):
             try:
                 keys = list(request.form.keys())
                 request_data = json.loads(keys[0])
             except ValueError as e:
                 raise ValueError(
-                    u'Error decoding JSON data. '
+                    'Error decoding JSON data. '
                     'Error: %r '
                     'JSON data extracted from the request: %r' %
                     (e, request_data))
@@ -195,24 +195,24 @@ def _get_request_data(try_url_params: bool = False) -> dict[str, Any]:
     elif request.args and try_url_params:
         request_data = mixed(request.args)
     elif (request.data and request.data != b'' and
-          request.content_type != u'multipart/form-data'):
+          request.content_type != 'multipart/form-data'):
         try:
             request_data = request.get_json()
         except BadRequest as e:
-            raise ValueError(u'Error decoding JSON data. '
+            raise ValueError('Error decoding JSON data. '
                              'Error: %r '
                              'JSON data extracted from the request: %r' %
                              (e, request_data))
     if not isinstance(request_data, dict):
-        raise ValueError(u'Request data JSON decoded to %r but '
+        raise ValueError('Request data JSON decoded to %r but '
                          'it needs to be a dictionary.' % request_data)
 
-    if request.method == u'PUT' and not request_data:
-        raise ValueError(u'Invalid request. Please use the POST method for '
+    if request.method == 'PUT' and not request_data:
+        raise ValueError('Invalid request. Please use the POST method for '
                          'your request')
     for field_name, file_ in request.files.items():
         request_data[field_name] = file_
-    log.debug(u'Request data extracted: %r', request_data)
+    log.debug('Request data extracted: %r', request_data)
 
     return request_data
 
@@ -220,7 +220,7 @@ def _get_request_data(try_url_params: bool = False) -> dict[str, Any]:
 # View functions
 
 def action(logic_function: str, ver: int = API_DEFAULT_VERSION) -> Response:
-    u'''Main endpoint for the action API (v3)
+    '''Main endpoint for the action API (v3)
 
     Creates a dict with the incoming request data and calls the appropriate
     logic function. Returns a JSON response with the following keys:
@@ -237,20 +237,20 @@ def action(logic_function: str, ver: int = API_DEFAULT_VERSION) -> Response:
     try:
         function = get_action(logic_function)
     except KeyError:
-        msg = u'Action name not known: {0}'.format(logic_function)
+        msg = f'Action name not known: {logic_function}'
         log.info(msg)
         return _finish_bad_request(msg)
 
     context: Context = {
-        u'user': current_user.name,
-        u'api_version': ver,
-        u'auth_user_obj': current_user
+        'user': current_user.name,
+        'api_version': ver,
+        'auth_user_obj': current_user
     }
     model.Session()._context = context
 
     return_dict: dict[str, Any] = {
-        u'help': url_for(u'api.action',
-                         logic_function=u'help_show',
+        'help': url_for('api.action',
+                         logic_function='help_show',
                          ver=ver,
                          name=logic_function,
                          _external=True,
@@ -259,21 +259,21 @@ def action(logic_function: str, ver: int = API_DEFAULT_VERSION) -> Response:
 
     # Get the request data
     try:
-        side_effect_free = getattr(function, u'side_effect_free', False)
+        side_effect_free = getattr(function, 'side_effect_free', False)
 
         request_data = _get_request_data(
             try_url_params=side_effect_free)
     except ValueError as inst:
-        log.info(u'Bad Action API request data: %s', inst)
+        log.info('Bad Action API request data: %s', inst)
         return _finish_bad_request(
-            _(u'JSON Error: %s') % inst)
+            _('JSON Error: %s') % inst)
 
-    if u'callback' in request_data:
-        del request_data[u'callback']
+    if 'callback' in request_data:
+        del request_data['callback']
         g.user = None
         g.userobj = None
-        context[u'user'] = ''
-        context[u'auth_user_obj'] = None
+        context['user'] = ''
+        context['auth_user_obj'] = None
 
     # Call the action function, catch any exception
     try:
@@ -286,80 +286,80 @@ def action(logic_function: str, ver: int = API_DEFAULT_VERSION) -> Response:
                 for typ, ids in context['changed_entities'].items()
             }
     except DataError as e:
-        log.info(u'Format incorrect (Action API): %s - %s',
+        log.info('Format incorrect (Action API): %s - %s',
                  e.error, request_data)
-        return_dict[u'error'] = {u'__type': u'Integrity Error',
-                                 u'message': e.error,
-                                 u'data': request_data}
-        return_dict[u'success'] = False
-        return _finish(400, return_dict, content_type=u'json')
+        return_dict['error'] = {'__type': 'Integrity Error',
+                                 'message': e.error,
+                                 'data': request_data}
+        return_dict['success'] = False
+        return _finish(400, return_dict, content_type='json')
     except NotAuthorized as e:
         error_msg = _('Access denied: %s') % e if str(e) else _('Access denied')
-        return_dict[u'error'] = {u'__type': u'Authorization Error',
+        return_dict['error'] = {'__type': 'Authorization Error',
                                  'message': error_msg}
-        return_dict[u'success'] = False
-        return _finish(403, return_dict, content_type=u'json')
+        return_dict['success'] = False
+        return _finish(403, return_dict, content_type='json')
     except NotFound as e:
         error_msg = _('Not found: %s') % e if str(e) else _('Not found')
-        return_dict[u'error'] = {u'__type': u'Not Found Error',
+        return_dict['error'] = {'__type': 'Not Found Error',
                                  'message': error_msg}
-        return_dict[u'success'] = False
-        return _finish(404, return_dict, content_type=u'json')
+        return_dict['success'] = False
+        return _finish(404, return_dict, content_type='json')
     except ValidationError as e:
         error_dict = e.error_dict
-        error_dict[u'__type'] = u'Validation Error'
-        return_dict[u'error'] = error_dict
-        return_dict[u'success'] = False
+        error_dict['__type'] = 'Validation Error'
+        return_dict['error'] = error_dict
+        return_dict['success'] = False
         # CS nasty_string ignore
-        log.info(u'Validation error (Action API): %r', str(e.error_dict))
-        return _finish(409, return_dict, content_type=u'json')
+        log.info('Validation error (Action API): %r', str(e.error_dict))
+        return _finish(409, return_dict, content_type='json')
     except SearchQueryError as e:
-        return_dict[u'error'] = {u'__type': u'Search Query Error',
-                                 u'message': u'Search Query is invalid: %r' %
+        return_dict['error'] = {'__type': 'Search Query Error',
+                                 'message': 'Search Query is invalid: %r' %
                                  e.args}
-        return_dict[u'success'] = False
-        return _finish(400, return_dict, content_type=u'json')
+        return_dict['success'] = False
+        return _finish(400, return_dict, content_type='json')
     except SearchError as e:
-        return_dict[u'error'] = {u'__type': u'Search Error',
-                                 u'message': u'Search error: %r' % e.args}
-        return_dict[u'success'] = False
-        return _finish(409, return_dict, content_type=u'json')
+        return_dict['error'] = {'__type': 'Search Error',
+                                 'message': 'Search error: %r' % e.args}
+        return_dict['success'] = False
+        return _finish(409, return_dict, content_type='json')
     except SearchIndexError as e:
-        return_dict[u'error'] = {
-            u'__type': u'Search Index Error',
-            u'message': u'Unable to add package to search index: %s' %
+        return_dict['error'] = {
+            '__type': 'Search Index Error',
+            'message': 'Unable to add package to search index: %s' %
                        str(e)}
-        return_dict[u'success'] = False
-        return _finish(500, return_dict, content_type=u'json')
+        return_dict['success'] = False
+        return _finish(500, return_dict, content_type='json')
     except SolrConnectionError:
-        return_dict[u'error'] = {
-            u'__type': u'Search Connection Error',
-            u'message': u'Unable to connect to the search server'}
-        return_dict[u'success'] = False
-        return _finish(500, return_dict, content_type=u'json')
+        return_dict['error'] = {
+            '__type': 'Search Connection Error',
+            'message': 'Unable to connect to the search server'}
+        return_dict['success'] = False
+        return _finish(500, return_dict, content_type='json')
     except Exception as e:
-        return_dict[u'error'] = {
-            u'__type': u'Internal Server Error',
-            u'message': u'Internal Server Error'}
-        return_dict[u'success'] = False
+        return_dict['error'] = {
+            '__type': 'Internal Server Error',
+            'message': 'Internal Server Error'}
+        return_dict['success'] = False
         log.exception(e)
-        return _finish(500, return_dict, content_type=u'json')
+        return _finish(500, return_dict, content_type='json')
 
     return _finish_ok(return_dict)
 
 
 def get_api(ver: int = 1) -> Response:
-    u'''Root endpoint for the API, returns the version number'''
+    '''Root endpoint for the API, returns the version number'''
 
     response_data = {
-        u'version': ver
+        'version': ver
     }
     return _finish_ok(response_data)
 
 
 def dataset_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
-    q = request.args.get(u'incomplete', u'')
-    limit = request.args.get(u'limit', 10)
+    q = request.args.get('incomplete', '')
+    limit = request.args.get('limit', 10)
     package_dicts: ActionResult.PackageAutocomplete = []
     if q:
         context: Context = {
@@ -367,19 +367,19 @@ def dataset_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
             'auth_user_obj': current_user,
         }
 
-        data_dict: dict[str, Any] = {u'q': q, u'limit': limit}
+        data_dict: dict[str, Any] = {'q': q, 'limit': limit}
 
         package_dicts = get_action(
-            u'package_autocomplete')(context, data_dict)
+            'package_autocomplete')(context, data_dict)
 
-    result_set = {u'ResultSet': {u'Result': package_dicts}}
+    result_set = {'ResultSet': {'Result': package_dicts}}
     return _finish_ok(result_set)
 
 
 def tag_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
-    q = request.args.get(u'incomplete', u'')
-    limit = request.args.get(u'limit', 10)
-    vocab = request.args.get(u'vocabulary_id', u'')
+    q = request.args.get('incomplete', '')
+    limit = request.args.get('limit', 10)
+    vocab = request.args.get('vocabulary_id', '')
     tag_names: ActionResult.TagAutocomplete = []
     if q:
         context: Context = {
@@ -387,44 +387,44 @@ def tag_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
             'auth_user_obj': current_user,
         }
 
-        data_dict: dict[str, Any] = {u'q': q, u'limit': limit}
-        if vocab != u'':
-            data_dict[u'vocabulary_id'] = vocab
+        data_dict: dict[str, Any] = {'q': q, 'limit': limit}
+        if vocab != '':
+            data_dict['vocabulary_id'] = vocab
 
-        tag_names = get_action(u'tag_autocomplete')(context, data_dict)
+        tag_names = get_action('tag_autocomplete')(context, data_dict)
 
     result_set = {
-        u'ResultSet': {
-            u'Result': [{u'Name': tag} for tag in tag_names]
+        'ResultSet': {
+            'Result': [{'Name': tag} for tag in tag_names]
         }
     }
     return _finish_ok(result_set)
 
 
 def format_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
-    q = request.args.get(u'incomplete', u'')
-    limit = request.args.get(u'limit', 5)
+    q = request.args.get('incomplete', '')
+    limit = request.args.get('limit', 5)
     formats: ActionResult.FormatAutocomplete = []
     if q:
         context: Context = {
             'user': current_user.name,
             'auth_user_obj': current_user,
         }
-        data_dict: dict[str, Any] = {u'q': q, u'limit': limit}
-        formats = get_action(u'format_autocomplete')(context, data_dict)
+        data_dict: dict[str, Any] = {'q': q, 'limit': limit}
+        formats = get_action('format_autocomplete')(context, data_dict)
 
     result_set = {
-        u'ResultSet': {
-            u'Result': [{u'Format': format} for format in formats]
+        'ResultSet': {
+            'Result': [{'Format': format} for format in formats]
         }
     }
     return _finish_ok(result_set)
 
 
 def user_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
-    q = request.args.get(u'q', u'')
-    limit = request.args.get(u'limit', 20)
-    ignore_self = request.args.get(u'ignore_self', False)
+    q = request.args.get('q', '')
+    limit = request.args.get('limit', 20)
+    ignore_self = request.args.get('ignore_self', False)
     user_list: ActionResult.UserAutocomplete = []
     if q:
         context: Context = {
@@ -433,84 +433,83 @@ def user_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
         }
 
         data_dict: dict[str, Any] = {
-            u'q': q, u'limit': limit, u'ignore_self': ignore_self}
+            'q': q, 'limit': limit, 'ignore_self': ignore_self}
 
-        user_list = get_action(u'user_autocomplete')(context, data_dict)
+        user_list = get_action('user_autocomplete')(context, data_dict)
     return _finish_ok(user_list)
 
 
 def group_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
-    q = request.args.get(u'q', u'')
-    limit = request.args.get(u'limit', 20)
+    q = request.args.get('q', '')
+    limit = request.args.get('limit', 20)
     group_list: ActionResult.GroupAutocomplete = []
 
     if q:
         context: Context = {'user': current_user.name}
 
-        data_dict: dict[str, Any] = {u'q': q, u'limit': limit}
-        group_list = get_action(u'group_autocomplete')(context, data_dict)
+        data_dict: dict[str, Any] = {'q': q, 'limit': limit}
+        group_list = get_action('group_autocomplete')(context, data_dict)
     return _finish_ok(group_list)
 
 
 def organization_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
-    q = request.args.get(u'q', u'')
-    limit = request.args.get(u'limit', 20)
+    q = request.args.get('q', '')
+    limit = request.args.get('limit', 20)
     organization_list = []
 
     if q:
-        context: Context = {u'user': current_user.name}
-        data_dict: dict[str, Any] = {u'q': q, u'limit': limit}
+        context: Context = {'user': current_user.name}
+        data_dict: dict[str, Any] = {'q': q, 'limit': limit}
         organization_list = get_action(
-            u'organization_autocomplete')(context, data_dict)
+            'organization_autocomplete')(context, data_dict)
     return _finish_ok(organization_list)
 
 
 def i18n_js_translations(
         lang: str,
-        ver: int = API_REST_DEFAULT_VERSION) -> Union[str, Response]:
+        ver: int = API_REST_DEFAULT_VERSION) -> str | Response:
 
     if lang not in get_locales_from_config():
-        return _finish_bad_request('Unknown locale: {}'.format(lang))
+        return _finish_bad_request(f'Unknown locale: {lang}')
 
     js_translations_folder = get_js_translations_dir()
 
     source = os.path.join(js_translations_folder, f"{lang}.js")
     if not os.path.exists(source):
         return "{}"
-    translations = io.open(source, "r", encoding="utf-8").read()
+    translations = open(source, encoding="utf-8").read()
     return _finish_ok(LazyJSONObject(translations))
 
 
 # Routing
 
 # Root
-api.add_url_rule(u'/', view_func=get_api, strict_slashes=False)
-api.add_url_rule(u'/<int(min=1, max={0}):ver>'.format(API_MAX_VERSION),
+api.add_url_rule('/', view_func=get_api, strict_slashes=False)
+api.add_url_rule(f'/<int(min=1, max={API_MAX_VERSION}):ver>',
                  view_func=get_api, strict_slashes=False)
 
 # Action API (v3)
 
-api.add_url_rule(u'/action/<logic_function>', methods=[u'GET', u'POST'],
+api.add_url_rule('/action/<logic_function>', methods=['GET', 'POST'],
                  view_func=action)
-api.add_url_rule(u'/<int(min=3, max={0}):ver>/action/<logic_function>'.format(
-                 API_MAX_VERSION),
-                 methods=[u'GET', u'POST'],
+api.add_url_rule(f'/<int(min=3, max={API_MAX_VERSION}):ver>/action/<logic_function>',
+                 methods=['GET', 'POST'],
                  view_func=action)
 
 
 # Util API
 
-util_rules: list[tuple[str, Callable[..., Union[str, Response]]]] = [
-    (u'/util/dataset/autocomplete', dataset_autocomplete),
-    (u'/util/user/autocomplete', user_autocomplete),
-    (u'/util/tag/autocomplete', tag_autocomplete),
-    (u'/util/group/autocomplete', group_autocomplete),
-    (u'/util/organization/autocomplete', organization_autocomplete),
-    (u'/util/resource/format_autocomplete', format_autocomplete),
-    (u'/i18n/<lang>', i18n_js_translations),
+util_rules: list[tuple[str, Callable[..., str | Response]]] = [
+    ('/util/dataset/autocomplete', dataset_autocomplete),
+    ('/util/user/autocomplete', user_autocomplete),
+    ('/util/tag/autocomplete', tag_autocomplete),
+    ('/util/group/autocomplete', group_autocomplete),
+    ('/util/organization/autocomplete', organization_autocomplete),
+    ('/util/resource/format_autocomplete', format_autocomplete),
+    ('/i18n/<lang>', i18n_js_translations),
 ]
 
-version_rule = u'/<int(min=1, max=2):ver>'
+version_rule = '/<int(min=1, max=2):ver>'
 for rule, view_func in util_rules:
     api.add_url_rule(rule, view_func=view_func)
     api.add_url_rule(version_rule + rule, view_func=view_func)

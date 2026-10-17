@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from ckan.config.declaration import Option
 

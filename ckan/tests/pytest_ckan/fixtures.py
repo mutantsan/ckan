@@ -170,9 +170,9 @@ def ckan_config(
         "ckan.max_image_size",
         "ckan.max_resource_size",
     )
-    for mark in request.node.iter_markers(u"ckan_config"):
+    for mark in request.node.iter_markers("ckan_config"):
         key, value = mark.args
-        if key.startswith((prefixes)):
+        if key.startswith(prefixes):
             storage_changed = True
         monkeypatch.setitem(config, key, value)
 
@@ -231,12 +231,12 @@ def cli(ckan_config: types.FixtureCkanConfig):
 
     """
     env = {
-        u'CKAN_INI': ckan_config[u'__file__']
+        'CKAN_INI': ckan_config['__file__']
     }
     return test_helpers.CKANCliRunner(env=env)
 
 
-@pytest.fixture(scope=u"session")
+@pytest.fixture(scope="session")
 def reset_db():
     """Callable for resetting the database to the initial state.
 
@@ -247,7 +247,7 @@ def reset_db():
     return test_helpers.reset_db
 
 
-@pytest.fixture(scope=u"session")
+@pytest.fixture(scope="session")
 def reset_index():
     """Callable for cleaning search index.
 
@@ -264,7 +264,7 @@ def _empty_queues():
         queue.delete()
 
 
-@pytest.fixture(scope=u"session")
+@pytest.fixture(scope="session")
 def reset_queues():
     """Callable for emptying and deleting the queues.
 
@@ -590,7 +590,7 @@ def mail_server(monkeypatch: pytest.MonkeyPatch):
     """Catch all outcome mails.
     """
     bag = test_helpers.FakeSMTP()
-    monkeypatch.setattr(smtplib, u"SMTP", bag)
+    monkeypatch.setattr(smtplib, "SMTP", bag)
     yield bag
 
 
@@ -599,10 +599,10 @@ def with_test_worker(monkeypatch: pytest.MonkeyPatch):
     """Worker that doesn't create forks.
     """
     monkeypatch.setattr(
-        rq.Worker, u"main_work_horse", rq.SimpleWorker.main_work_horse
+        rq.Worker, "main_work_horse", rq.SimpleWorker.main_work_horse
     )
     monkeypatch.setattr(
-        rq.Worker, u"execute_job", rq.SimpleWorker.execute_job
+        rq.Worker, "execute_job", rq.SimpleWorker.execute_job
     )
     yield
 
@@ -624,7 +624,7 @@ def with_extended_cli(
     # using global config object.  With this patch it becomes possible
     # to apply per-test config changes to it without creating real
     # config file.
-    monkeypatch.setattr(ckan.cli, u"load_config", lambda _: ckan_config)
+    monkeypatch.setattr(ckan.cli, "load_config", lambda _: ckan_config)
 
 
 @pytest.fixture(scope="session")
@@ -655,7 +655,7 @@ def non_clean_db(reset_db_once: types.FixtureResetDb):
 
 class FakeFileStorage(FlaskFileStorage):
     def __init__(self, stream: IO[bytes], filename: str):
-        super(FakeFileStorage, self).__init__(stream, filename, "upload")
+        super().__init__(stream, filename, "upload")
 
 
 @pytest.fixture(scope="session")

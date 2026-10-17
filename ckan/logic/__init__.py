@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 from contextlib import contextmanager
 
@@ -8,9 +7,10 @@ import re
 import importlib
 
 from collections import defaultdict
-from typing import (Any, Callable, Container, Iterable, Optional,
+from typing import (Any, Optional,
                     TypeVar, Union, cast, overload)
-from typing_extensions import Literal
+from collections.abc import Callable, Container, Iterable
+from typing import Literal
 
 from werkzeug.datastructures import MultiDict
 from sqlalchemy import exc
@@ -47,11 +47,11 @@ class UsernamePasswordError(Exception):
 
 
 class ActionError(Exception):
-    message: Optional[str]
+    message: str | None
 
-    def __init__(self, message: Optional[str] = '') -> None:
+    def __init__(self, message: str | None = '') -> None:
         self.message = message
-        super(ActionError, self).__init__(message)
+        super().__init__(message)
 
     def __str__(self):
         msg = self.message
@@ -89,16 +89,16 @@ class ValidationError(ActionError):
     error_dict: ErrorDict
 
     def __init__(self,
-                 errors: Union[str, ErrorDict],
-                 error_summary: Optional[dict[str, str]] = None,
-                 extra_msg: Optional[str] = None) -> None:
+                 errors: str | ErrorDict,
+                 error_summary: dict[str, str] | None = None,
+                 extra_msg: str | None = None) -> None:
         if not isinstance(errors, dict):
             error_dict: ErrorDict = {'message': errors}
         else:
             error_dict = errors
         # tags errors are a mess so let's clean them up
         if 'tags' in error_dict:
-            tag_errors: list[Union[str, dict[str, Any]]] = []
+            tag_errors: list[str | dict[str, Any]] = []
             for error in cast("list[dict[str, Any]]", error_dict['tags']):
                 try:
                     tag_errors.append(', '.join(error['name']))
@@ -109,7 +109,7 @@ class ValidationError(ActionError):
             error_dict['tags'] = tag_errors
         self.error_dict = error_dict
         self._error_summary = error_summary
-        super(ValidationError, self).__init__(extra_msg)
+        super().__init__(extra_msg)
 
     @property
     def error_summary(self) -> dict[str, str]:
@@ -152,7 +152,7 @@ class ValidationError(ActionError):
         return summarise(self.error_dict)
 
     def __str__(self):
-        err_msgs = (super(ValidationError, self).__str__(),
+        err_msgs = (super().__str__(),
                     self.error_dict)
         return ' - '.join([str(err_msg) for err_msg in err_msgs if err_msg])
 
@@ -176,9 +176,9 @@ def checks_and_delete_if_csrf_token_in_forms(parsed: dict[str, Any]):
 
 
 def parse_params(
-    params: 'MultiDict[str, Any]',
-    ignore_keys: Optional['Container[str]'] = None
-) -> dict[str, Union[str, list[str]]]:
+    params: MultiDict[str, Any],
+    ignore_keys: Container[str] | None = None
+) -> dict[str, str | list[str]]:
     '''Takes a dict and returns it with some values standardised.
     This is done on a dict before calling tuplize_dict on it.
     '''
@@ -252,7 +252,7 @@ def tuplize_dict(data_dict: dict[str, Any]) -> FlattenDataDict:
     '''
     tuplized_dict: FlattenDataDict = {}
     for k, value in data_dict.items():
-        key_list = cast("list[Union[str, int]]", k.split('__'))
+        key_list = cast("list[str | int]", k.split('__'))
         for num, key in enumerate(key_list):
             if num % 2 == 1:
                 try:
@@ -306,7 +306,7 @@ def flatten_to_string_key(dict: dict[str, Any]) -> dict[str, Any]:
     return untuplize_dict(flattented)
 
 
-def _prepopulate_context(context: Optional[Context]) -> Context:
+def _prepopulate_context(context: Context | None) -> Context:
     if context is None:
         context = {}
     context.setdefault('model', model)  # type: ignore # deprecated since v2.12
@@ -330,7 +330,7 @@ def _prepopulate_context(context: Optional[Context]) -> Context:
 
 def check_access(action: str,
                  context: Context,
-                 data_dict: Optional[dict[str, Any]] = None) -> Literal[True]:
+                 data_dict: dict[str, Any] | None = None) -> Literal[True]:
     '''Calls the authorization function for the provided action
 
     This is the only function that should be called to determine whether a
@@ -370,7 +370,7 @@ def check_access(action: str,
     # Auth Auditing.  We remove this call from the __auth_audit stack to show
     # we have called the auth function
     try:
-        audit: Optional[tuple[str, int]] = context.get('__auth_audit', [])[-1]
+        audit: tuple[str, int] | None = context.get('__auth_audit', [])[-1]
     except IndexError:
         audit = None
     if audit and audit[0] == action:
@@ -392,7 +392,7 @@ def check_access(action: str,
             msg = cast(str, logic_authorization.get('msg', ''))
             raise NotAuthorized(msg)
     except NotAuthorized as e:
-        log.debug(u'check access NotAuthorized - %s user=%s "%s"',
+        log.debug('check access NotAuthorized - %s user=%s "%s"',
                   action, context["user"], str(e))
         raise
 
@@ -561,8 +561,8 @@ def get_action(action: str) -> Action:
     for action_name, _action in _actions.items():
         def make_wrapped(_action: Action, action_name: str):
             @functools.wraps(_action)
-            def wrapped(context: Optional[Context] = None,
-                        data_dict: Optional[DataDict] = None, **kw: Any):
+            def wrapped(context: Context | None = None,
+                        data_dict: DataDict | None = None, **kw: Any):
                 if kw:
                     log.critical('%s was passed extra keywords %r',
                                  _action.__name__, kw)
@@ -591,9 +591,9 @@ def get_action(action: str) -> Action:
                             log.debug('No auth function for %s', action_name)
                         elif not getattr(_action, 'auth_audit_exempt', False):
                             raise Exception(
-                                'Action function {0} did not call its '
+                                f'Action function {action_name} did not call its '
                                 'auth function'
-                                .format(action_name))
+                                )
                         # remove from audit stack
                         context['__auth_audit'].pop()
                 except IndexError:
@@ -628,7 +628,7 @@ def get_or_bust(
 
 def get_or_bust(
         data_dict: dict[str, Any],
-        keys: Union[str, Iterable[str]]) -> Union[Any, tuple[Any, ...]]:
+        keys: str | Iterable[str]) -> Any | tuple[Any, ...]:
     '''Return the value(s) from the given data_dict for the given key(s).
 
     Usage::
@@ -825,7 +825,7 @@ class UnknownValidator(Exception):
     pass
 
 
-_validators_cache: dict[str, Union[Validator, ValidatorFactory]] = {}
+_validators_cache: dict[str, Validator | ValidatorFactory] = {}
 
 
 def clear_validators_cache() -> None:
@@ -835,7 +835,7 @@ def clear_validators_cache() -> None:
 # This function exists mainly so that validators can be made available to
 # extensions via ckan.plugins.toolkit.
 def get_validator(
-        validator: str) -> Union[Validator, ValidatorFactory]:
+        validator: str) -> Validator | ValidatorFactory:
     '''Return a validator function by name.
 
     :param validator: the name of the validator function to return,
@@ -902,8 +902,8 @@ def guard_against_duplicated_email(email: str):
             model.Session.rollback()
             raise ValidationError({
                 "email": [
-                    "The email address '{email}' belongs to "
-                    "a registered user.".format(email=email)
+                    f"The email address '{email}' belongs to "
+                    "a registered user."
                 ]
             })
         raise

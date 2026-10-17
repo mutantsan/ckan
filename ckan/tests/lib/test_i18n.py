@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """
 Tests for ``ckan.lib.i18n``.
@@ -46,7 +45,7 @@ def temp_i18n_dir():
 
 @pytest.mark.ckan_config("ckan.plugins", "test_js_translations_plugin")
 @pytest.mark.usefixtures("with_plugins", "temp_i18n_dir")
-class TestBuildJSTranslations(object):
+class TestBuildJSTranslations:
     """
     Tests for ``ckan.lib.i18n.build_js_translations``.
     """
@@ -140,7 +139,7 @@ class TestBuildJSTranslations(object):
 
 @pytest.mark.ckan_config("ckan.plugins", "test_blueprint_plugin")
 @pytest.mark.usefixtures("with_plugins")
-class TestI18nFlask(object):
+class TestI18nFlask:
     def test_translation_works(self, app):
         resp = app.get("/view_translated")
         assert resp.data == b"Dataset"

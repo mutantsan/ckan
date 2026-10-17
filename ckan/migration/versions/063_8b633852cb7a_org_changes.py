@@ -1,4 +1,3 @@
-# encoding: utf-8
 """063 Org changes
 
 Revision ID: 8b633852cb7a

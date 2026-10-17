@@ -1,11 +1,10 @@
-# encoding: utf-8
 
 from ckan.model.misc import escape_sql_like_special_characters
 
 _sql_escape = escape_sql_like_special_characters
 
 
-class TestEscapeSqlLikeCharacters(object):
+class TestEscapeSqlLikeCharacters:
     """
     Tests for model.misc.escape_sql_like_special_characters
     """

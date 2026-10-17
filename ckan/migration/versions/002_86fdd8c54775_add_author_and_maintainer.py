@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Add author and maintainer
 
 Revision ID: 86fdd8c54775

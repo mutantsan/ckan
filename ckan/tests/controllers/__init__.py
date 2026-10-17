@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Controller tests probably shouldn't use mocking.
 
 .. todo::

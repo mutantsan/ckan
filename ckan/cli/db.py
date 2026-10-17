@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import inspect
@@ -27,7 +26,7 @@ accepts_disabled_plugin = click.option(
 )
 
 
-@click.group(short_help=u"Database management commands.")
+@click.group(short_help="Database management commands.")
 def db():
     """Database management commands.
     """
@@ -71,7 +70,7 @@ def create_from_model():
         click.secho('Create DB from model: SUCCESS', fg='green', bold=True)
 
 
-PROMPT_MSG = u'This will delete all of your data!\nDo you want to continue?'
+PROMPT_MSG = 'This will delete all of your data!\nDo you want to continue?'
 
 
 @db.command()
@@ -84,8 +83,8 @@ def clean():
     from ckan.lib.search import clear_all
     clear_all()
 
-    click.secho(u'Cleaning DB: SUCCESS', fg=u'green', bold=True)
-    click.secho(u'Clearing search index: SUCCESS', fg=u'green')
+    click.secho('Cleaning DB: SUCCESS', fg='green', bold=True)
+    click.secho('Clearing search index: SUCCESS', fg='green')
 
 
 @db.command()
@@ -114,22 +113,20 @@ def upgrade(
 def _migrate_plugins(apply: bool):
     pending = _get_pending_plugins()
     for plugin, n in sorted(pending.items()):
-        click.secho("{n} unapplied migrations for {p}".format(
-            p=click.style(plugin, bold=True),
-            n=click.style(str(n), bold=True)))
+        click.secho(f"{click.style(str(n), bold=True)} unapplied migrations for {click.style(plugin, bold=True)}")
         if apply:
             _run_migrations(plugin)
 
 
 @db.command()
-@click.option(u'-v', u'--version', help=u'Migration version', default=u'base')
+@click.option('-v', '--version', help='Migration version', default='base')
 @applies_to_plugin
 @accepts_disabled_plugin
 def downgrade(version: str, plugin: str, load_plugin: bool):
     """Downgrade the database.
     """
     _run_migrations(plugin, version, False, load_plugin)
-    click.secho(u'Downgrading DB: SUCCESS', fg=u'green', bold=True)
+    click.secho('Downgrading DB: SUCCESS', fg='green', bold=True)
 
 
 @db.command()
@@ -195,8 +192,8 @@ def version(plugin: str, load_plugin: bool):
         current = _version_hash_to_ordinal(current)
     except ValueError:
         pass
-    click.secho(u'Current DB version: {}'.format(current),
-                fg=u'green',
+    click.secho(f'Current DB version: {current}',
+                fg='green',
                 bold=True)
 
 
@@ -206,14 +203,14 @@ def current_revision(plugin: str, load_plugin: bool = False) -> str | None:
         return repo.current_version()
 
 
-@db.command(u"duplicate_emails", short_help=u"Check users email for duplicate")
+@db.command("duplicate_emails", short_help="Check users email for duplicate")
 def duplicate_emails():
-    u'''Check users email for duplicate'''
-    log.info(u"Searching for accounts with duplicate emails.")
+    '''Check users email for duplicate'''
+    log.info("Searching for accounts with duplicate emails.")
 
     q = model.Session.query(model.User.email, model.User.name).filter(
         model.User.state.in_(config["ckan.user.unique_email_states"]),
-        model.User.email != u"",
+        model.User.email != "",
         model.User.email.isnot(None),
     ).order_by(model.User.email).all()
 
@@ -223,38 +220,37 @@ def duplicate_emails():
             users = [user[1] for user in grp]
             if len(users) > 1:
                 duplicates_found = True
-                s = u"{} appears {} time(s). Users: {}"
+                s = "{} appears {} time(s). Users: {}"
                 click.secho(
-                    s.format(k, len(users), u", ".join(users)),
-                    fg=u"green", bold=True)
+                    s.format(k, len(users), ", ".join(users)),
+                    fg="green", bold=True)
     except Exception as e:
         error_shout(e)
     if not duplicates_found:
-        click.secho(u"No duplicate emails found", fg=u"green")
+        click.secho("No duplicate emails found", fg="green")
 
 
 def _version_hash_to_ordinal(version: str):
-    if u'base' == version:
+    if 'base' == version:
         return 0
     versions_dir = os.path.join(os.path.dirname(migration_repo.__file__),
-                                u'versions')
+                                'versions')
     versions = sorted(os.listdir(versions_dir))
 
     # latest version looks like `123abc (head)`
-    if version.endswith(u'(head)'):
-        return int(versions[-1].split(u'_')[0])
+    if version.endswith('(head)'):
+        return int(versions[-1].split('_')[0])
     for name in versions:
         if version in name:
-            return int(name.split(u'_')[0])
-    error_shout(u'Version `{}` was not found in {}'.format(
-        version, versions_dir))
+            return int(name.split('_')[0])
+    error_shout(f'Version `{version}` was not found in {versions_dir}')
 
 
 def _resolve_alembic_config(plugin: str):
     if plugin:
         plugin_obj = p.get_plugin(plugin)
         if plugin_obj is None:
-            error_shout(u"Plugin '{}' cannot be loaded.".format(plugin))
+            error_shout(f"Plugin '{plugin}' cannot be loaded.")
             raise click.Abort()
         source = inspect.getsourcefile(type(plugin_obj))
         assert source
@@ -262,15 +258,15 @@ def _resolve_alembic_config(plugin: str):
 
         # if there is `plugin` folder instead of single_file, find
         # plugin's parent dir
-        ckanext_idx = plugin_dir.rfind(u"/ckanext/") + 9
-        idx = plugin_dir.find(u"/", ckanext_idx)
+        ckanext_idx = plugin_dir.rfind("/ckanext/") + 9
+        idx = plugin_dir.find("/", ckanext_idx)
         if ~idx:
             plugin_dir = plugin_dir[:idx]
-        migration_dir = os.path.join(plugin_dir, u"migration", plugin)
+        migration_dir = os.path.join(plugin_dir, "migration", plugin)
     else:
         import ckan.migration as _cm
         migration_dir = os.path.dirname(_cm.__file__)
-    return os.path.join(migration_dir, u"alembic.ini")
+    return os.path.join(migration_dir, "alembic.ini")
 
 
 @contextlib.contextmanager

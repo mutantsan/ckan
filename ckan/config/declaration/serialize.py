@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module defines the ways to serialize the config declaration into
 different structures, such as: documentation string, config template,
 validation schema.
@@ -23,7 +22,8 @@ avoided unless you have an irresistible desire to hack into CKAN core.
 """
 import os
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Dict
+from typing import TYPE_CHECKING, Any, Dict
+from collections.abc import Callable
 
 import ckan
 
@@ -112,7 +112,7 @@ def serialize_ini(
 
 
 @handler.register("validation_schema")
-def serialize_validation_schema(declaration: "Declaration") -> Dict[str, Any]:
+def serialize_validation_schema(declaration: "Declaration") -> dict[str, Any]:
     """Serialize declaration into validation schema.
     """
     return {

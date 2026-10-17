@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Add user object
 
 Revision ID: f22b4f5241a5

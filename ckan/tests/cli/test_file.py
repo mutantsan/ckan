@@ -24,7 +24,7 @@ def with_temp_storage(
     reset_storages()
 
 
-class TestFilesAdapters(object):
+class TestFilesAdapters:
     def test_adapters_list(self, cli: CKANCliRunner):
         """At least adapters name are shown."""
         result = cli.invoke(ckan, ["file", "adapters"])

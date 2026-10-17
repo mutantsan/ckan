@@ -1,4 +1,3 @@
-# encoding: utf-8
 """017 Add pkg_relationships
 
 Revision ID: 1250b2ff3e36

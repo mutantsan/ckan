@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """Data previewer functions
 
@@ -7,7 +6,8 @@ Functions and data structures that are needed for the ckan data preview.
 from __future__ import annotations
 
 import logging
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
+from collections.abc import Iterable
 
 from urllib.parse import urlparse
 
@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 DEFAULT_RESOURCE_VIEW_TYPES = ['image_view', 'datatables_view']
 
 
-def res_format(resource: dict[str, Any]) -> Optional[str]:
+def res_format(resource: dict[str, Any]) -> str | None:
     ''' The assumed resource format in lower case. '''
     if not resource['url']:
         return None
@@ -62,7 +62,7 @@ def on_same_domain(data_dict: dict[str, Any]) -> bool:
     return compare_domains([ckan_url, resource_url])
 
 
-def get_view_plugin(view_type: Optional[str]) -> Optional[p.IResourceView]:
+def get_view_plugin(view_type: str | None) -> p.IResourceView | None:
     '''
     Returns the IResourceView plugin associated with the given view_type.
     '''
@@ -150,8 +150,8 @@ def get_default_view_plugins(
 
 def add_views_to_resource(context: Context,
                           resource_dict: dict[str, Any],
-                          dataset_dict: Optional[dict[str, Any]] = None,
-                          view_types: Optional[list[str]] = None,
+                          dataset_dict: dict[str, Any] | None = None,
+                          view_types: list[str] | None = None,
                           create_datastore_views: bool = False
                           ) -> list[dict[str, Any]]:
     '''
@@ -224,7 +224,7 @@ def add_views_to_resource(context: Context,
 def add_views_to_dataset_resources(
         context: Context,
         dataset_dict: dict[str, Any],
-        view_types: Optional[list[str]] = None,
+        view_types: list[str] | None = None,
         create_datastore_views: bool = False) -> list[dict[str, Any]]:
     '''
     Creates the provided views on all resources of the provided dataset

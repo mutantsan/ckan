@@ -1,4 +1,3 @@
-# encoding: utf-8
 """057 Tracking
 
 Revision ID: 660a5aae527e

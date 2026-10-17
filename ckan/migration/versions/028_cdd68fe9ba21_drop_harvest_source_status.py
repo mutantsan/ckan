@@ -1,4 +1,3 @@
-# encoding: utf-8
 """028 Drop harvest_source_status
 
 Revision ID: cdd68fe9ba21

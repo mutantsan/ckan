@@ -1,4 +1,3 @@
-# encoding: utf-8
 """009 Add creation timestamps
 
 Revision ID: b739a48de5c4

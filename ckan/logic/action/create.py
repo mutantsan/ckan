@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 '''API functions for adding data to CKAN.'''
 from __future__ import annotations
@@ -282,7 +281,7 @@ def resource_create(context: Context,
     if not data_dict.get('url'):
         data_dict['url'] = ''
 
-    package_show_context: Union[Context, Any] = dict(context, for_update=True)
+    package_show_context: Context | Any = dict(context, for_update=True)
     pkg_dict = _get_action('package_show')(
         package_show_context, {'id': package_id})
 
@@ -354,9 +353,7 @@ def resource_view_create(
 
     if not view_plugin:
         raise ValidationError(
-            {"view_type": "No plugin found for view_type {view_type}".format(
-                view_type=view_type
-            )}
+            {"view_type": f"No plugin found for view_type {view_type}"}
         )
 
     default: Schema = ckan.logic.schema.default_create_resource_view_schema(
@@ -510,7 +507,7 @@ def package_relationship_create(
     ref_package_by = 'id' if api == 2 else 'name'
 
     id, id2, rel_type = _get_or_bust(data_dict, ['subject', 'object', 'type'])
-    comment = data_dict.get('comment', u'')
+    comment = data_dict.get('comment', '')
 
     pkg1 = model.Package.get(id)
     pkg2 = model.Package.get(id2)
@@ -587,10 +584,10 @@ def member_create(context: Context,
         order_by(model.Member.state.asc()).first()
     if member:
         user_obj = model.User.get(user)
-        if user_obj and member.table_name == u'user' and \
+        if user_obj and member.table_name == 'user' and \
                 member.table_id == user_obj.id and \
-                member.capacity == u'admin' and \
-                capacity != u'admin':
+                member.capacity == 'admin' and \
+                capacity != 'admin':
             raise NotAuthorized("Administrators cannot revoke their "
                                 "own admin status")
         if member.state != 'active':
@@ -685,7 +682,7 @@ def package_collaborator_create(
 
 def _group_or_org_create(context: Context,
                          data_dict: DataDict,
-                         is_org: bool = False) -> Union[str, dict[str, Any]]:
+                         is_org: bool = False) -> str | dict[str, Any]:
     user = context['user']
     session = context['session']
     data_dict['is_organization'] = is_org
@@ -1089,7 +1086,7 @@ def user_invite(context: Context,
             )
         if not notification_sent:
             mailer.send_invite(user, group_dict, data['role'])
-    except (socket_error, mailer.MailerException) as error:
+    except (OSError, mailer.MailerException) as error:
         # Email could not be sent, delete the pending user
 
         _get_action('user_delete')(context, {'id': user.id})
@@ -1321,7 +1318,7 @@ def _group_or_org_member_create(
     if result:
         user_id = result.id
     else:
-        message = _(u'User {username} does not exist.').format(
+        message = _('User {username} does not exist.').format(
             username=username)
         raise ValidationError({'message': message})
     member_dict: dict[str, Any] = {
@@ -1459,14 +1456,14 @@ def api_token_create(context: Context,
     :rtype: dictionary
 
     """
-    user, _name = _get_or_bust(data_dict, [u'user', u'name'])
+    user, _name = _get_or_bust(data_dict, ['user', 'name'])
 
     if model.User.get(user) is None:
         raise NotFound("User not found")
 
-    _check_access(u'api_token_create', context, data_dict)
+    _check_access('api_token_create', context, data_dict)
 
-    schema = context.get(u'schema')
+    schema = context.get('schema')
     if not schema:
         schema = api_token.get_schema()
 
@@ -1480,8 +1477,8 @@ def api_token_create(context: Context,
     )
     model.Session.commit()
     data = {
-        u'jti': token_obj.id,
-        u'iat': api_token.into_seconds(token_obj.created_at)
+        'jti': token_obj.id,
+        'iat': api_token.into_seconds(token_obj.created_at)
     }
 
     data = api_token.postprocess(data, token_obj.id, validated_data_dict)

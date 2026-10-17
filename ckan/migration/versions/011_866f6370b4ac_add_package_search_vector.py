@@ -1,4 +1,3 @@
-# encoding: utf-8
 """011 Add package search vector
 
 Revision ID: 866f6370b4ac

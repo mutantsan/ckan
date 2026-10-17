@@ -1,4 +1,3 @@
-# encoding: utf-8
 """029 Version groups
 
 Revision ID: 1bfdf4240915

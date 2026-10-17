@@ -1,4 +1,3 @@
-# encoding: utf-8
 """068 Add package extras index
 
 Revision ID: e33a5f2b2a84

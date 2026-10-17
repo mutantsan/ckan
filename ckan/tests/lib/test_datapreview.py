@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 from ckan.common import config
@@ -60,7 +59,7 @@ class MockDatastoreBasedResourceView(p.SingletonPlugin):
     "ckan.plugins", "image_view datatables_view webpage_view test_datastore_view"
 )
 @pytest.mark.usefixtures("with_plugins")
-class TestDatapreviewWithWebpageView(object):
+class TestDatapreviewWithWebpageView:
     def test_no_config(self):
 
         default_views = datapreview.get_default_view_plugins()
@@ -136,7 +135,7 @@ class TestDatapreviewWithWebpageView(object):
 @pytest.mark.provide_plugin("test_datastore_view", MockDatastoreBasedResourceView)
 @pytest.mark.ckan_config("ckan.plugins", "image_view test_datastore_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestDatapreview(object):
+class TestDatapreview:
     def test_get_view_plugins(self):
 
         view_types = ["image_view", "not_there", "test_datastore_view"]

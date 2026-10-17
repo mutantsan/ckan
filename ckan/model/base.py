@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 import datetime
 from collections import OrderedDict
-from typing import Any, Callable, Optional
+from typing import Any, Optional
+from collections.abc import Callable
 
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -44,13 +44,13 @@ class DebugMixin:
     def __repr__(self):
         """Show model name and all the columns with their values.
         """
-        output = u'<%s' % self.__class__.__name__
+        output = '<%s' % self.__class__.__name__
         table: Any = orm.class_mapper(self.__class__).persist_selectable
         for col in table.c:
             try:
-                output += u' %s=%s' % (col.name, getattr(self, col.name))
+                output += ' %s=%s' % (col.name, getattr(self, col.name))
             except Exception as inst:
-                output += u' %s=%s' % (col.name, inst)
+                output += ' %s=%s' % (col.name, inst)
 
         output += '>'
         return output
@@ -83,8 +83,8 @@ class NameMixin(SessionMixin):
 
     @classmethod
     def by_name(
-            cls, name: Optional[str], autoflush: bool = True,
-            for_update: bool = False) -> Optional[Self]:
+            cls, name: str | None, autoflush: bool = True,
+            for_update: bool = False) -> Self | None:
         """Return first record with the given name.
         """
         q = cls.Session.query(cls).autoflush(autoflush).filter_by(name=name)

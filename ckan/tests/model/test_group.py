@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -7,25 +6,25 @@ from ckan.tests import factories
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroup(object):
+class TestGroup:
     def test_basic(self):
         group = model.Group(
             name=factories.Group.stub().name,
-            title=u"Test Group",
-            description=u"This is a test group",
+            title="Test Group",
+            description="This is a test group",
         )
         model.Session.add(group)
         model.repo.commit_and_remove()
         grp = model.Group.by_name(group.name)
-        assert grp.title == u"Test Group"
-        assert grp.description == u"This is a test group"
+        assert grp.title == "Test Group"
+        assert grp.description == "This is a test group"
         assert grp.packages() == []
 
     def test_add_packages(self):
         group = model.Group(
             name=factories.Group.stub().name,
-            title=u"Russian Group",
-            description=u"This is the russian group",
+            title="Russian Group",
+            description="This is the russian group",
         )
 
         model.Session.add(group)
@@ -49,7 +48,7 @@ class TestGroup(object):
         model.repo.commit_and_remove()
 
         grp = model.Group.by_name(group.name)
-        assert grp.title == u"Russian Group"
+        assert grp.title == "Russian Group"
         anna = model.Package.get(pkg1["id"])
         war = model.Package.get(pkg2["id"])
         assert set(grp.packages()) == set((anna, war)), grp.packages()
@@ -57,9 +56,9 @@ class TestGroup(object):
 
     def test_search_by_name_or_title_only_returns_active_groups(self):
         active_group = model.Group(name=factories.Group.stub().name)
-        active_group.state = u"active"
+        active_group.state = "active"
         inactive_group = model.Group(name=factories.Group.stub().name)
-        inactive_group.state = u"inactive"
+        inactive_group.state = "inactive"
 
         model.Session.add(active_group)
         model.Session.add(inactive_group)

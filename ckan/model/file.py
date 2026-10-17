@@ -11,7 +11,7 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
 )
-from typing_extensions import Annotated, ClassVar
+from typing import Annotated, ClassVar
 
 from ckan.lib.dictization import table_dictize
 from ckan.model.types import make_uuid

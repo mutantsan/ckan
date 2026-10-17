@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Create existing tables
 
 Revision ID: 103676e0a497

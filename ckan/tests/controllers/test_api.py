@@ -1,4 +1,3 @@
-# encoding: utf-8
 """
 NB Don't test logic functions here. This is just for the mechanics of the API
 controller itself.
@@ -58,7 +57,7 @@ def test_sideeffect_action_is_not_get_able(app):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestApiController(object):
+class TestApiController:
     def test_resource_create_upload_file(self, app):
         user = factories.User()
         user_token = factories.APIToken(user=user["name"])
@@ -71,7 +70,7 @@ class TestApiController(object):
         )
         headers = {"Authorization": user_token["token"]}
 
-        content = 'upload-content'.encode()
+        content = b'upload-content'
         upload_content = BytesIO(content)
         postparams = {
             "name": "test-flask-upload",
@@ -93,7 +92,7 @@ class TestApiController(object):
         # Use tag_delete to echo back some unicode
 
         org_url = "/api/action/tag_delete"
-        data_dict = {"id": u"Delta symbol: \u0394"}  # unicode gets rec'd ok
+        data_dict = {"id": "Delta symbol: \u0394"}  # unicode gets rec'd ok
         response = app.post(url=org_url, data=data_dict, status=404)
         # The unicode is backslash encoded (because that is the default when
         # you do str(exception) )
@@ -106,18 +105,18 @@ class TestApiController(object):
         assert url == "/api/2/util/dataset/autocomplete"
 
         response = app.get(
-            url=url, query_string={"incomplete": u"rive"}, status=200
+            url=url, query_string={"incomplete": "rive"}, status=200
         )
 
         results = json.loads(response.body)
         assert results == {
-            u"ResultSet": {
-                u"Result": [
+            "ResultSet": {
+                "Result": [
                     {
-                        u"match_field": u"name",
-                        u"name": u"rivers",
-                        u"match_displayed": u"rivers",
-                        u"title": dataset["title"],
+                        "match_field": "name",
+                        "name": "rivers",
+                        "match_displayed": "rivers",
+                        "title": dataset["title"],
                     }
                 ]
             }
@@ -134,18 +133,18 @@ class TestApiController(object):
         assert url == "/api/2/util/dataset/autocomplete"
 
         response = app.get(
-            url=url, query_string={"incomplete": u"riv"}, status=200
+            url=url, query_string={"incomplete": "riv"}, status=200
         )
 
         results = json.loads(response.body)
         assert results == {
-            u"ResultSet": {
-                u"Result": [
+            "ResultSet": {
+                "Result": [
                     {
-                        u"match_field": u"title",
-                        u"name": dataset["name"],
-                        u"match_displayed": u"Rivers (test_ri)",
-                        u"title": u"Rivers",
+                        "match_field": "title",
+                        "name": dataset["name"],
+                        "match_displayed": "Rivers (test_ri)",
+                        "title": "Rivers",
                     }
                 ]
             }
@@ -162,7 +161,7 @@ class TestApiController(object):
         assert url == "/api/2/util/tag/autocomplete"
 
         response = app.get(
-            url=url, query_string={"incomplete": u"rs ア"}, status=200
+            url=url, query_string={"incomplete": "rs ア"}, status=200
         )
 
         assert response.json == {
@@ -178,7 +177,7 @@ class TestApiController(object):
         url = url_for("api.group_autocomplete", ver=2)
         assert url == "/api/2/util/group/autocomplete"
 
-        response = app.get(url=url, query_string={"q": u"rive"}, status=200)
+        response = app.get(url=url, query_string={"q": "rive"}, status=200)
 
         results = json.loads(response.body)
         assert len(results) == 1
@@ -193,7 +192,7 @@ class TestApiController(object):
         factories.Group(name="frogs", title="Bugs")
         url = url_for("api.group_autocomplete", ver=2)
 
-        response = app.get(url=url, query_string={"q": u"bug"}, status=200)
+        response = app.get(url=url, query_string={"q": "bug"}, status=200)
 
         results = json.loads(response.body)
         assert len(results) == 1
@@ -204,7 +203,7 @@ class TestApiController(object):
         url = url_for("api.organization_autocomplete", ver=2)
         assert url == "/api/2/util/organization/autocomplete"
 
-        response = app.get(url=url, query_string={"q": u"simple"}, status=200)
+        response = app.get(url=url, query_string={"q": "simple"}, status=200)
 
         results = json.loads(response.body)
         assert len(results) == 1
@@ -220,7 +219,7 @@ class TestApiController(object):
         url = url_for("api.organization_autocomplete", ver=2)
 
         response = app.get(
-            url=url, query_string={"q": u"simple dum"}, status=200
+            url=url, query_string={"q": "simple dum"}, status=200
         )
 
         results = json.loads(response.body)

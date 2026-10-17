@@ -1,4 +1,3 @@
-# encoding: utf-8
 """081 Set datastore active
 
 Revision ID: a64cf4a79182

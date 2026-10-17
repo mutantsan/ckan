@@ -1,4 +1,3 @@
-# encoding: utf-8
 """069 Resource url and metadata_modified
 
 Revision ID: e7524c675cdb

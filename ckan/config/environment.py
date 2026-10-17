@@ -1,4 +1,3 @@
-# encoding: utf-8
 '''CKAN environment configuration'''
 from __future__ import annotations
 
@@ -34,7 +33,7 @@ log = logging.getLogger(__name__)
 warnings.simplefilter('ignore', UserWarning)
 
 
-def load_environment(conf: Union[Config, CKANConfig]):
+def load_environment(conf: Config | CKANConfig):
     """
     Configure the Pylons environment via the ``pylons.config`` object. This
     code should only need to be run once.

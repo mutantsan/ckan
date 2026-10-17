@@ -1,8 +1,8 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import datetime
-from typing import Any, Callable, Iterable, Literal, cast
+from typing import Any, Literal, cast
+from collections.abc import Callable, Iterable
 
 import sqlalchemy
 from sqlalchemy import Table

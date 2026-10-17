@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 from ckan.lib.app_globals import app_globals as g
 

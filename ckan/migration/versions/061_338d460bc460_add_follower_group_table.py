@@ -1,4 +1,3 @@
-# encoding: utf-8
 """061 Add follower  group_table
 
 Revision ID: 338d460bc460

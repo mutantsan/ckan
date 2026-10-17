@@ -1,11 +1,11 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import re
 import logging
 
-from typing import Any, Iterable, Optional, Dict
-from typing_extensions import Literal
+from typing import Any, Optional, Dict
+from collections.abc import Iterable
+from typing import Literal
 
 
 INSERT_NEW_SECTIONS_BEFORE_SECTION = 'app:main'
@@ -42,7 +42,7 @@ def config_edit_using_merge_file(config_filepath: str,
 
 
 def config_edit(config_filepath: str,
-                desired_options: Iterable['Option'],
+                desired_options: Iterable[Option],
                 edit: bool = False) -> None:
     '''Writes the desired_options to the config file.'''
     # Read and parse the existing config file
@@ -63,7 +63,7 @@ def config_edit(config_filepath: str,
 
 def parse_option_string(section: str,
                         option_string: str,
-                        raise_on_error: bool = False) -> Optional['Option']:
+                        raise_on_error: bool = False) -> Option | None:
     option_match = OPTION_RE.match(option_string)
     if not option_match:
         if raise_on_error:
@@ -78,13 +78,13 @@ def parse_option_string(section: str,
                   original=option_string)
 
 
-class Option(object):
+class Option:
     def __init__(self,
                  section: str,
                  key: str,
                  value: str,
                  is_commented_out: Any,
-                 original: Optional[str] = None) -> None:
+                 original: str | None = None) -> None:
         self.section = section
         self.key = key
         self.value = value
@@ -117,7 +117,7 @@ def calculate_new_sections(existing_options: Iterable[Option],
     return new_sections
 
 
-class Changes(Dict[str, Any]):
+class Changes(dict[str, Any]):
     '''A store of Options that are to "edit" or "add" to existing sections of a
        config file. (Excludes options that go into new sections.)'''
     def add(self, action: Literal["edit", "add"], option: Option) -> None:
@@ -129,7 +129,7 @@ class Changes(Dict[str, Any]):
             self[option.section][action] = []
         self[option.section][action].append(option)
 
-    def get(self, section: str, action: Optional[str] = None) -> list[Option]:
+    def get(self, section: str, action: str | None = None) -> list[Option]:
         try:
             return self[section][action]
         except KeyError:

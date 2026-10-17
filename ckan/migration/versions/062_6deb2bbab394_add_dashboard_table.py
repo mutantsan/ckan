@@ -1,4 +1,3 @@
-# encoding: utf-8
 """062 Add dashboard table
 
 Revision ID: 6deb2bbab394

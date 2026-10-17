@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import re
 import uuid
@@ -25,7 +24,7 @@ def sysadmin():
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestOrganizationNew(object):
+class TestOrganizationNew:
 
     def test_not_logged_in(self, app):
         app.get(url=url_for("group.new"), status=403)
@@ -43,7 +42,7 @@ class TestOrganizationNew(object):
             url=url, headers=headers, data={"save": "", "name": "saved"}
         )
         group = helpers.call_action("organization_show", id="saved")
-        assert group["title"] == u""
+        assert group["title"] == ""
         assert group["type"] == "organization"
         assert group["state"] == "active"
 
@@ -53,7 +52,7 @@ class TestOrganizationNew(object):
             url=url_for("organization.new"),
             headers=headers,
             data={
-                "name": u"all-fields-saved",
+                "name": "all-fields-saved",
                 "title": "Science",
                 "description": "Sciencey datasets",
                 "image_url": "http://example.com/image.png",
@@ -61,11 +60,11 @@ class TestOrganizationNew(object):
             }
         )
         group = helpers.call_action("organization_show", id="all-fields-saved")
-        assert group["title"] == u"Science"
+        assert group["title"] == "Science"
         assert group["description"] == "Sciencey datasets"
 
 
-class TestOrganizationList(object):
+class TestOrganizationList:
     @pytest.mark.usefixtures("non_clean_db")
     def test_error_message_shown_when_no_organization_list_permission(
         self, monkeypatch, app, user
@@ -85,7 +84,7 @@ class TestOrganizationList(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationRead(object):
+class TestOrganizationRead:
     def test_group_read(self, app):
         org = factories.Organization()
         response = app.get(url=url_for("organization.read", id=org["name"]))
@@ -136,7 +135,7 @@ class TestOrganizationRead(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationEdit(object):
+class TestOrganizationEdit:
 
     def test_group_doesnt_exist(self, app, user):
         headers = {"Authorization": user["token"]}
@@ -169,7 +168,7 @@ class TestOrganizationEdit(object):
             ),
             headers=headers,
             data={
-                "name": u"all-fields-edited-organization",
+                "name": "all-fields-edited-organization",
                 "title": "Science Organization Test",
                 "description": "Sciencey datasets",
                 "image_url": "http://example.com/image.png",
@@ -179,13 +178,13 @@ class TestOrganizationEdit(object):
         group = helpers.call_action(
             "organization_show", id=group["id"]
         )
-        assert group["title"] == u"Science Organization Test"
+        assert group["title"] == "Science Organization Test"
         assert group["description"] == "Sciencey datasets"
         assert group["image_url"] == "http://example.com/image.png"
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationDelete(object):
+class TestOrganizationDelete:
 
     def test_owner_delete(self, app, user):
         headers = {"Authorization": user["token"]}
@@ -304,7 +303,7 @@ class TestOrganizationDelete(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationBulkProcess(object):
+class TestOrganizationBulkProcess:
     def test_make_private(self, app, user):
         headers = {"Authorization": user["token"]}
         self.organization = factories.Organization(user=user)
@@ -373,7 +372,7 @@ class TestOrganizationBulkProcess(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestOrganizationSearch(object):
+class TestOrganizationSearch:
     """Test searching for organizations."""
 
     def test_organization_search(self, app):
@@ -434,7 +433,7 @@ class TestOrganizationSearch(object):
 
 
 @pytest.mark.usefixtures("clean_db", "clean_index")
-class TestOrganizationInnerSearch(object):
+class TestOrganizationInnerSearch:
     """Test searching within an organization."""
 
     def test_organization_search_within_org(self, app):
@@ -533,7 +532,7 @@ class TestOrganizationInnerSearch(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationMembership(object):
+class TestOrganizationMembership:
     def test_editor_users_cannot_add_members(self, app, user):
         headers = {"Authorization": user["token"]}
         organization = factories.Organization(

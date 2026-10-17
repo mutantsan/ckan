@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import multiprocessing as mp
@@ -13,35 +12,35 @@ import ckan.model as model
 from . import error_shout
 
 
-@click.group(name=u'search-index', short_help=u'Search index commands')
-@click.help_option(u'-h', u'--help')
+@click.group(name='search-index', short_help='Search index commands')
+@click.help_option('-h', '--help')
 def search_index():
     pass
 
 
-@search_index.command(name=u'rebuild', short_help=u'Rebuild search index')
-@click.option(u'-v', u'--verbose', is_flag=True)
-@click.option(u'-i', u'--force', is_flag=True,
-              help=u'Ignore exceptions when rebuilding the index')
-@click.option(u'-o', u'--only-missing',
-              help=u'Index non indexed datasets only', is_flag=True)
-@click.option(u'-q', u'--quiet', help=u'Do not output index rebuild progress',
+@search_index.command(name='rebuild', short_help='Rebuild search index')
+@click.option('-v', '--verbose', is_flag=True)
+@click.option('-i', '--force', is_flag=True,
+              help='Ignore exceptions when rebuilding the index')
+@click.option('-o', '--only-missing',
+              help='Index non indexed datasets only', is_flag=True)
+@click.option('-q', '--quiet', help='Do not output index rebuild progress',
               is_flag=True)
-@click.option(u'-e', u'--commit-each', is_flag=True,
-              help=u'Perform a commit after indexing each dataset. This'
-                   u'ensures that changes are immediately available on the'
-                   u'search, but slows significantly the process. Default'
-                   u'is false.')
+@click.option('-e', '--commit-each', is_flag=True,
+              help='Perform a commit after indexing each dataset. This'
+                   'ensures that changes are immediately available on the'
+                   'search, but slows significantly the process. Default'
+                   'is false.')
 @click.option('--keep-orphans', is_flag=True,
               help='Keep orphaned packages in search index after rebuild. '
                    'By default, orphaned packages are automatically cleared.')
-@click.argument(u'package_id', required=False)
+@click.argument('package_id', required=False)
 @click.pass_context
 def rebuild(
         ctx: click.Context, verbose: bool, force: bool, only_missing: bool,
         quiet: bool, commit_each: bool, keep_orphans: bool, package_id: str
 ):
-    u''' Rebuild search index '''
+    ''' Rebuild search index '''
     errors = 0
     from ckan.lib.search import rebuild, commit
     try:
@@ -68,14 +67,14 @@ def rebuild(
         sys.exit(errors)
 
 
-@search_index.command(name=u'check', short_help=u'Check search index')
+@search_index.command(name='check', short_help='Check search index')
 def check():
     from ckan.lib.search import check
     check()
 
 
-@search_index.command(name=u'show', short_help=u'Show index of a dataset')
-@click.argument(u'dataset_name')
+@search_index.command(name='show', short_help='Show index of a dataset')
+@click.argument('dataset_name')
 def show(dataset_name: str):
     from ckan.lib.search import show
 
@@ -83,8 +82,8 @@ def show(dataset_name: str):
     click.echo(index)
 
 
-@search_index.command(name=u'clear', short_help=u'Clear the search index')
-@click.argument(u'dataset_name', required=False)
+@search_index.command(name='clear', short_help='Clear the search index')
+@click.argument('dataset_name', required=False)
 def clear(dataset_name: str):
     from ckan.lib.search import clear, clear_all
 
@@ -117,36 +116,32 @@ def get_orphans() -> list[str]:
 
 
 @search_index.command(
-    name=u'list-orphans',
-    short_help=u'Lists any non-existent packages in the search index'
+    name='list-orphans',
+    short_help='Lists any non-existent packages in the search index'
 )
 def list_orphans_command():
     orphaned_package_ids = get_orphans()
     if len(orphaned_package_ids):
         click.echo(orphaned_package_ids)
-    click.echo("Found {} orphaned package(s).".format(
-        len(orphaned_package_ids)
-    ))
+    click.echo(f"Found {len(orphaned_package_ids)} orphaned package(s).")
 
 
 @search_index.command(
-    name=u'clear-orphans',
-    short_help=u'Clear any non-existent packages in the search index'
+    name='clear-orphans',
+    short_help='Clear any non-existent packages in the search index'
 )
-@click.option(u'-v', u'--verbose', is_flag=True)
+@click.option('-v', '--verbose', is_flag=True)
 @click.pass_context
 def clear_orphans(ctx: click.Context, verbose: bool = False):
     for orphaned_package_id in get_orphans():
         if verbose:
-            click.echo("Clearing search index for dataset {}...".format(
-                orphaned_package_id
-            ))
+            click.echo(f"Clearing search index for dataset {orphaned_package_id}...")
         ctx.invoke(clear, dataset_name=orphaned_package_id)
 
 
 @search_index.command(
-    name=u'list-unindexed',
-    short_help=u'Lists any missing packages from the search index'
+    name='list-unindexed',
+    short_help='Lists any missing packages from the search index'
 )
 def list_unindexed():
     packages = model.Session.query(model.Package.id)
@@ -163,13 +158,11 @@ def list_unindexed():
 
     if len(unindexed_package_ids):
         click.echo(unindexed_package_ids)
-    click.echo("Found {} unindexed package(s).".format(
-        len(unindexed_package_ids)
-    ))
+    click.echo(f"Found {len(unindexed_package_ids)} unindexed package(s).")
 
 
-@search_index.command(name=u'rebuild-fast',
-                      short_help=u'Reindex with multiprocessing')
+@search_index.command(name='rebuild-fast',
+                      short_help='Reindex with multiprocessing')
 def rebuild_fast():
     from ckan.lib.search import commit
 
@@ -188,7 +181,7 @@ def rebuild_fast():
         rebuild(package_ids=ids)
 
     def chunks(list_: list[str], n: int):
-        u""" Yield n successive chunks from list_"""
+        """ Yield n successive chunks from list_"""
         newn = int(len(list_) / n)
         for i in range(0, n - 1):
             yield list_[i * newn:i * newn + newn]

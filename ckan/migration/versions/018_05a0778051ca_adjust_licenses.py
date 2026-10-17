@@ -1,4 +1,3 @@
-# encoding: utf-8
 """018 Adjust licenses
 
 Revision ID: 05a0778051ca

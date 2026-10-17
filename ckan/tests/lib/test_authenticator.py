@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 import ckan.tests.factories as factories
@@ -6,7 +5,7 @@ from ckan.lib.authenticator import default_authenticate
 
 
 @pytest.mark.usefixtures("non_clean_db", "with_request_context")
-class TestUsernamePasswordAuthenticator(object):
+class TestUsernamePasswordAuthenticator:
     password = 'somepass'
 
     def test_succeeds_if_username_and_password_are_correct(self):

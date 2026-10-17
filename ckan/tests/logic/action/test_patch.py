@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Unit tests for ckan/logic/action/patch.py."""
 import pytest
 
@@ -12,7 +11,7 @@ from ckan import model
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPatch(object):
+class TestPatch:
     def test_package_patch_updating_single_field(self):
         user = factories.User()
         dataset = factories.Dataset(notes="some test now", user=user)
@@ -88,7 +87,7 @@ class TestPatch(object):
         assert group2["name"] == name
         assert group2["description"] == "somethingnew"
 
-    @pytest.mark.ckan_config(u"ckan.auth.public_user_details", u"false")
+    @pytest.mark.ckan_config("ckan.auth.public_user_details", "false")
     def test_group_patch_updating_single_field_when_public_user_details_is_false(
         self,
     ):
@@ -165,7 +164,7 @@ class TestPatch(object):
         assert organization2["name"] == name
         assert organization2["description"] == "somethingnew"
 
-    @pytest.mark.ckan_config(u"ckan.auth.public_user_details", u"false")
+    @pytest.mark.ckan_config("ckan.auth.public_user_details", "false")
     def test_organization_patch_updating_single_field_when_public_user_details_is_false(
         self,
     ):

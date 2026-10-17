@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 """This module defines utilitis for manipulations with the name of config
 option.
 
 """
 import fnmatch
-from typing import Any, Iterable, Tuple, Union
+from typing import Any, Tuple, Union
+from collections.abc import Iterable
 
 
 class Wildcard(str):
@@ -17,7 +17,7 @@ class Wildcard(str):
     """
 
     def __str__(self):
-        s = super(Wildcard, self).__str__()
+        s = super().__str__()
         return "<" + s + ">"
 
 
@@ -49,7 +49,7 @@ class Key:
     """
 
     __slots__ = ("_path",)
-    _path: Tuple[str, ...]
+    _path: tuple[str, ...]
 
     def __init__(self, path: Iterable[str] = ()):
         self._path = tuple(path)
@@ -157,7 +157,7 @@ class Pattern(Key):
         >>> assert pattern != "not-ckan.hello"
     """
     __slots__ = ()
-    _path: Tuple[Union[str, Wildcard], ...]
+    _path: tuple[str | Wildcard, ...]
 
     __hash__ = Key.__hash__
 

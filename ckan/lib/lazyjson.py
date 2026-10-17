@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 from typing import Any
 from simplejson import (
@@ -8,7 +7,7 @@ from simplejson import (
 
 
 class LazyJSONObject(RawJSON):
-    u'''
+    '''
     An object that behaves like a dict returned from json.loads
     but when passed to simplejson.dumps will render original
     string passed when possible. Accepts and produces only
@@ -28,8 +27,8 @@ class LazyJSONObject(RawJSON):
 
     def __repr__(self):
         if self._json_string:
-            return u'<LazyJSONObject %r>' % self._json_string
-        return u'<LazyJSONObject %r>' % self._json_dict
+            return '<LazyJSONObject %r>' % self._json_string
+        return '<LazyJSONObject %r>' % self._json_dict
 
     @property
     def encoded_json(self):
@@ -38,7 +37,7 @@ class LazyJSONObject(RawJSON):
         return dumps(
             self._json_dict,
             ensure_ascii=False,
-            separators=(u',', u':'))
+            separators=(',', ':'))
 
 
 def _loads_method(name: str):
@@ -47,10 +46,10 @@ def _loads_method(name: str):
     return method
 
 
-for fn in [u'__contains__', u'__delitem__', u'__eq__', u'__ge__',
-           u'__getitem__', u'__gt__', u'__iter__', u'__le__', u'__len__',
-           u'__lt__', u'__ne__', u'__setitem__', u'clear', u'copy',
-           u'fromkeys', u'get', u'items', u'iteritems',
-           u'iterkeys', u'itervalues', u'keys', u'pop', u'popitem',
-           u'setdefault', u'update', u'values']:
+for fn in ['__contains__', '__delitem__', '__eq__', '__ge__',
+           '__getitem__', '__gt__', '__iter__', '__le__', '__len__',
+           '__lt__', '__ne__', '__setitem__', 'clear', 'copy',
+           'fromkeys', 'get', 'items', 'iteritems',
+           'iterkeys', 'itervalues', 'keys', 'pop', 'popitem',
+           'setdefault', 'update', 'values']:
     setattr(LazyJSONObject, fn, _loads_method(fn))

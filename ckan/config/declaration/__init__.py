@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module contains definition of the config Declaration class.
 
 """
@@ -9,7 +8,6 @@ from collections import OrderedDict
 from typing import (
     Any,
     Dict,
-    Iterator,
     List,
     Optional,
     Set,
@@ -17,6 +15,7 @@ from typing import (
     TYPE_CHECKING,
     cast,
 )
+from collections.abc import Iterator
 
 from .key import Key, Pattern, Wildcard
 from .option import Option, Annotation, Flag, T
@@ -51,9 +50,9 @@ class Declaration:
         "_core_loaded",
         "_sealed",
     )
-    _options: Dict[Key, Option[Any]]
-    _members: List[Union[Key, Annotation, Any]]
-    _plugins: Set[str]
+    _options: dict[Key, Option[Any]]
+    _members: list[Key | Annotation | Any]
+    _plugins: set[str]
     _sealed: bool
     _core_loaded: bool
 
@@ -63,7 +62,7 @@ class Declaration:
     def __bool__(self):
         return bool(self._members)
 
-    def __contains__(self, key: Union[Key, str]):
+    def __contains__(self, key: Key | str):
         return key in self._options
 
     def __getitem__(self, key: Key) -> Option[Any]:
@@ -72,7 +71,7 @@ class Declaration:
     def __len__(self) -> int:
         return len(self._options)
 
-    def get(self, key: Union[str, Key]) -> Optional[Option[Any]]:
+    def get(self, key: str | Key) -> Option[Any] | None:
         """Return the declaration of config option or `None`.
         """
         k = Key._as_key(key)
@@ -82,7 +81,7 @@ class Declaration:
     def iter_options(
         self,
         *,
-        pattern: Union[str, Pattern] = "*",
+        pattern: str | Pattern = "*",
         exclude: Flag = _non_iterable,
     ) -> Iterator[Key]:
         """Iterate over declared config options.
@@ -118,7 +117,7 @@ class Declaration:
             plugin.declare_config_options(self, Key())
         self._seal()
 
-    def make_safe(self, config: "CKANConfig"):
+    def make_safe(self, config: CKANConfig):
         """Load default values for missing options.
         """
 
@@ -151,7 +150,7 @@ class Declaration:
             else:
                 config[str(key)] = info.default
 
-    def normalize(self, config: "CKANConfig"):
+    def normalize(self, config: CKANConfig):
         """Validate and normalize all the values in the config object.
 
         This method ensures that all the config values are in-place and
@@ -181,7 +180,7 @@ class Declaration:
             config[k] = v
 
     def validate(
-            self, config: "CKANConfig"
+            self, config: CKANConfig
     ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Return validated config dict and dictionary with validation errors.
         """
@@ -260,7 +259,7 @@ class Declaration:
         """
         return serializer(self, "ini", minimal, include_docs, section)
 
-    def into_schema(self) -> Dict[str, Any]:
+    def into_schema(self) -> dict[str, Any]:
         """Serialize declaration into validation schema.
         """
         return serializer(self, "validation_schema")
@@ -277,14 +276,14 @@ class Declaration:
         return describer(self, fmt)
 
     def declare(
-        self, key: Union[Key, str], default: Optional[T] = None
+        self, key: Key | str, default: T | None = None
     ) -> Option[T]:
         """Add declaration of the option with the given default value.
         """
         return self.declare_option(key, Option(default))
 
     def declare_option(
-        self, key: Union[Key, str], option: Option[T]
+        self, key: Key | str, option: Option[T]
     ) -> Option[T]:
         """Add the declaration using existing Option object.
 
@@ -320,7 +319,7 @@ class Declaration:
         option.set_validators("convert_int")
         return option
 
-    def declare_float(self, key: Key, default: Optional[float]) -> Option[float]:
+    def declare_float(self, key: Key, default: float | None) -> Option[float]:
         """Declare float option.
         """
         option = self.declare(key, default)

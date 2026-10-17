@@ -1,4 +1,3 @@
-# encoding: utf-8
 """006 Add ratings
 
 Revision ID: c83955e7acb6

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import pytest
 import ckan.model as model
@@ -78,7 +77,7 @@ class MockPackageSearchPlugin(p.SingletonPlugin):
 
 @pytest.mark.ckan_config("ckan.plugins", "mock_search_plugin")
 @pytest.mark.usefixtures("clean_db", "clean_index", "with_plugins")
-class TestSearchPluginInterface(object):
+class TestSearchPluginInterface:
     def test_search_plugin_interface_search(self):
         avoid = "Tolstoy"
         factories.Dataset(title=avoid)

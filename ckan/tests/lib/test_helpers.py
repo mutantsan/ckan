@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import datetime
 import hashlib
@@ -23,7 +22,7 @@ from ckan.tests import helpers, factories
 CkanUrlException = ckan.exceptions.CkanUrlException
 
 
-class BaseUrlFor(object):
+class BaseUrlFor:
     @pytest.fixture(autouse=True)
     def request_context(self, monkeypatch, ckan_config, app):
         monkeypatch.setitem(ckan_config, "ckan.site_url", "http://example.com")
@@ -44,7 +43,7 @@ class TestHelpersUrlForStatic(BaseUrlFor):
         assert h.url_for_static(slashless_url) == url
 
     def test_url_for_static_converts_unicode_strings_to_regular_strings(self):
-        url = u"/ckan.jpg"
+        url = "/ckan.jpg"
         assert isinstance(h.url_for_static(url), str)
 
     def test_url_for_static_raises_when_called_with_external_urls(self):
@@ -83,7 +82,7 @@ class TestHelpersUrlForStatic(BaseUrlFor):
     [
         "/assets/ckan.jpg",
         "http://assets.ckan.org/ckan.jpg",
-        u"/ckan.jpg",
+        "/ckan.jpg",
         "/ckan.jpg",
         "//assets.ckan.org/ckan.jpg",
     ],
@@ -259,7 +258,7 @@ class TestHelpersUrlForFlaskandPylons(BaseUrlFor):
             assert generated_url == url
 
 
-class TestHelpersRenderMarkdown(object):
+class TestHelpersRenderMarkdown:
     @pytest.mark.parametrize(
         "data,output,allow_html",
         [
@@ -282,42 +281,42 @@ class TestHelpersRenderMarkdown(object):
                 False,
             ),
             (
-                u"* [Foo (http://foo.bar) * Bar] (http://foo.bar)",
-                u'<ul>\n<li>[Foo (<a href="http://foo.bar" target="_blank" rel="nofollow">http://foo.bar</a>) * Bar] (<a href="http://foo.bar" target="_blank" rel="nofollow">http://foo.bar</a>)</li>\n</ul>',
+                "* [Foo (http://foo.bar) * Bar] (http://foo.bar)",
+                '<ul>\n<li>[Foo (<a href="http://foo.bar" target="_blank" rel="nofollow">http://foo.bar</a>) * Bar] (<a href="http://foo.bar" target="_blank" rel="nofollow">http://foo.bar</a>)</li>\n</ul>',
                 False,
             ),
-            (u"[text](javascript: alert(1))", '<p><a rel="noopener noreferrer">text</a></p>', False),
+            ("[text](javascript: alert(1))", '<p><a rel="noopener noreferrer">text</a></p>', False),
             (
-                u'<p onclick="some.script"><img onmouseover="some.script" src="image.png" /> and text</p>',
+                '<p onclick="some.script"><img onmouseover="some.script" src="image.png" /> and text</p>',
                 '<p><img src="image.png"> and text</p>',
                 False,
             ),
-            (u"#heading", u"<h1>heading</h1>", False),
-            (u"##heading", u"<h2>heading</h2>", False),
-            (u"###heading", u"<h3>heading</h3>", False),
+            ("#heading", "<h1>heading</h1>", False),
+            ("##heading", "<h2>heading</h2>", False),
+            ("###heading", "<h3>heading</h3>", False),
             (
-                u"![image](/image.png)",
-                u'<p><img alt="image" src="/image.png"></p>',
+                "![image](/image.png)",
+                '<p><img alt="image" src="/image.png"></p>',
                 False,
             ),
             (
-                u"Something **important**",
-                u"<p>Something <strong>important</strong></p>",
+                "Something **important**",
+                "<p>Something <strong>important</strong></p>",
                 False,
             ),
             (
-                u"Something *important*",
-                u"<p>Something <em>important</em></p>",
+                "Something *important*",
+                "<p>Something <em>important</em></p>",
                 False,
             ),
             (
-                u"[link](/url?a=1&b=2)",
-                u'<p><a href="/url?a=1&amp;b=2" rel="noopener noreferrer">link</a></p>',
+                "[link](/url?a=1&b=2)",
+                '<p><a href="/url?a=1&amp;b=2" rel="noopener noreferrer">link</a></p>',
                 False,
             ),
             (
-                u"http://example.com/page?a=1&b=2",
-                u'<p><a href="http://example.com/page?a=1&amp;b=2" target="_blank" rel="nofollow">http://example.com/page?a=1&amp;b=2</a></p>',
+                "http://example.com/page?a=1&b=2",
+                '<p><a href="http://example.com/page?a=1&amp;b=2" target="_blank" rel="nofollow">http://example.com/page?a=1&amp;b=2</a></p>',
                 False,
             ),
             (
@@ -360,8 +359,8 @@ class TestHelpersRenderMarkdown(object):
                 False,
             ),
             (
-                u'tag:"Japanese katakana \u30a1" blah',
-                u'<p><a href="/dataset/?tags=Japanese+katakana+%E3%82%A1">tag:&quot;Japanese katakana \u30a1&quot;</a> blah</p>',
+                'tag:"Japanese katakana \u30a1" blah',
+                '<p><a href="/dataset/?tags=Japanese+katakana+%E3%82%A1">tag:&quot;Japanese katakana \u30a1&quot;</a> blah</p>',
                 False,
             ),
             (
@@ -422,7 +421,7 @@ class TestHelpersRenderMarkdown(object):
             assert output in result, "\nGot: %s\nWanted: %s" % (result, output)
 
 
-class TestHelpersRemoveLineBreaks(object):
+class TestHelpersRemoveLineBreaks:
     def test_remove_linebreaks_removes_linebreaks(self):
         test_string = "foo\nbar\nbaz"
         result = h.remove_linebreaks(test_string)
@@ -438,13 +437,13 @@ class TestHelpersRemoveLineBreaks(object):
         test_string = UnicodeLike("foo")
         result = h.remove_linebreaks(test_string)
 
-        str_type = u"".__class__
+        str_type = "".__class__
         assert (
             result.__class__ == str_type
         ), '"remove_linebreaks" casts into unicode()'
 
 
-class TestLicenseOptions(object):
+class TestLicenseOptions:
     def test_includes_existing_license(self):
         licenses = h.license_options("some-old-license")
         assert dict(licenses)["some-old-license"] == "some-old-license"
@@ -469,7 +468,7 @@ def test_unified_resource_format(fmt, exp):
     assert h.unified_resource_format(fmt) == exp
 
 
-class TestGetDisplayTimezone(object):
+class TestGetDisplayTimezone:
     def test_missing_config(self):
         assert h.get_display_timezone() == pytz.timezone("utc")
 
@@ -568,19 +567,19 @@ def test_time_ago_from_timestamp(date, exp):
 
 
 def test_clean_html_disallowed_tag():
-    assert h.clean_html("<b><bad-tag>Hello") == u"<b>Hello</b>"
+    assert h.clean_html("<b><bad-tag>Hello") == "<b>Hello</b>"
 
 
 def test_clean_html_non_string():
     # allow a datetime for compatibility with older ckanext-datapusher
     assert (
         h.clean_html(datetime.datetime(2018, 1, 5, 10, 48, 23, 463511))
-        == u"2018-01-05 10:48:23.463511"
+        == "2018-01-05 10:48:23.463511"
     )
 
 
 @pytest.mark.usefixtures("with_request_context")
-class TestBuildNavMain(object):
+class TestBuildNavMain:
     def test_flask_routes(self):
         menu = (
             ("home.index", "Home"),
@@ -598,7 +597,7 @@ class TestBuildNavMain(object):
         )
 
     def test_active_in_flask_routes(self, test_request_context):
-        with test_request_context(u'/organization'):
+        with test_request_context('/organization'):
             menu = (
                 ("home.index", "Home"),
                 ("dataset.search", "Datasets", ['dataset', 'resource']),
@@ -618,7 +617,7 @@ class TestBuildNavMain(object):
     def test_active_in_resource_controller(self, test_request_context):
 
         dataset = factories.Dataset()
-        with test_request_context(u'/dataset/' + dataset['id']):
+        with test_request_context('/dataset/' + dataset['id']):
             menu = (
                 ("home.index", "Home"),
                 ("dataset.search", "Datasets", ['dataset', 'resource']),
@@ -635,7 +634,7 @@ class TestBuildNavMain(object):
             )
 
         resource = factories.Resource(name="some_resource")
-        with test_request_context(u'/dataset/' + resource['package_id'] + '/resource/' + resource['id']):
+        with test_request_context('/dataset/' + resource['package_id'] + '/resource/' + resource['id']):
             menu = (
                 ("home.index", "Home"),
                 ("dataset.search", "Datasets", ['dataset', 'resource', 'dataset_resource']),
@@ -671,25 +670,25 @@ class TestRemoveUrlParam:
             assert h.remove_url_param("q", replace="test") == base + "?q=test"
 
 
-class TestAddUrlParam(object):
-    @pytest.mark.parametrize(u'url,params,expected', [
-        (u'/dataset', {u'a': u'2'}, u'/dataset/?a=2'),
-        (u'/dataset?a=1', {u'a': u'2'}, u'/dataset/?a=1&a=2'),
-        (u'/dataset?a=1&a=3', {u'a': u'2'}, u'/dataset/?a=1&a=3&a=2'),
-        (u'/dataset?a=2', {u'a': u'2'}, u'/dataset/?a=2&a=2'),
+class TestAddUrlParam:
+    @pytest.mark.parametrize('url,params,expected', [
+        ('/dataset', {'a': '2'}, '/dataset/?a=2'),
+        ('/dataset?a=1', {'a': '2'}, '/dataset/?a=1&a=2'),
+        ('/dataset?a=1&a=3', {'a': '2'}, '/dataset/?a=1&a=3&a=2'),
+        ('/dataset?a=2', {'a': '2'}, '/dataset/?a=2&a=2'),
     ])
     def test_new_param(self, test_request_context, url, params, expected):
         with test_request_context(url):
             assert h.add_url_param(new_params=params) == expected
 
     def test_alternative_url(self, test_request_context):
-        with test_request_context(u'/dataset'):
-            assert h.add_url_param(u'/group') == u'/group'
+        with test_request_context('/dataset'):
+            assert h.add_url_param('/group') == '/group'
             assert h.add_url_param(
-                u'/group', new_params={'x': 'y'}) == u'/group?x=y'
-            assert h.add_url_param() == u'/dataset/'
+                '/group', new_params={'x': 'y'}) == '/group?x=y'
+            assert h.add_url_param() == '/dataset/'
 
-    @pytest.mark.parametrize(u'controller,action,extras', [
+    @pytest.mark.parametrize('controller,action,extras', [
         ('dataset', 'read', {'id': 'uuid'}),
         ('dataset', 'search', {'q': '*:*'}),
         ('organization', 'index', {}),
@@ -698,7 +697,7 @@ class TestAddUrlParam(object):
     ])
     def test_controller_action(
             self, test_request_context, controller, action, extras):
-        with test_request_context(u'/dataset/'):
+        with test_request_context('/dataset/'):
             assert h.add_url_param(
                 controller=controller, action=action, extras=extras
             ) == h.url_for(controller + '.' + action, **extras)
@@ -706,35 +705,35 @@ class TestAddUrlParam(object):
 
 def test_sanitize_url():
     assert h.sanitize_url(
-        u'http://example.com/some-path/to_a/file.jpg'
-    ) == u'http://example.com/some-path/to_a/file.jpg'
+        'http://example.com/some-path/to_a/file.jpg'
+    ) == 'http://example.com/some-path/to_a/file.jpg'
     assert h.sanitize_url(
-        u'sh+eme://host:12345/a/path?a=b&c=d'
-    ) == u'sh+eme://host:12345/a/path?a=b&c=d'
+        'sh+eme://host:12345/a/path?a=b&c=d'
+    ) == 'sh+eme://host:12345/a/path?a=b&c=d'
     assert h.sanitize_url(
-        u'sh+eme://[2001:db8:85a3:8d3:1319:8a2e:370:7348]:12345/a/path?a=b&c=d'
-    ) == u'sh+eme://[2001:db8:85a3:8d3:1319:8a2e:370:7348]:12345/a/path?a=b&c=d'
+        'sh+eme://[2001:db8:85a3:8d3:1319:8a2e:370:7348]:12345/a/path?a=b&c=d'
+    ) == 'sh+eme://[2001:db8:85a3:8d3:1319:8a2e:370:7348]:12345/a/path?a=b&c=d'
     assert h.sanitize_url(
-        u'http://éxàmple.com/some:path/to+a/fil[e].jpg'
-    ) == u'http://éxàmple.com/some%3Apath/to%2Ba/fil%5Be%5D.jpg'
+        'http://éxàmple.com/some:path/to+a/fil[e].jpg'
+    ) == 'http://éxàmple.com/some%3Apath/to%2Ba/fil%5Be%5D.jpg'
     assert h.sanitize_url('http://bad host/path') == ''
     assert h.sanitize_url(
-        u'http://x/things" onerror=alert(document.domain)>'
-    ) == u'http://x/things%22%20onerror%3Dalert%28document.domain%29%3E'
+        'http://x/things" onerror=alert(document.domain)>'
+    ) == 'http://x/things%22%20onerror%3Dalert%28document.domain%29%3E'
     assert h.sanitize_url(
         h.sanitize_url(
-            u'http://éxàmple.com/some:path/to+a/fil[e].jpg'
+            'http://éxàmple.com/some:path/to+a/fil[e].jpg'
         )
-    ) == h.sanitize_url(u'http://éxàmple.com/some:path/to+a/fil[e].jpg')
+    ) == h.sanitize_url('http://éxàmple.com/some:path/to+a/fil[e].jpg')
 
 
 def test_extract_markdown():
-    with_html = u"""<i>Data</i> *exposed*: &mdash;
+    with_html = """<i>Data</i> *exposed*: &mdash;
 Size of dump and data set: size?
 Notes: this is the classic RDF source but historically has had some problems with RDF correctness.
 """
 
-    with_unicode = u"""[From the project website] This project collects information on China’s foreign aid from the China Commerce Yearbook (中国商务年鉴) and the Almanac of China’s Foreign Economic Relations & Trade (中国对外经济贸易年间), published annually by China’s Ministry of Commerce (MOFCOM). Data is reported for each year between 1990 and 2005, with the exception of 2002, in which year China’s Ministry of Commerce published no project-level data on its foreign aid giving."""
+    with_unicode = """[From the project website] This project collects information on China’s foreign aid from the China Commerce Yearbook (中国商务年鉴) and the Almanac of China’s Foreign Economic Relations & Trade (中国对外经济贸易年间), published annually by China’s Ministry of Commerce (MOFCOM). Data is reported for each year between 1990 and 2005, with the exception of 2002, in which year China’s Ministry of Commerce published no project-level data on its foreign aid giving."""
 
     assert "Data exposed" in h.markdown_extract(with_html)
     assert "collects information" in h.markdown_extract(with_unicode)
@@ -885,7 +884,7 @@ def test_get_pkg_dict_extra():
 @pytest.mark.usefixtures("with_request_context")
 def test_decode_view_request_filters(test_request_context):
 
-    with test_request_context(u'?filters=Titl%25C3%25A8:T%25C3%25A9st|Dat%25C3%25AA%2520Time:2022-01-01%252001%253A01%253A01|_id:1|_id:2|_id:3|Piped%257CFilter:Piped%257CValue'):
+    with test_request_context('?filters=Titl%25C3%25A8:T%25C3%25A9st|Dat%25C3%25AA%2520Time:2022-01-01%252001%253A01%253A01|_id:1|_id:2|_id:3|Piped%257CFilter:Piped%257CValue'):
         assert h.decode_view_request_filters() == {
             'Titlè': ['Tést'],
             'Datê Time': ['2022-01-01 01:01:01'],
@@ -1141,7 +1140,7 @@ def test_unix_locale_to_bcp47():
     assert h.unix_locale_to_bcp47('fr_FR') == 'fr-FR'
 
 
-class TestDarkModeEnabled(object):
+class TestDarkModeEnabled:
     def test_enabled_by_default(self):
         assert h.dark_mode_enabled() is True
 

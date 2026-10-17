@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 from typing import Any
 from jinja2.ext import babel_extract

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """075 Rename view plugins
 
 Revision ID: 9cdc88c8896a

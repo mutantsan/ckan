@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Unit tests for ckan/logic/action/create.py.
 
 """
@@ -23,7 +22,7 @@ from freezegun import freeze_time
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserInvite(object):
+class TestUserInvite:
     @mock.patch("ckan.lib.mailer.send_invite")
     def test_invited_user_is_created_as_pending(self, _):
         invited_user = self._invite_user_to_group(factories.User.stub().email)
@@ -66,7 +65,7 @@ class TestUserInvite(object):
         name = factories.User.stub().name
         for _ in range(3):
             invited_user = self._invite_user_to_group(
-                email="same{}@{}.com".format(_, name)
+                email=f"same{_}@{name}.com"
             )
             assert invited_user is not None, invited_user
 
@@ -153,7 +152,7 @@ class TestUserInvite(object):
 
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestResourceViewCreate(object):
+class TestResourceViewCreate:
     def test_resource_view_create(self):
         context = {}
         params = self._default_resource_view_attributes()
@@ -321,7 +320,7 @@ class TestResourceViewCreate(object):
 @pytest.mark.ckan_config("ckan.views.default_views", "")
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestCreateDefaultResourceViews(object):
+class TestCreateDefaultResourceViews:
     def test_add_default_views_to_dataset_resources(self):
 
         # New resources have no views
@@ -594,7 +593,7 @@ class TestResourceCreate:
             content,
             "test.json",
             url="http://data",
-            package_id=factories.Dataset()[u"id"],
+            package_id=factories.Dataset()["id"],
         )
         mimetype = result.pop("mimetype")
 
@@ -624,7 +623,7 @@ class TestResourceCreate:
             content,
             "test.csv",
             url="http://data",
-            package_id=factories.Dataset()[u"id"],
+            package_id=factories.Dataset()["id"],
         )
 
         mimetype = result.pop("mimetype")
@@ -649,7 +648,7 @@ class TestResourceCreate:
             content,
             "test.csv",
             url="http://data",
-            package_id=factories.Dataset()[u"id"],
+            package_id=factories.Dataset()["id"],
         )
 
         size = result.pop("size")
@@ -683,17 +682,17 @@ class TestResourceCreate:
             "resource_create",
             package_id=dataset["id"],
             somekey="somevalue",  # this is how to do resource extras
-            extras={u"someotherkey": u"alt234"},  # this isn't
-            subobject={u"hello": u"there"},  # JSON objects supported
+            extras={"someotherkey": "alt234"},  # this isn't
+            subobject={"hello": "there"},  # JSON objects supported
             sublist=[1, 2, 3],  # JSON lists supported
-            format=u"plain text",
-            url=u"http://datahub.io/download/",
+            format="plain text",
+            url="http://datahub.io/download/",
         )
 
         assert resource["somekey"] == "somevalue"
         assert "extras" not in resource
         assert "someotherkey" not in resource
-        assert resource["subobject"] == {u"hello": u"there"}
+        assert resource["subobject"] == {"hello": "there"}
         assert resource["sublist"] == [1, 2, 3]
         resource = helpers.call_action("package_show", id=dataset["id"])[
             "resources"
@@ -701,7 +700,7 @@ class TestResourceCreate:
         assert resource["somekey"] == "somevalue"
         assert "extras" not in resource
         assert "someotherkey" not in resource
-        assert resource["subobject"] == {u"hello": u"there"}
+        assert resource["subobject"] == {"hello": "there"}
         assert resource["sublist"] == [1, 2, 3]
 
     @freeze_time("2020-02-25 12:00:00")
@@ -798,7 +797,7 @@ class TestResourceCreate:
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestMemberCreate(object):
+class TestMemberCreate:
     def test_group_member_creation(self):
         user = factories.User()
         group = factories.Group()
@@ -891,7 +890,7 @@ class TestMemberCreate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestDatasetCreate(object):
+class TestDatasetCreate:
     def test_private_package(self):
         org = factories.Organization()
         stub = factories.Dataset.stub()
@@ -1088,20 +1087,20 @@ class TestDatasetCreate(object):
             title="Test Resources",
             resources=[
                 {
-                    "alt_url": u"alt123",
-                    "description": u"Full text.",
+                    "alt_url": "alt123",
+                    "description": "Full text.",
                     "somekey": "somevalue",  # this is how to do resource extras
-                    "extras": {u"someotherkey": u"alt234"},  # this isn't
-                    "format": u"plain text",
-                    "hash": u"abc123",
+                    "extras": {"someotherkey": "alt234"},  # this isn't
+                    "format": "plain text",
+                    "hash": "abc123",
                     "position": 0,
-                    "url": u"http://datahub.io/download/",
+                    "url": "http://datahub.io/download/",
                 },
                 {
-                    "description": u"Index of the novel",
-                    "format": u"JSON",
+                    "description": "Index of the novel",
+                    "format": "JSON",
                     "position": 1,
-                    "url": u"http://datahub.io/index.json",
+                    "url": "http://datahub.io/index.json",
                 },
             ],
         )
@@ -1177,7 +1176,7 @@ class TestDatasetCreate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroupCreate(object):
+class TestGroupCreate:
     def test_create_group(self):
         user = factories.User()
         context = {"user": user["name"], "ignore_auth": True}
@@ -1315,7 +1314,7 @@ class TestGroupCreate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationCreate(object):
+class TestOrganizationCreate:
     def test_create_organization(self):
         user = factories.User()
         context = {"user": user["name"], "ignore_auth": True}
@@ -1446,7 +1445,7 @@ class TestOrganizationCreate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserCreate(object):
+class TestUserCreate:
     def test_user_create_with_password_hash(self):
         sysadmin = factories.Sysadmin()
         context = {"user": sysadmin["name"]}
@@ -1581,7 +1580,7 @@ class TestUserCreate(object):
 
 @pytest.mark.usefixtures("clean_db")
 @pytest.mark.ckan_config("ckan.auth.create_user_via_web", True)
-class TestUserCreateDb():
+class TestUserCreateDb:
 
     def test_anon_user_create_does_not_update(self):
         user1 = factories.User(about="This is user 1")
@@ -1710,7 +1709,7 @@ class TestUserCreateDb():
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestFollowCommon(object):
+class TestFollowCommon:
     def test_validation(self):
         user = factories.User()
         unfollow_actions = (
@@ -1748,7 +1747,7 @@ class TestFollowCommon(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestFollowDataset(object):
+class TestFollowDataset:
     def test_auth(self):
         user = factories.User()
         dataset = factories.Dataset()
@@ -1826,7 +1825,7 @@ class TestFollowDataset(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestFollowGroup(object):
+class TestFollowGroup:
     def test_auth(self):
         user = factories.User()
         group = factories.Group()
@@ -1865,7 +1864,7 @@ class TestFollowGroup(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestFollowOrganization(object):
+class TestFollowOrganization:
     def test_auth(self):
         user = factories.User()
         organization = factories.Organization()
@@ -1904,7 +1903,7 @@ class TestFollowOrganization(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestFollowUser(object):
+class TestFollowUser:
     def test_auth(self):
         user = factories.User()
         second_user = factories.User()
@@ -1967,21 +1966,21 @@ class TestFollowUser(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestApiToken(object):
+class TestApiToken:
     def test_token_created(self):
         from ckan.lib.api_token import decode
 
         user = factories.User()
         data = helpers.call_action(
-            u"api_token_create",
-            context={u"model": model, u"user": user[u"name"]},
-            user=user[u"name"],
-            name=u"token-name",
+            "api_token_create",
+            context={"model": model, "user": user["name"]},
+            user=user["name"],
+            name="token-name",
         )
-        token = data[u"token"]
-        jti = decode(token)[u"jti"]
+        token = data["token"]
+        jti = decode(token)["jti"]
         res = model.ApiToken.get(jti)
-        assert res.user_id == user[u"id"]
+        assert res.user_id == user["id"]
         assert res.last_access is None
         assert res.id == jti
 
@@ -2053,7 +2052,7 @@ def test_create_package_collaborator_when_config_disabled():
 
 @pytest.mark.usefixtures("non_clean_db")
 @pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
-class TestPackageMemberCreate(object):
+class TestPackageMemberCreate:
     def test_create(self):
         initial = model.Session.query(model.PackageMember).count()
         dataset = factories.Dataset()
@@ -2142,7 +2141,7 @@ class TestPackageMemberCreate(object):
 
 @pytest.mark.usefixtures("non_clean_db")
 @pytest.mark.ckan_config("ckan.auth.create_user_via_web", True)
-class TestUserPluginExtras(object):
+class TestUserPluginExtras:
     def test_stored_on_create_if_sysadmin(self):
 
         sysadmin = factories.Sysadmin()
@@ -2242,7 +2241,7 @@ class TestUserPluginExtras(object):
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestUserImageUrl(object):
+class TestUserImageUrl:
     def test_external_picture(self):
         stub = factories.User.stub()
         params = {
@@ -2388,7 +2387,7 @@ class TestUserImageUrl(object):
         assert user["image_display_url"].endswith(".jpg")
 
 
-class TestVocabularyCreate(object):
+class TestVocabularyCreate:
     @pytest.mark.usefixtures("non_clean_db")
     def test_basic(self):
         name = factories.Vocabulary.stub().name
@@ -2628,7 +2627,7 @@ class TestMemberCreate2:
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestPackagePluginData(object):
+class TestPackagePluginData:
 
     def test_stored_on_create_if_sysadmin(self):
         sysadmin = factories.Sysadmin()

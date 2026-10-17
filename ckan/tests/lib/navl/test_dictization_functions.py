@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -40,7 +39,7 @@ def identity_converter(key, data, errors, context):
     return
 
 
-class TestValidate(object):
+class TestValidate:
     def test_validate_passes_a_copy_of_the_context_to_validators(self):
 
         # We need to pass some keys on the context, otherwise validate
@@ -74,7 +73,7 @@ class TestValidate(object):
         data, errors = validate(data_dict, schema, context)
 
 
-class TestDictizationError(object):
+class TestDictizationError:
     def test_str_error(self):
         err_obj = Invalid("Some ascii error")
         assert str(err_obj) == "Invalid: 'Some ascii error'"
@@ -90,7 +89,7 @@ class TestDictizationError(object):
         assert str(err_obj) == "Invalid"
 
 
-class TestCheckDict(object):
+class TestCheckDict:
     def test_exact(self):
         assert (
             check_dict(
@@ -128,7 +127,7 @@ class TestCheckDict(object):
         ]
 
 
-class TestResolveStringKey(object):
+class TestResolveStringKey:
     def test_dict_value(self):
         assert resolve_string_key(
             {"a": [{"b": "c"}], "d": "e"}, "a__0__b"
@@ -163,7 +162,7 @@ class TestResolveStringKey(object):
         assert de.value.error == "Unmatched key a__dead"
 
 
-class TestCheckStringKey(object):
+class TestCheckStringKey:
     def test_list_child(self):
         assert (
             check_string_key({"a": [{"b": "c"}], "d": "e"}, "a", [{"b": "c"}])
@@ -206,7 +205,7 @@ class TestCheckStringKey(object):
         ) == [("a", 0)]
 
 
-class TestFilterGlobMatch(object):
+class TestFilterGlobMatch:
     def test_remove_leaves(self):
         data = {"q": [{"b": "c"}, {"z": "x"}], "r": "e"}
         filter_glob_match(data, ["q__0__b", "q__1__z", "r"])
@@ -238,7 +237,7 @@ class TestFilterGlobMatch(object):
         assert data == [{"id": "hello"}, {"id": "people"}]
 
 
-class TestMergeDict(object):
+class TestMergeDict:
     def test_deep(self):
         data = {"a": [{"b": "c"}], "d": "e"}
         update_merge_dict(
@@ -279,7 +278,7 @@ class TestMergeDict(object):
         assert de.value.error == "Expected dict for a__0"
 
 
-class TestMergeStringKey(object):
+class TestMergeStringKey:
     def test_replace_child(self):
         data = {"a": [{"b": "c"}], "d": "e"}
         update_merge_string_key(data, "a__0__b", "z")
@@ -465,78 +464,78 @@ class TestDictization:
 
         assert errors == {
             ("__junk",): [
-                u"The input field [('4', 1, '30')] was not expected."
+                "The input field [('4', 1, '30')] was not expected."
             ],
-            ("1",): [u"Missing value"],
-            ("__extras",): [u"The input field __extras was not expected."],
+            ("1",): ["Missing value"],
+            ("__extras",): ["The input field __extras was not expected."],
         }, errors
 
     def test_flatten(self):
 
         data = {
             "extras": [
-                {"key": "genre", "value": u"horror"},
-                {"key": "media", "value": u"dvd"},
+                {"key": "genre", "value": "horror"},
+                {"key": "media", "value": "dvd"},
             ],
-            "license_id": u"gpl-3.0",
-            "name": u"testpkg",
+            "license_id": "gpl-3.0",
+            "name": "testpkg",
             "resources": [
                 {
-                    u"alt_url": u"alt_url",
-                    u"description": u"Second file",
-                    u"extras": {u"size": u"200"},
-                    u"format": u"xml",
-                    u"hash": u"def123",
-                    u"url": u"http://blah.com/file2.xml",
+                    "alt_url": "alt_url",
+                    "description": "Second file",
+                    "extras": {"size": "200"},
+                    "format": "xml",
+                    "hash": "def123",
+                    "url": "http://blah.com/file2.xml",
                 },
                 {
-                    u"alt_url": u"alt_url",
-                    u"description": u"Main file",
-                    u"extras": {u"size": u"200"},
-                    u"format": u"xml",
-                    u"hash": u"abc123",
-                    u"url": u"http://blah.com/file.xml",
+                    "alt_url": "alt_url",
+                    "description": "Main file",
+                    "extras": {"size": "200"},
+                    "format": "xml",
+                    "hash": "abc123",
+                    "url": "http://blah.com/file.xml",
                 },
             ],
-            "tags": [{"name": u"russion"}, {"name": u"novel"}],
-            "title": u"Some Title",
-            "url": u"http://blahblahblah.mydomain",
+            "tags": [{"name": "russion"}, {"name": "novel"}],
+            "title": "Some Title",
+            "url": "http://blahblahblah.mydomain",
         }
 
         assert flatten_dict(data) == {
             ("extras", 0, "key"): "genre",
-            ("extras", 0, "value"): u"horror",
+            ("extras", 0, "value"): "horror",
             ("extras", 1, "key"): "media",
-            ("extras", 1, "value"): u"dvd",
-            ("license_id",): u"gpl-3.0",
-            ("name",): u"testpkg",
-            ("resources", 0, u"alt_url"): u"alt_url",
-            ("resources", 0, u"description"): u"Second file",
-            ("resources", 0, u"extras"): {u"size": u"200"},
-            ("resources", 0, u"format"): u"xml",
-            ("resources", 0, u"hash"): u"def123",
-            ("resources", 0, u"url"): u"http://blah.com/file2.xml",
-            ("resources", 1, u"alt_url"): u"alt_url",
-            ("resources", 1, u"description"): u"Main file",
-            ("resources", 1, u"extras"): {u"size": u"200"},
-            ("resources", 1, u"format"): u"xml",
-            ("resources", 1, u"hash"): u"abc123",
-            ("resources", 1, u"url"): u"http://blah.com/file.xml",
-            ("tags", 0, "name"): u"russion",
-            ("tags", 1, "name"): u"novel",
-            ("title",): u"Some Title",
-            ("url",): u"http://blahblahblah.mydomain",
+            ("extras", 1, "value"): "dvd",
+            ("license_id",): "gpl-3.0",
+            ("name",): "testpkg",
+            ("resources", 0, "alt_url"): "alt_url",
+            ("resources", 0, "description"): "Second file",
+            ("resources", 0, "extras"): {"size": "200"},
+            ("resources", 0, "format"): "xml",
+            ("resources", 0, "hash"): "def123",
+            ("resources", 0, "url"): "http://blah.com/file2.xml",
+            ("resources", 1, "alt_url"): "alt_url",
+            ("resources", 1, "description"): "Main file",
+            ("resources", 1, "extras"): {"size": "200"},
+            ("resources", 1, "format"): "xml",
+            ("resources", 1, "hash"): "abc123",
+            ("resources", 1, "url"): "http://blah.com/file.xml",
+            ("tags", 0, "name"): "russion",
+            ("tags", 1, "name"): "novel",
+            ("title",): "Some Title",
+            ("url",): "http://blahblahblah.mydomain",
         }, pformat(flatten_dict(data))
 
         assert data == unflatten(flatten_dict(data))
 
     def test_flatten_deeper(self):
         data = {
-            u"resources": [
+            "resources": [
                 {
-                    u"subfields": [
+                    "subfields": [
                         {
-                            u"test": u"hello",
+                            "test": "hello",
                         },
                     ],
                 },
@@ -544,7 +543,7 @@ class TestDictization:
         }
 
         assert flatten_dict(data) == {
-            ("resources", 0, u"subfields", 0, u"test"): u"hello",
+            ("resources", 0, "subfields", 0, "test"): "hello",
         }, pformat(flatten_dict(data))
 
         assert data == unflatten(flatten_dict(data)), pformat(
@@ -553,15 +552,15 @@ class TestDictization:
 
     def test_unflatten_regression(self):
         fdata = {
-            (u"items", 0, u"name"): u"first",
-            (u"items", 0, u"value"): u"v1",
-            (u"items", 3, u"name"): u"second",
-            (u"items", 3, u"value"): u"v2",
+            ("items", 0, "name"): "first",
+            ("items", 0, "value"): "v1",
+            ("items", 3, "name"): "second",
+            ("items", 3, "value"): "v2",
         }
         expected = {
-            u"items": [
-                {u"name": u"first", u"value": u"v1"},
-                {u"name": u"second", u"value": u"v2"},
+            "items": [
+                {"name": "first", "value": "v1"},
+                {"name": "second", "value": "v2"},
             ],
         }
         assert unflatten(fdata) == expected, pformat(unflatten(fdata))
@@ -589,8 +588,8 @@ class TestDictization:
         converted_data, errors = validate(data, schema)
 
         assert errors == {
-            "age": [u"Please enter an integer value"],
-            "name": [u"Missing value"],
+            "age": ["Please enter an integer value"],
+            "name": ["Missing value"],
         }, errors
 
         assert converted_data == {
@@ -619,7 +618,7 @@ class TestDictization:
 
         converted_data, errors = validate(data, schema)
 
-        assert errors == {"numbers": [{"code": [u"Missing value"]}, {}]}
+        assert errors == {"numbers": [{"code": ["Missing value"]}, {}]}
 
     def test_error_list_position(self):
         data = {
@@ -651,9 +650,9 @@ class TestDictization:
         assert errors == {
             "numbers": [
                 {},
-                {"code": [u"Missing value"]},
+                {"code": ["Missing value"]},
                 {},
-                {"code": [u"Missing value"]},
+                {"code": ["Missing value"]},
                 {},
             ]
         }
@@ -672,7 +671,7 @@ class TestDictization:
         assert converted_data == {
             "gender": "female",
             "age": 32,
-            "name": u"fred",
+            "name": "fred",
         }, converted_data
 
         assert isinstance(converted_data["name"], str)

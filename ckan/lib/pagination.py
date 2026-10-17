@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-u'''
+'''
 
 This module was copied (with modifications) from the webhelpers library,
 which is distributed with the following license:
@@ -37,13 +36,15 @@ from __future__ import annotations
 
 import re
 from string import Template
-from typing import Any, Callable, Match, Optional, Sequence, List, cast
+from typing import Any, Optional, List, cast
+from re import Match
+from collections.abc import Callable, Sequence
 
 import dominate.tags as tags
 from markupsafe import Markup
 
 
-class BasePage(List[Any]):
+class BasePage(list[Any]):
     """A list/iterator of items representing one page in a larger
     collection.
 
@@ -98,19 +99,19 @@ class BasePage(List[Any]):
         Index of last item on the current page
 
     """
-    previous_page: Optional[int]
-    next_page: Optional[int]
-    first_item: Optional[int]
-    last_item: Optional[int]
+    previous_page: int | None
+    next_page: int | None
+    first_item: int | None
+    last_item: int | None
 
     def __init__(self,
                  collection: Sequence[Any],
                  page: int = 1,
                  items_per_page: int = 20,
-                 item_count: Optional[int] = None,
+                 item_count: int | None = None,
                  sqlalchemy_session: Any = None,
                  presliced_list: bool = False,
-                 url: Optional[Callable[..., str]] = None,
+                 url: Callable[..., str] | None = None,
                  **kwargs: Any) -> None:
         """Create a "Page" instance.
 
@@ -236,47 +237,47 @@ class BasePage(List[Any]):
 
     def __repr__(self):
         return (
-            u"Page:\n"
-            u"Collection type:  %(type)s\n"
-            u"(Current) page:   %(page)s\n"
-            u"First item:       %(first_item)s\n"
-            u"Last item:        %(last_item)s\n"
-            u"First page:       %(first_page)s\n"
-            u"Last page:        %(last_page)s\n"
-            u"Previous page:    %(previous_page)s\n"
-            u"Next page:        %(next_page)s\n"
-            u"Items per page:   %(items_per_page)s\n"
-            u"Number of items:  %(item_count)s\n"
-            u"Number of pages:  %(page_count)s\n"
+            "Page:\n"
+            "Collection type:  %(type)s\n"
+            "(Current) page:   %(page)s\n"
+            "First item:       %(first_item)s\n"
+            "Last item:        %(last_item)s\n"
+            "First page:       %(first_page)s\n"
+            "Last page:        %(last_page)s\n"
+            "Previous page:    %(previous_page)s\n"
+            "Next page:        %(next_page)s\n"
+            "Items per page:   %(items_per_page)s\n"
+            "Number of items:  %(item_count)s\n"
+            "Number of pages:  %(page_count)s\n"
             % {
-                u"type": type(self.collection),
-                u"page": self.page,
-                u"first_item": self.first_item,
-                u"last_item": self.last_item,
-                u"first_page": self.first_page,
-                u"last_page": self.last_page,
-                u"previous_page": self.previous_page,
-                u"next_page": self.next_page,
-                u"items_per_page": self.items_per_page,
-                u"item_count": self.item_count,
-                u"page_count": self.page_count,
+                "type": type(self.collection),
+                "page": self.page,
+                "first_item": self.first_item,
+                "last_item": self.last_item,
+                "first_page": self.first_page,
+                "last_page": self.last_page,
+                "previous_page": self.previous_page,
+                "next_page": self.next_page,
+                "items_per_page": self.items_per_page,
+                "item_count": self.item_count,
+                "page_count": self.page_count,
             }
         )
 
     def pager(self,
-              format: str = u"~2~",
-              page_param: str = u"page",
-              partial_param: str = u"partial",
+              format: str = "~2~",
+              page_param: str = "page",
+              partial_param: str = "partial",
               show_if_single_page: bool = False,
-              separator: str = u" ",
-              onclick: Optional[str] = None,
-              symbol_first: str = u"<<",
-              symbol_last: str = u">>",
-              symbol_previous: str = u"<",
-              symbol_next: str = u">",
-              link_attr: Optional[dict[str, str]] = None,
-              curpage_attr: Optional[dict[str, str]] = None,
-              dotdot_attr: Optional[dict[str, str]] = None,
+              separator: str = " ",
+              onclick: str | None = None,
+              symbol_first: str = "<<",
+              symbol_last: str = ">>",
+              symbol_previous: str = "<",
+              symbol_next: str = ">",
+              link_attr: dict[str, str] | None = None,
+              curpage_attr: dict[str, str] | None = None,
+              dotdot_attr: dict[str, str] | None = None,
               **kwargs: Any) -> Markup:
         """Return string with links to other pages (e.g. "1 2 [3] 4 5 6 7").
 
@@ -459,11 +460,11 @@ class BasePage(List[Any]):
 
         """
         if curpage_attr is None:
-            curpage_attr = {u"class": u"pager_curpage"}
+            curpage_attr = {"class": "pager_curpage"}
         if link_attr is None:
-            link_attr = {u"class": u"pager_link"}
+            link_attr = {"class": "pager_link"}
         if dotdot_attr is None:
-            dotdot_attr = {u"class": u"pager_dotdot"}
+            dotdot_attr = {"class": "pager_dotdot"}
 
         self.curpage_attr = curpage_attr
         self.separator = separator
@@ -478,34 +479,34 @@ class BasePage(List[Any]):
         if self.page_count == 0 or (
             self.page_count == 1 and not show_if_single_page
         ):
-            return Markup(u"")
+            return Markup("")
 
         # Replace ~...~ in token format by range of pages
-        result = re.sub(u"~(\\d+)~", self._range, format)
+        result = re.sub("~(\\d+)~", self._range, format)
 
         # Interpolate '%' variables
         result = Template(result).safe_substitute(
             {
-                u"first_page": self.first_page,
-                u"last_page": self.last_page,
-                u"page": self.page,
-                u"page_count": self.page_count,
-                u"items_per_page": self.items_per_page,
-                u"first_item": self.first_item,
-                u"last_item": self.last_item,
-                u"item_count": self.item_count,
-                u"link_first": self.page > self.first_page
+                "first_page": self.first_page,
+                "last_page": self.last_page,
+                "page": self.page,
+                "page_count": self.page_count,
+                "items_per_page": self.items_per_page,
+                "first_item": self.first_item,
+                "last_item": self.last_item,
+                "item_count": self.item_count,
+                "link_first": self.page > self.first_page
                 and self._pagerlink(self.first_page, symbol_first)
-                or u"",
-                u"link_last": self.page < self.last_page
+                or "",
+                "link_last": self.page < self.last_page
                 and self._pagerlink(self.last_page, symbol_last)
-                or u"",
-                u"link_previous": self.previous_page
+                or "",
+                "link_previous": self.previous_page
                 and self._pagerlink(self.previous_page, symbol_previous)
-                or u"",
-                u"link_next": self.next_page
+                or "",
+                "link_next": self.next_page
                 and self._pagerlink(self.next_page, symbol_next)
-                or u"",
+                or "",
             }
         )
 
@@ -548,7 +549,7 @@ class BasePage(List[Any]):
         # and the currently displayed page range
         if leftmost_page - self.first_page > 1:
             # Wrap in a SPAN tag if nolink_attr is set
-            text = u".."
+            text = ".."
             if self.dotdot_attr:
                 text = Markup(str(tags.span(text, **self.dotdot_attr)))
             nav_items.append(text)
@@ -556,20 +557,20 @@ class BasePage(List[Any]):
         for thispage in range(leftmost_page, rightmost_page + 1):
             # Highlight the current page number and do not use a link
             if thispage == self.page:
-                text = u"%s" % (thispage,)
+                text = "%s" % (thispage,)
                 # Wrap in a SPAN tag if nolink_attr is set
                 if self.curpage_attr:
                     text = Markup(str(tags.span(text, **self.curpage_attr)))
                 nav_items.append(text)
             # Otherwise create just a link to that page
             else:
-                text = u"%s" % (thispage,)
+                text = "%s" % (thispage,)
                 nav_items.append(self._pagerlink(thispage, text))
 
         # Insert dots if there are pages between the displayed
         # page numbers and the end of the page range
         if self.last_page - rightmost_page > 1:
-            text = u".."
+            text = ".."
             # Wrap in a SPAN tag if nolink_attr is set
             if self.dotdot_attr:
                 text = Markup(str(tags.span(text, **self.dotdot_attr)))
@@ -622,7 +623,7 @@ class BasePage(List[Any]):
                 onclick_action = self.onclick % (partial_url,)
             except TypeError:
                 onclick_action = Template(self.onclick).safe_substitute(
-                    {u"partial_url": partial_url, u"page": page}
+                    {"partial_url": partial_url, "page": page}
                 )
             return tags.a(
                 text, href=link_url, onclick=onclick_action, **self.link_attr
@@ -633,7 +634,7 @@ class BasePage(List[Any]):
 
 class Page(BasePage):
     def pager(self, *args: Any, **kwargs: Any) -> Markup:
-        with cast(Any, tags.div(cls=u"pagination-wrapper")) as wrapper:
+        with cast(Any, tags.div(cls="pagination-wrapper")) as wrapper:
             tags.ul(
                 "$link_previous ~2~ $link_next",
                 cls="pagination justify-content-center"
@@ -642,18 +643,18 @@ class Page(BasePage):
             format=str(wrapper),
             symbol_previous=tags.i(cls='fa-solid fa-chevron-left'),
             symbol_next=tags.i(cls='fa-solid fa-chevron-right'),
-            curpage_attr={u"class": u"page-item active"},
+            curpage_attr={"class": "page-item active"},
             link_attr={"class": "page-link"},
         )
         params.update(kwargs)
-        return super(Page, self).pager(*args, **params)
+        return super().pager(*args, **params)
 
     # Put each page link into a <li> (for Bootstrap to style it)
 
     def _pagerlink(
             self, page: int, text: str,
-            extra_attributes: Optional[dict[str, Any]] = None):
-        anchor = super(Page, self)._pagerlink(page, text)
+            extra_attributes: dict[str, Any] | None = None):
+        anchor = super()._pagerlink(page, text)
         extra_attributes = extra_attributes or {"class": "page-item"}
         return str(tags.li(anchor, **extra_attributes))
 
@@ -662,14 +663,14 @@ class Page(BasePage):
     # (for Bootstrap to style them properly)
 
     def _range(self, regexp_match: Match[str]):
-        html = super(Page, self)._range(regexp_match)
+        html = super()._range(regexp_match)
         # Convert ..
-        dotdot = u'<span class="pager_dotdot">..</span>'
-        dotdot_link = tags.li(tags.a(u"...", href=u"#"), cls=u"disabled")
+        dotdot = '<span class="pager_dotdot">..</span>'
+        dotdot_link = tags.li(tags.a("...", href="#"), cls="disabled")
         html = re.sub(dotdot, str(dotdot_link), html)
 
         # Convert current page
-        text = u"%s" % self.page
+        text = "%s" % self.page
         current_page_span = str(tags.span(text, **self.curpage_attr))
         current_page_link = self._pagerlink(
             self.page, text, extra_attributes=self.curpage_attr

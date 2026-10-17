@@ -1,4 +1,3 @@
-# encoding: utf-8
 """083 Remove related items
 
 Revision ID: f98d8fa2a7f7
@@ -6,7 +5,6 @@ Revises: 8ea886d0ede4
 Create Date: 2018-09-04 18:49:17.615242
 
 """
-from __future__ import print_function
 from alembic import op
 import sqlalchemy as sa
 from ckan.migration import skip_based_on_legacy_engine_version

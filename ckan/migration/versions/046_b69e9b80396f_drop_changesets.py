@@ -1,4 +1,3 @@
-# encoding: utf-8
 """046 Drop changesets
 
 Revision ID: b69e9b80396f

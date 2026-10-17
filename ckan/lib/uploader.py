@@ -51,7 +51,7 @@ def _copy_file(input_file: IO[bytes],
 
 
 def get_uploader(upload_to: str,
-                 old_filename: Optional[str] = None) -> PUploader:
+                 old_filename: str | None = None) -> PUploader:
     '''Query IUploader plugins and return an uploader instance for general
     files.'''
     upload = None
@@ -105,18 +105,18 @@ def get_max_resource_size() -> int:
     return config.get('ckan.max_resource_size')
 
 
-class Upload(object):
-    storage_path: Optional[str]
-    filename: Optional[str]
-    filepath: Optional[str]
-    object_type: Optional[str]
-    old_filename: Optional[str]
-    old_filepath: Optional[str]
-    upload_file: Optional[IO[bytes]]
+class Upload:
+    storage_path: str | None
+    filename: str | None
+    filepath: str | None
+    object_type: str | None
+    old_filename: str | None
+    old_filepath: str | None
+    upload_file: IO[bytes] | None
 
     def __init__(self,
                  object_type: str,
-                 old_filename: Optional[str] = None) -> None:
+                 old_filename: str | None = None) -> None:
         '''Setup upload by creating a subdirectory of the storage directory
         of name ``object_type``.
 
@@ -273,8 +273,8 @@ class Upload(object):
             self.filepath = str(Path(self.filepath).with_suffix(preferred_extension))
 
 
-class ResourceUpload(object):
-    mimetype: Optional[str]
+class ResourceUpload:
+    mimetype: str | None
 
     def __init__(self, resource: dict[str, Any]) -> None:
         path = get_storage_path()
@@ -327,7 +327,7 @@ class ResourceUpload(object):
                     self.mimetype = magic.from_buffer(self.upload_file.read(),
                                                       mime=True)
                     self.upload_file.seek(0, os.SEEK_SET)
-                except IOError:
+                except OSError:
                     # Not that important if call above fails
                     self.mimetype = None
 
@@ -409,16 +409,16 @@ class ResourceUpload(object):
                 pass
 
 
-class FKUpload(object):
+class FKUpload:
     storage: fk.Storage | None = None
-    filename: Optional[str]
-    object_type: Optional[str]
-    old_filename: Optional[str]
+    filename: str | None
+    object_type: str | None
+    old_filename: str | None
     upload_file: files.Upload | None
 
     def __init__(self,
                  object_type: str,
-                 old_filename: Optional[str] = None) -> None:
+                 old_filename: str | None = None) -> None:
         '''Setup upload by creating a subdirectory of the storage directory
         of name ``object_type``.
 
@@ -518,8 +518,8 @@ class FKUpload(object):
             self.filename = str(Path(self.filename).with_suffix(preferred_extension))
 
 
-class FKResourceUpload(object):
-    mimetype: Optional[str]
+class FKResourceUpload:
+    mimetype: str | None
     storage: fk.Storage | None = None
 
     def __init__(self, resource: dict[str, Any]) -> None:

@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """The base functionality for web-views.
 
@@ -27,8 +26,8 @@ log = logging.getLogger(__name__)
 
 def abort(status_code: int,
           detail: str = '',
-          headers: Optional[dict[str, Any]] = None,
-          comment: Optional[str] = None) -> NoReturn:
+          headers: dict[str, Any] | None = None,
+          comment: str | None = None) -> NoReturn:
     '''Abort the current request immediately by returning an HTTP exception.
 
     This is a wrapper for :py:func:`flask.abort` that adds
@@ -86,7 +85,7 @@ def render_snippet(*template_names: str, **kw: Any) -> str:
 
 
 def render(template_name: str,
-           extra_vars: Optional[dict[str, Any]] = None) -> str:
+           extra_vars: dict[str, Any] | None = None) -> str:
     '''Render a template and return the output.
 
     This is CKAN's main template rendering function.
@@ -104,7 +103,7 @@ def render(template_name: str,
     return flask_render_template(template_name, **extra_vars)
 
 
-def _allow_caching(cache_force: Optional[bool] = None):
+def _allow_caching(cache_force: bool | None = None):
     # Caching Logic
 
     allow_cache = True
@@ -139,7 +138,7 @@ def _is_valid_session_cookie_data() -> bool:
     for key, value in session.items():
         if key == config.get("WTF_CSRF_FIELD_NAME"):
             continue
-        if not key.startswith(u'_') and value:
+        if not key.startswith('_') and value:
             is_valid_cookie_data = True
             break
 

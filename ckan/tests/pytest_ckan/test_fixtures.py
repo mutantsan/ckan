@@ -10,17 +10,17 @@ from ckan.model.base import BaseModel
 
 
 def test_ckan_config_fixture(ckan_config):
-    assert asbool(ckan_config[u"testing"])
+    assert asbool(ckan_config["testing"])
 
 
 def test_ckan_config_do_not_have_some_new_config(ckan_config):
-    assert u"some.new.config" not in ckan_config
+    assert "some.new.config" not in ckan_config
 
 
 # START-CONFIG-OVERRIDE
-@pytest.mark.ckan_config(u"some.new.config", u"exists")
+@pytest.mark.ckan_config("some.new.config", "exists")
 def test_ckan_config_mark(ckan_config):
-    assert ckan_config[u"some.new.config"] == u"exists"
+    assert ckan_config["some.new.config"] == "exists"
 
 
 # END-CONFIG-OVERRIDE
@@ -30,10 +30,10 @@ class _FakePlugin:
     pass
 
 
-@pytest.mark.ckan_config(u"some.new.config", u"exists")
-@pytest.mark.usefixtures(u"ckan_config")
+@pytest.mark.ckan_config("some.new.config", "exists")
+@pytest.mark.usefixtures("ckan_config")
 def test_ckan_config_mark_without_explicit_config_fixture():
-    assert config[u"some.new.config"] == u"exists"
+    assert config["some.new.config"] == "exists"
 
 
 class TestWithPlugins:
@@ -42,10 +42,10 @@ class TestWithPlugins:
         plugins.unload_all()
         plugins.load("example_itemplatehelpers")
 
-    @pytest.mark.ckan_config(u"ckan.plugins", u"stats")
-    @pytest.mark.usefixtures(u"with_plugins")
+    @pytest.mark.ckan_config("ckan.plugins", "stats")
+    @pytest.mark.usefixtures("with_plugins")
     def test_with_plugins_is_able_to_run_with_stats(self):
-        assert plugins.plugin_loaded(u"stats")
+        assert plugins.plugin_loaded("stats")
 
     def test_with_plugins_unloads_enabled_plugins(
             self, load_example_helpers, with_plugins
@@ -103,46 +103,46 @@ def test_existing_ckan_config_mark_with_test_request(ckan_config):
     assert ckan_config["ckan.site_url"] == "https://example.org"
 
 
-class TestMethodLevelConfig(object):
+class TestMethodLevelConfig:
     """Verify that config overrides work for individual methods.
     """
 
-    @pytest.mark.ckan_config(u"some.new.config", u"exists")
+    @pytest.mark.ckan_config("some.new.config", "exists")
     def test_ckan_config_mark_first(self, ckan_config):
-        assert ckan_config[u"some.new.config"] == u"exists"
+        assert ckan_config["some.new.config"] == "exists"
 
-    @pytest.mark.ckan_config(u"some.new.config", u"exists again")
+    @pytest.mark.ckan_config("some.new.config", "exists again")
     def test_ckan_config_mark_second(self, ckan_config):
-        assert ckan_config[u"some.new.config"] == u"exists again"
+        assert ckan_config["some.new.config"] == "exists again"
 
 
-@pytest.mark.ckan_config(u"some.new.config", u"exists")
-class TestClassLevelConfig(object):
+@pytest.mark.ckan_config("some.new.config", "exists")
+class TestClassLevelConfig:
 
     """Verify that config overrides applied for each method when applied
     per on class level.
     """
 
     def test_ckan_config_mark_first(self, ckan_config):
-        assert ckan_config[u"some.new.config"] == u"exists"
+        assert ckan_config["some.new.config"] == "exists"
 
     def test_ckan_config_mark_second(self, ckan_config):
-        assert ckan_config[u"some.new.config"] == u"exists"
+        assert ckan_config["some.new.config"] == "exists"
 
 
-class TestCreateWithUpload(object):
+class TestCreateWithUpload:
 
     def test_create_organization(self, create_with_upload, ckan_config, faker):
         user = factories.User()
         context = {
-            u"user": user["name"]
+            "user": user["name"]
         }
         org = create_with_upload(
-            faker.image(), u"image.png",
+            faker.image(), "image.png",
             context=context,
-            action=u"organization_create",
-            upload_field_name=u"image_upload",
-            name=u"test-org"
+            action="organization_create",
+            upload_field_name="image_upload",
+            name="test-org"
         )
         storage = files.get_storage(ckan_config["ckan.files.default_storages.group"])
         content = storage.content(files.FileData.from_string(org["image_url"]))
@@ -152,15 +152,15 @@ class TestCreateWithUpload(object):
     def test_create_resource(self, create_with_upload):
         dataset = factories.Dataset()
         resource = create_with_upload(
-            u"hello world", u"file.txt",
-            package_id=dataset[u'id']
+            "hello world", "file.txt",
+            package_id=dataset['id']
         )
-        assert resource[u"url_type"] == u"upload"
-        assert resource[u"format"] == u"TXT"
-        assert resource[u"size"] == 11
+        assert resource["url_type"] == "upload"
+        assert resource["format"] == "TXT"
+        assert resource["size"] == 11
 
 
-class TestMigrateDbFor(object):
+class TestMigrateDbFor:
     @pytest.mark.ckan_config("ckan.plugins", "example_database_migrations")
     @pytest.mark.usefixtures("with_plugins", "clean_db")
     def test_migrations_applied(self, migrate_db_for):

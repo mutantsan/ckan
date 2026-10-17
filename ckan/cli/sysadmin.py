@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 from typing import Optional
@@ -11,7 +10,7 @@ from ckan.cli.user import add_user
 
 
 @click.group(
-    short_help=u"Gives sysadmin rights to a named user.",
+    short_help="Gives sysadmin rights to a named user.",
     invoke_without_command=True,
 )
 @click.pass_context
@@ -23,16 +22,16 @@ def sysadmin(ctx: click.Context):
         ctx.invoke(list_sysadmins)
 
 
-@sysadmin.command(name=u"list", help=u"List sysadmins.")
+@sysadmin.command(name="list", help="List sysadmins.")
 def list_sysadmins():
-    click.secho(u"Sysadmins:")
+    click.secho("Sysadmins:")
     sysadmins = model.Session.query(model.User).filter_by(
-        sysadmin=True, state=u"active"
+        sysadmin=True, state="active"
     )
-    click.secho(u"count = %i" % sysadmins.count())
+    click.secho("count = %i" % sysadmins.count())
     for sysadmin in sysadmins:
         click.secho(
-            u"%s name=%s email=%s id=%s"
+            "%s name=%s email=%s id=%s"
             % (
                 sysadmin.__class__.__name__,
                 sysadmin.name,
@@ -42,7 +41,7 @@ def list_sysadmins():
         )
 
 
-@sysadmin.command(help=u"Convert user into a sysadmin.")
+@sysadmin.command(help="Convert user into a sysadmin.")
 @click.argument("username")
 @click.argument("args", nargs=-1)
 @click.option("--create", is_flag=True, help="Create user if it doesn't exist")
@@ -51,13 +50,13 @@ def add(
         ctx: click.Context,
         username: str,
         args: list[str],
-        create: Optional[bool] = False):
+        create: bool | None = False):
     user = model.User.by_name(str(username))
     if not user:
         if not create:
-            click.secho(u'User "%s" not found' % username, fg=u"red")
+            click.secho('User "%s" not found' % username, fg="red")
             if click.confirm(
-                u"Create new user: %s?" % username, default=True, abort=True
+                "Create new user: %s?" % username, default=True, abort=True
             ):
                 create = True
         if create:
@@ -68,15 +67,15 @@ def add(
     user.sysadmin = True
     model.Session.add(user)
     model.repo.commit_and_remove()
-    click.secho(u"Added %s as sysadmin" % username, fg=u"green")
+    click.secho("Added %s as sysadmin" % username, fg="green")
 
 
-@sysadmin.command(help=u"Removes user from sysadmins.")
-@click.argument(u"username")
+@sysadmin.command(help="Removes user from sysadmins.")
+@click.argument("username")
 def remove(username: str):
     user = model.User.by_name(str(username))
     if not user:
-        return error_shout(u'Error: user "%s" not found!' % username)
+        return error_shout('Error: user "%s" not found!' % username)
     user.sysadmin = False
     model.repo.commit_and_remove()
-    click.secho(u"Removed %s from sysadmins" % username, fg=u"green")
+    click.secho("Removed %s from sysadmins" % username, fg="green")

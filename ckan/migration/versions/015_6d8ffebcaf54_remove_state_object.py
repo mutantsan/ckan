@@ -1,4 +1,3 @@
-# encoding: utf-8
 """015 Remove state_object
 
 Revision ID: 6d8ffebcaf54

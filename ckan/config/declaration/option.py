@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module defines Option class and its helpers.
 
 """
@@ -220,15 +219,15 @@ class Option(SectionMixin, Generic[T]):
     )
 
     flags: Flag
-    default: Optional[T]
-    description: Optional[str]
-    placeholder: Optional[str]
-    example: Optional[Any]
+    default: T | None
+    description: str | None
+    placeholder: str | None
+    example: Any | None
     validators: str
-    legacy_key: Optional[str]
+    legacy_key: str | None
     null_value: str = "null"
 
-    def __init__(self, default: Optional[T] = None):
+    def __init__(self, default: T | None = None):
         self.flags = Flag.none()
         self.description = None
         self.placeholder = None

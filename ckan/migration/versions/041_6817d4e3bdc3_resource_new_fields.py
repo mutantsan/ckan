@@ -1,4 +1,3 @@
-# encoding: utf-8
 """041 Resource new fields
 
 Revision ID: 6817d4e3bdc3

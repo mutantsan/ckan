@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Unit tests for ckan/logic/validators.py.
 
 """
@@ -58,7 +57,7 @@ def returns_arg(function):
         result = function(arg, context=context)
         assert result == arg, (
             "Should return the argument that was passed to it, unchanged "
-            "({arg})".format(arg=repr(arg))
+            f"({repr(arg)})"
         )
         return result
 
@@ -122,24 +121,14 @@ def does_not_modify_other_keys_in_errors_dict(validator):
 
         assert errors.keys() == original_errors.keys(), (
             "Should not add or remove keys from errors dict when called with "
-            "key: {key}, data: {data}, errors: {errors}, "
-            "context: {context}".format(
-                key=key,
-                data=original_data,
-                errors=original_errors,
-                context=original_context,
-            )
+            f"key: {key}, data: {original_data}, errors: {original_errors}, "
+            f"context: {original_context}"
         )
         for key_ in errors:
             assert errors[key_] == original_errors[key_], (
                 "Should not modify other keys in errors dict when called with "
-                "key: {key}, data: {data}, errors: {errors}, "
-                "context: {context}".format(
-                    key=key,
-                    data=original_data,
-                    errors=original_errors,
-                    context=original_context,
-                )
+                f"key: {key}, data: {original_data}, errors: {original_errors}, "
+                f"context: {original_context}"
             )
         return result
 
@@ -168,9 +157,7 @@ def adds_message_to_errors_dict(error_message):
             result = validator(key, data, errors, context)
             assert errors[key] == [
                 error_message
-            ], "Should add message to errors dict: {msg}".format(
-                msg=error_message
-            )
+            ], f"Should add message to errors dict: {error_message}"
             return result
 
         return call_and_assert
@@ -303,7 +290,7 @@ def test_name_validator_with_invalid_value():
         # Strings > PACKAGE_NAME_MAX_LENGTH long aren't allowed as names.
         "a" * (model.PACKAGE_NAME_MAX_LENGTH + 1),
         # Strings containing non-ascii characters aren't allowed as names.
-        u"fred_❤%'\"Ußabc@fred.com",
+        "fred_❤%'\"Ußabc@fred.com",
         # Strings containing upper-case characters aren't allowed as names.
         "seanH",
         # Strings containing spaces aren't allowed as names.
@@ -388,7 +375,7 @@ def test_name_validator_with_valid_value():
         "99",
         "--",
         "__",
-        u"fred-flintstone_9",
+        "fred-flintstone_9",
     ]
 
     for valid_name in valid_names:
@@ -884,7 +871,7 @@ def test_url_invalid():
         call_validator(key, {key: url}, errors, None)
 
 
-class TestOneOfValidator(object):
+class TestOneOfValidator:
     def test_val_in_list(self):
         cont = [1, 2, 3, 4]
         func = validators.one_of(cont)

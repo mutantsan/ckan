@@ -1,4 +1,3 @@
-# encoding: utf-8
 """059 Add related count and_flag
 
 Revision ID: 9291bb46f352

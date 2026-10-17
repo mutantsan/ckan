@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from ckan.common import CKANConfig
 from ckan.config.declaration.load import GroupV1, OptionV1

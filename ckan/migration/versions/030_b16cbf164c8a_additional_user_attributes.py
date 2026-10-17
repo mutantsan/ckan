@@ -1,4 +1,3 @@
-# encoding: utf-8
 """030 Additional user_attributes
 
 Revision ID: b16cbf164c8a

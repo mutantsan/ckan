@@ -1,4 +1,3 @@
-# encoding: utf-8
 """019 Pkg relationships_state
 
 Revision ID: b2eb6f34a638

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """007 Add system roles
 
 Revision ID: 1928d4af1cda

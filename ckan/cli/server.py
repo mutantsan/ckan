@@ -1,11 +1,11 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import glob
 import itertools
 import logging
 import warnings
-from typing import Iterable, Optional
+from typing import Optional
+from collections.abc import Iterable
 
 import click
 from werkzeug.serving import run_simple
@@ -22,46 +22,46 @@ DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 5000
 
 
-@click.command(u"run", short_help=u"Start development server")
-@click.option(u"-H", u"--host", help=u"Host name")
-@click.option(u"-p", u"--port", help=u"Port number")
-@click.option(u"-r", u"--disable-reloader", is_flag=True,
-              help=u"Disable reloader")
-@click.option(u"-E", u"--passthrough-errors", is_flag=True,
-              help=u"Disable error caching (useful to hook debuggers)")
+@click.command("run", short_help="Start development server")
+@click.option("-H", "--host", help="Host name")
+@click.option("-p", "--port", help="Port number")
+@click.option("-r", "--disable-reloader", is_flag=True,
+              help="Disable reloader")
+@click.option("-E", "--passthrough-errors", is_flag=True,
+              help="Disable error caching (useful to hook debuggers)")
 @click.option(
-    u"-D", u"--disable-debugger", is_flag=True,
-    help=u"Disable debugger to prevent conflict with external debug tools"
+    "-D", "--disable-debugger", is_flag=True,
+    help="Disable debugger to prevent conflict with external debug tools"
 )
 @click.option(
-    u"-t", u"--threaded", is_flag=True,
-    help=u"Handle each request in a separate thread"
+    "-t", "--threaded", is_flag=True,
+    help="Handle each request in a separate thread"
 )
 @click.option(
-    u"--processes", type=int, default=0,
-    help=u"Maximum number of concurrent processes"
+    "--processes", type=int, default=0,
+    help="Maximum number of concurrent processes"
 )
 @click.option(
-    u"-e", u"--extra-files", multiple=True,
-    help=u"Additional files that should be watched for server reloading"
+    "-e", "--extra-files", multiple=True,
+    help="Additional files that should be watched for server reloading"
     " (you can provide multiple values)")
 @click.option(
-    u"-C", u"--ssl-cert", default=None,
-    help=u"Certificate file to use to enable SSL. Passing 'adhoc' will "
+    "-C", "--ssl-cert", default=None,
+    help="Certificate file to use to enable SSL. Passing 'adhoc' will "
     " automatically generate a new one (on each server reload).")
 @click.option(
-    u"-K", u"--ssl-key", default=None,
-    help=u"Key file to use to enable SSL. Passing 'adhoc' will "
+    "-K", "--ssl-key", default=None,
+    help="Key file to use to enable SSL. Passing 'adhoc' will "
     " automatically generate a new one (on each server reload).")
 @click.option(
-    u"-P", u"--prefix", default="",
-    help=u"Run ckan in prefix path."
+    "-P", "--prefix", default="",
+    help="Run ckan in prefix path."
 )
 @click.pass_context
 def run(ctx: click.Context, host: str, port: str, disable_reloader: bool,
         passthrough_errors: bool, disable_debugger: bool, threaded: bool,
-        extra_files: Iterable[str], processes: int, ssl_cert: Optional[str],
-        ssl_key: Optional[str], prefix: Optional[str]):
+        extra_files: Iterable[str], processes: int, ssl_cert: str | None,
+        ssl_key: str | None, prefix: str | None):
     """Regenerate JS translations and run the Werkzeug development server"""
 
     if config.get("debug"):
@@ -80,7 +80,7 @@ def run(ctx: click.Context, host: str, port: str, disable_reloader: bool,
     use_reloader = not disable_reloader
     config_extra_files = config["ckan.devserver.watch_patterns"]
     extra_files = itertools.chain(
-        [config[u"__file__"]],
+        [config["__file__"]],
         *[
             glob.glob(path, recursive=True)
             for path
@@ -89,10 +89,10 @@ def run(ctx: click.Context, host: str, port: str, disable_reloader: bool,
     )
 
     # Threads and processes
-    threaded = threaded or config.get(u"ckan.devserver.threaded")
-    processes = processes or config.get(u"ckan.devserver.multiprocess")
+    threaded = threaded or config.get("ckan.devserver.threaded")
+    processes = processes or config.get("ckan.devserver.multiprocess")
     if threaded and processes > 1:
-        error_shout(u"Cannot have a multithreaded and multi process server")
+        error_shout("Cannot have a multithreaded and multi process server")
         raise click.Abort()
 
     # SSL
@@ -108,8 +108,8 @@ def run(ctx: click.Context, host: str, port: str, disable_reloader: bool,
         ssl_context = None
 
     if prefix:
-        if not prefix.startswith(u'/'):
-            error_shout(u"Prefix must start with /, example /data.")
+        if not prefix.startswith('/'):
+            error_shout("Prefix must start with /, example /data.")
             raise click.Abort()
         ctx.obj.app = DispatcherMiddleware(ctx.obj.app, {
             prefix: ctx.obj.app
@@ -120,7 +120,7 @@ def run(ctx: click.Context, host: str, port: str, disable_reloader: bool,
     try:
         port_int = int(port)
     except ValueError:
-        error_shout(u"Server port must be an integer, not {}".format(port))
+        error_shout(f"Server port must be an integer, not {port}")
         raise click.Abort()
 
     # Once automatic on startup, run only here for faster debug iterations

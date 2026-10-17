@@ -1,4 +1,3 @@
-# encoding: utf-8
 """077 Add revisions to system_info
 
 Revision ID: 51171a04d86d

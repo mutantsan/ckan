@@ -1,4 +1,3 @@
-# encoding: utf-8
 """014 Hash 2
 
 Revision ID: 93519b684820

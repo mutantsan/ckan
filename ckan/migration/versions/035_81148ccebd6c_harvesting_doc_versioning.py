@@ -1,4 +1,3 @@
-# encoding: utf-8
 """035 Harvesting doc versioning
 
 Revision ID: 81148ccebd6c

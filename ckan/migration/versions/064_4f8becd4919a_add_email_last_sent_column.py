@@ -1,4 +1,3 @@
-# encoding: utf-8
 """064 Add email_last_sent_column
 
 Revision ID: 4f8becd4919a

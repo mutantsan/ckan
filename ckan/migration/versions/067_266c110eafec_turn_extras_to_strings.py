@@ -1,4 +1,3 @@
-# encoding: utf-8
 """067 Turn extras to strings
 
 Revision ID: 266c110eafec

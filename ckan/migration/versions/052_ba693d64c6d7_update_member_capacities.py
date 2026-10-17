@@ -1,4 +1,3 @@
-# encoding: utf-8
 """052 Update member capacities
 
 Revision ID: ba693d64c6d7

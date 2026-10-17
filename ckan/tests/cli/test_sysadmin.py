@@ -6,7 +6,7 @@ from ckan.tests import factories
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestSysadminCommand(object):
+class TestSysadminCommand:
 
     def test_cli_sysadmin_list(self, cli):
         """Command should list all available sysdmins"""

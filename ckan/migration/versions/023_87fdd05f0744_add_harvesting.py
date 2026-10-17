@@ -1,4 +1,3 @@
-# encoding: utf-8
 """023 Add harvesting
 
 Revision ID: 87fdd05f0744
@@ -22,11 +21,11 @@ def upgrade():
     op.create_table(
         'harvest_source',
         sa.Column('id', sa.UnicodeText, primary_key=True),
-        sa.Column('status', sa.UnicodeText, server_default=u'New'),
+        sa.Column('status', sa.UnicodeText, server_default='New'),
         sa.Column('url', sa.UnicodeText, unique=True, nullable=False),
-        sa.Column('description', sa.UnicodeText, default=u''),
-        sa.Column('user_ref', sa.UnicodeText, default=u''),
-        sa.Column('publisher_ref', sa.UnicodeText, default=u''),
+        sa.Column('description', sa.UnicodeText, default=''),
+        sa.Column('user_ref', sa.UnicodeText, default=''),
+        sa.Column('publisher_ref', sa.UnicodeText, default=''),
         sa.Column(
             'created', sa.DateTime, server_default=sa.func.current_timestamp()
         ),
@@ -35,12 +34,12 @@ def upgrade():
     op.create_table(
         'harvesting_job',
         sa.Column('id', sa.UnicodeText, primary_key=True),
-        sa.Column('status', sa.UnicodeText, default=u'', nullable=False),
+        sa.Column('status', sa.UnicodeText, default='', nullable=False),
         sa.Column(
             'created', sa.DateTime, server_default=sa.func.current_timestamp()
         ),
         sa.Column('user_ref', sa.UnicodeText, nullable=False),
-        sa.Column('report', sa.UnicodeText, default=u''),
+        sa.Column('report', sa.UnicodeText, default=''),
         sa.Column(
             'source_id', sa.UnicodeText, sa.ForeignKey('harvest_source.id')
         ),

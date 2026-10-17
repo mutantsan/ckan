@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """This is a collection of helper functions for use in tests.
 
@@ -169,8 +168,8 @@ def call_auth(auth_name: str, context, **kwargs) -> bool:
 class CKANCliRunner(CliRunner):
     def invoke(self, *args, **kwargs):
         # prevent cli runner from str/bytes exceptions
-        kwargs.setdefault(u'complete_var', u'_CKAN_COMPLETE')
-        return super(CKANCliRunner, self).invoke(*args, **kwargs)
+        kwargs.setdefault('complete_var', '_CKAN_COMPLETE')
+        return super().invoke(*args, **kwargs)
 
 
 class CKANResponse(Response):
@@ -186,7 +185,7 @@ class CKANResponse(Response):
         return segment in self.body
 
 
-class CKANTestApp(object):
+class CKANTestApp:
     """A wrapper around flask.testing.Client
 
     It adds some convenience methods for CKAN
@@ -278,12 +277,12 @@ class CKANTestClient(FlaskLoginClient):
         if args and isinstance(args[0], str):
             kwargs.setdefault("follow_redirects", True)
             kwargs.setdefault("base_url", config["ckan.site_url"])
-        res = super(CKANTestClient, self).open(*args, **kwargs)
+        res = super().open(*args, **kwargs)
 
         if status:
             assert (
                 res.status_code == status
-            ), "Actual: {}. Expected: {}".format(res.status_code, status)
+            ), f"Actual: {res.status_code}. Expected: {status}"
 
         return res
 
@@ -311,7 +310,7 @@ def _get_test_app():
     return app
 
 
-class FunctionalTestBase(object):
+class FunctionalTestBase:
     """A base class for functional test classes to inherit from.
 
     Deprecated: Use the ``app``, ``clean_db``, ``ckan_config`` and
@@ -384,13 +383,13 @@ class FunctionalTestBase(object):
 
 
 @pytest.mark.usefixtures("with_test_worker", "clean_queues")
-class RQTestBase(object):
+class RQTestBase:
     """
     Base class for tests of RQ functionality.
     """
 
     def all_jobs(self):
-        u"""
+        """
         Get a list of all RQ jobs.
         """
         jobs = []
@@ -400,7 +399,7 @@ class RQTestBase(object):
         return jobs
 
     def enqueue(self, job=None, *args, **kwargs):
-        u"""
+        """
         Enqueue a test job.
         """
         if job is None:
@@ -483,7 +482,7 @@ def recorded_logs(
     override_disabled=True,
     override_global_level=True,
 ):
-    u"""
+    """
     Context manager for recording log messages.
 
     :param logger: The logger to record messages from. Can either be a
@@ -552,7 +551,7 @@ def recorded_logs(
 
 
 class RecordingLogHandler(logging.Handler):
-    u"""
+    """
     Log handler that records log messages for later inspection.
 
     You can inspect the recorded messages via the ``messages`` attribute
@@ -564,14 +563,14 @@ class RecordingLogHandler(logging.Handler):
     """
 
     def __init__(self, *args, **kwargs):
-        super(RecordingLogHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.clear()
 
     def emit(self, record):
         self.messages[record.levelname.lower()].append(record.getMessage())
 
     def assert_log(self, level, pattern, msg=None):
-        u"""
+        """
         Assert that a certain message has been logged.
 
         :param string pattern: A regex which the message has to match.
@@ -590,21 +589,21 @@ class RecordingLogHandler(logging.Handler):
                 return
         if not msg:
             if self.messages[level]:
-                lines = u"\n    ".join(self.messages[level])
+                lines = "\n    ".join(self.messages[level])
                 msg = (
-                    u'Pattern "{}" was not found in the log messages for '
-                    + u'level "{}":\n    {}'
+                    'Pattern "{}" was not found in the log messages for '
+                    + 'level "{}":\n    {}'
                 ).format(pattern, level, lines)
             else:
                 msg = (
-                    u'Pattern "{}" was not found in the log messages for '
-                    + u'level "{}" (no messages were recorded for that '
-                    + u"level)."
+                    'Pattern "{}" was not found in the log messages for '
+                    + 'level "{}" (no messages were recorded for that '
+                    + "level)."
                 ).format(pattern, level)
         raise AssertionError(msg)
 
     def clear(self):
-        u"""
+        """
         Clear all captured log messages.
         """
         self.messages = collections.defaultdict(list)

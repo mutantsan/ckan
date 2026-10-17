@@ -1,4 +1,3 @@
-# encoding: utf-8
 """043 Drop postgres search
 
 Revision ID: bd38cd6502b2

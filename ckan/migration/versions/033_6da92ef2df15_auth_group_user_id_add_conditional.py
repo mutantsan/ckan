@@ -1,4 +1,3 @@
-# encoding: utf-8
 """033 Auth group user id_add_conditional
 
 Revision ID: 6da92ef2df15

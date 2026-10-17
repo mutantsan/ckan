@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 '''A Sphinx extension to automatically document CKAN's crazy plugins toolkit,
 autodoc-style.
@@ -18,7 +17,8 @@ into plugins-toolkit.rst manually before running Sphinx).
 
 '''
 import inspect
-from typing import Any, Callable, Optional
+from typing import Any, Optional
+from collections.abc import Callable
 
 import ckan.plugins.toolkit as toolkit
 
@@ -34,7 +34,7 @@ def setup(app: Any):
 
 def format_function(name: str,
                     function: Callable[..., Any],
-                    docstring: Optional[str] = None) -> str:
+                    docstring: str | None = None) -> str:
     '''Return a Sphinx .. function:: directive for the given function.
 
     The directive includes the function's docstring if it has one.
@@ -76,7 +76,7 @@ def format_function(name: str,
 
 def format_class(
         name: str, class_: Any,
-        docstring: Optional[str] = None) -> str:
+        docstring: str | None = None) -> str:
     '''Return a Sphinx .. class:: directive for the given class.
 
     The directive includes the class's docstring if it has one.
@@ -113,7 +113,7 @@ def format_class(
 
 
 def format_object(
-        name: str, object_: Any, docstring: Optional[str] = None) -> str:
+        name: str, object_: Any, docstring: str | None = None) -> str:
     '''Return a Sphinx .. attribute:: directive for the given object.
 
     The directive includes the object's class's docstring if it has one.
@@ -181,12 +181,11 @@ def source_read(app: Any, docname: str, source: Any) -> None:
             source_ += format_object(name, thing, docstring=custom_docstring)
 
         else:
-            assert False, ("Someone added {name}:{thing} to the plugins "
+            assert False, (f"Someone added {name}:{thing} to the plugins "
                            "toolkit and this Sphinx extension doesn't know "
                            "how to document that yet. If you're that someone, "
                            "you need to add a new format_*() function for it "
-                           "here or the docs won't build.".format(
-                               name=name, thing=thing))
+                           "here or the docs won't build.")
 
     source[0] += source_
 

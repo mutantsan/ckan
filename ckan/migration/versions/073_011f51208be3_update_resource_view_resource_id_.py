@@ -1,4 +1,3 @@
-# encoding: utf-8
 """073 Update resource view resource_id_constraint
 
 Revision ID: 011f51208be3

@@ -6,7 +6,8 @@ from typing import Any, ClassVar
 
 import file_keeper as fk
 import flask
-from typing_extensions import TypeAlias, override
+from typing_extensions import override
+from typing import TypeAlias
 
 from ckan import types
 from ckan.common import config

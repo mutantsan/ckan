@@ -1,8 +1,8 @@
-# encoding: utf-8
 
 import inspect
 from functools import wraps
-from typing import Any, Callable, Iterable, cast
+from typing import Any, cast
+from collections.abc import Callable, Iterable
 
 import ckan.model
 import ckan.plugins as plugins
@@ -843,7 +843,7 @@ def job_list_schema(
         int_validator: Validator, boolean_validator: Validator
 ) -> Schema:
     return {
-        u'queues': [ignore_missing, list_of_strings],
+        'queues': [ignore_missing, list_of_strings],
         'limit': [ignore_missing, int_validator],
         'ids_only': [ignore_missing, boolean_validator],
     }
@@ -854,7 +854,7 @@ def job_clear_schema(
         ignore_missing: Validator, list_of_strings: Validator
 ) -> Schema:
     return {
-        u'queues': [ignore_missing, list_of_strings],
+        'queues': [ignore_missing, list_of_strings],
     }
 
 
@@ -867,9 +867,9 @@ def default_create_api_token_schema(not_empty: Validator,
                                     isodate: Validator
                                     ) -> Schema:
     return {
-        u'name': [not_empty, unicode_safe],
-        u'user': [not_empty, unicode_safe],
-        u'plugin_extras': [ignore_missing, json_object, ignore_not_sysadmin],
+        'name': [not_empty, unicode_safe],
+        'user': [not_empty, unicode_safe],
+        'plugin_extras': [ignore_missing, json_object, ignore_not_sysadmin],
         'created_at': [ignore_missing, isodate, ignore_not_sysadmin],
         'id': [ignore_missing, ignore_not_sysadmin],
         'last_access': [ignore_missing, isodate, ignore_not_sysadmin],
@@ -885,22 +885,22 @@ def package_revise_schema(ignore_missing: Validator,
                           json_list_or_string: Validator,
                           dict_only: Validator) -> Schema:
     return {
-        u'__before': [
+        '__before': [
             collect_prefix_validate(
-                u'match__', u'json_or_string'),
+                'match__', 'json_or_string'),
             collect_prefix_validate(
-                u'update__', u'json_or_string')],
-        u'match': [
+                'update__', 'json_or_string')],
+        'match': [
             ignore_missing, json_or_string, dict_only],
-        u'filter': [
+        'filter': [
             ignore_missing, json_list_or_string, list_of_strings],
-        u'update': [
+        'update': [
             ignore_missing, json_or_string, dict_only],
-        u'include': [
+        'include': [
             ignore_missing, json_list_or_string, list_of_strings],
         # collect_prefix moves values to these, always dicts:
-        u'match__': [],
-        u'update__': [],
+        'match__': [],
+        'update__': [],
     }
 
 

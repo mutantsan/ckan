@@ -1,4 +1,3 @@
-# encoding: utf-8
 """024 Add harvested_document
 
 Revision ID: 12981fe12484

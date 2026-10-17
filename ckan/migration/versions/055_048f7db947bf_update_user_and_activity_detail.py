@@ -1,4 +1,3 @@
-# encoding: utf-8
 """055 Update user and activity_detail
 
 Revision ID: 048f7db947bf

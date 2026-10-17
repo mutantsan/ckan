@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module defines the ways to fill config declaration with definitions
 from different sources.
 
@@ -24,7 +23,8 @@ from __future__ import annotations
 
 import logging
 import pathlib
-from typing import TYPE_CHECKING, Any, Callable, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List
+from collections.abc import Callable
 from typing_extensions import TypedDict
 import msgspec
 
@@ -58,7 +58,7 @@ class OptionV1(TypedDict, total=False):
     default: Any
     default_callable: str
     placeholder_callable: str
-    callable_args: Dict[str, Any]
+    callable_args: dict[str, Any]
 
     description: str
 
@@ -69,19 +69,19 @@ class OptionV1(TypedDict, total=False):
 class GroupV1(TypedDict):
     annotation: str
     section: str
-    options: List[OptionV1]
+    options: list[OptionV1]
 
 
 class DeclarationDictV1(TypedDict):
     version: int
-    groups: List[GroupV1]
+    groups: list[GroupV1]
 
 
 DeclarationDict = DeclarationDictV1
 
 
 @handler.register("plugin")
-def load_plugin(declaration: "Declaration", name: str):
+def load_plugin(declaration: Declaration, name: str):
     """Load declarations from CKAN plugin."""
     from ckan.plugins import IConfigDeclaration, PluginNotFoundException
     from ckan.plugins.core import _get_service
@@ -100,7 +100,7 @@ def load_plugin(declaration: "Declaration", name: str):
 
 
 @handler.register("dict")
-def load_dict(declaration: "Declaration", definition: DeclarationDict):
+def load_dict(declaration: Declaration, definition: DeclarationDict):
     """Load declarations from dictionary."""
     from ckan.logic.schema import config_declaration_v1
     from ckan.logic import ValidationError
@@ -154,7 +154,7 @@ def load_dict(declaration: "Declaration", definition: DeclarationDict):
 
 
 @handler.register("core")
-def load_core(declaration: "Declaration"):
+def load_core(declaration: Declaration):
     """Load core declarations."""
     source = pathlib.Path(__file__).parent / ".." / "config_declaration.yaml"
     with source.open("rb") as stream:
@@ -163,7 +163,7 @@ def load_core(declaration: "Declaration"):
 
 
 @handler.register("files")
-def load_files(declaration: "Declaration", /, config: Any = None):
+def load_files(declaration: Declaration, /, config: Any = None):
     """Generate declarations for configured storages.
 
     Every uniques storage in the config will produce declarations depending on

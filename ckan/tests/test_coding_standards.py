@@ -1,6 +1,5 @@
-# encoding: utf-8
 
-u"""A module for coding standards tests.
+"""A module for coding standards tests.
 
 These are tests that are not functional- or unit-testing any particular piece
 of CKAN code, but are checking coding standards. For example: checking that
@@ -26,14 +25,14 @@ FILESYSTEM_ENCODING = str(
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-PROJECT_ROOT = os.path.normpath(os.path.join(HERE, u"..", u".."))
+PROJECT_ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 
 # Directories which are ignored when checking Python source code files
-IGNORED_DIRS = [u"ckan/include", u"contrib/cookiecutter"]
+IGNORED_DIRS = ["ckan/include", "contrib/cookiecutter"]
 
 
 def walk_python_files(ext=".py"):
-    u"""
+    """
     Generator that yields all CKAN Python source files.
 
     Yields 2-tuples containing the filename in absolute and relative (to
@@ -41,14 +40,14 @@ def walk_python_files(ext=".py"):
     """
 
     def _is_dir_ignored(root, d):
-        if d.startswith(u"."):
+        if d.startswith("."):
             return True
         return os.path.join(rel_root, d) in IGNORED_DIRS
 
     for abs_root, dirnames, filenames in os.walk(PROJECT_ROOT):
         rel_root = os.path.relpath(abs_root, PROJECT_ROOT)
-        if rel_root == u".":
-            rel_root = u""
+        if rel_root == ".":
+            rel_root = ""
         dirnames[:] = [d for d in dirnames if not _is_dir_ignored(rel_root, d)]
         for filename in filenames:
             if not filename.endswith(ext):
@@ -83,7 +82,7 @@ def show_passing(msg, errors):
         raise Exception("\n%s\n\n" % msg + "\n".join(sorted(errors)))
 
 
-class TestBadSpellings(object):
+class TestBadSpellings:
     BAD_SPELLING_BLACKLIST_FILES = []
 
     # these are the bad spellings with the correct spelling
@@ -112,7 +111,7 @@ class TestBadSpellings(object):
         )
 
         for path, filename in files:
-            f = open(path, "r")
+            f = open(path)
             count = 1
             errors = []
             for line in cs_filter(f, "bad_spelling"):
@@ -174,7 +173,7 @@ def cs_filter(f, filter_, ignore_comment_lines=True):
     return out
 
 
-class TestImportStar(object):
+class TestImportStar:
     """Find files using from xxx import *"""
 
     # Import * file exceptions
@@ -196,7 +195,7 @@ class TestImportStar(object):
         fails = {}
         passes = []
         for path, filename in walk_python_files():
-            f = open(path, "r")
+            f = open(path)
             count = 1
             errors = []
             for line in f:
@@ -226,7 +225,7 @@ class TestImportStar(object):
 
 
 def test_building_the_docs():
-    u"""There should be no warnings or errors when building the Sphinx docs.
+    """There should be no warnings or errors when building the Sphinx docs.
 
     This test will also fail is build_sphinx exits with non-zero status.
 
@@ -238,27 +237,25 @@ def test_building_the_docs():
     except subprocess.CalledProcessError as err:
         assert (
             False
-        ), u"Building the docs failed with return code: {code}".format(
-            code=err.returncode
-        )
+        ), f"Building the docs failed with return code: {err.returncode}"
     output_lines = output.decode("utf8").split("\n")
 
     errors = [line for line in output_lines if "ERROR" in line]
     if errors:
         assert False, (
-            u"Don't add any errors to the Sphinx build: \n"
-            u"{errors}".format(errors="\n".join(errors))
+            "Don't add any errors to the Sphinx build: \n"
+            "{errors}".format(errors="\n".join(errors))
         )
 
     warnings = [line for line in output_lines if "WARNING" in line]
     if warnings:
         assert False, (
-            u"Don't add any new warnings to the Sphinx build: \n"
-            u"{warnings}".format(warnings="\n".join(warnings))
+            "Don't add any new warnings to the Sphinx build: \n"
+            "{warnings}".format(warnings="\n".join(warnings))
         )
 
 
-class TestActionAuth(object):
+class TestActionAuth:
     """These tests check the logic auth/action functions are compliant. The
     main tests are that each action has a corresponding auth function and
     that each auth function has an action.  We check the function only
@@ -371,7 +368,7 @@ class TestActionAuth(object):
         )
 
 
-class TestBadExceptions(object):
+class TestBadExceptions:
     """Look for a common coding problem in ckan Exception(_'...')"""
 
     # Exceptions should not on the whole be translated as they are for
@@ -399,7 +396,7 @@ class TestBadExceptions(object):
         fails = {}
         passes = []
         for path, filename in walk_python_files():
-            f = open(path, "r")
+            f = open(path)
             count = 1
             errors = []
             for line in f:

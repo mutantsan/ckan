@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """create conditinal index on user
 

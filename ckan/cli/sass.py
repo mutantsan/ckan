@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import subprocess
@@ -32,7 +31,7 @@ def _compile_sass(
         command: tuple[str, ...],
         color: str,
         debug: bool):
-    click.echo('compile {}.css'.format(color))
+    click.echo(f'compile {color}.css')
     command = command + ('--', '--' + color)
     if debug:
         command = command + ('--debug',)

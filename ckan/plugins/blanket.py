@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Quick implementations of simple plugin interfaces.
 
 Blankets allow to reduce boilerplate code in plugins by simplifying the way
@@ -128,8 +127,9 @@ import yaml
 
 from importlib import import_module
 from typing import (
-    Any, Callable, NamedTuple, Optional, Type, Union, Dict, overload
+    Any, NamedTuple, Optional, Type, Union, Dict, overload
 )
+from collections.abc import Callable
 
 import flask
 
@@ -148,7 +148,7 @@ __all__ = [
 
 log = logging.getLogger(__name__)
 
-PluginSubject = Type[p.Plugin]
+PluginSubject = type[p.Plugin]
 SimpleSubject = Union[types.ModuleType, "dict[str, Any]", "list[Any]", str]
 SubjectFactory = Callable[..., Union["list[Any]", "dict[str, Any]"]]
 
@@ -191,7 +191,7 @@ class Blanket(enum.Flag):
     def implement(
         self,
         plugin: type[p.Plugin],
-        subject: Optional[Subject],
+        subject: Subject | None,
     ):
         """Implement for interface inside the given plugin."""
         if subject is None:
@@ -288,7 +288,7 @@ def _as_implementation(
 
     def func(
         self: type[p.Plugin], *args: Any, **kwargs: Any
-    ) -> Union[dict[str, Any], list[Any]]:
+    ) -> dict[str, Any] | list[Any]:
         if callable(subject):
             return subject(*args, **kwargs)
         elif isinstance(subject, types.ModuleType):
@@ -345,7 +345,7 @@ def _declaration_implementation(subject: Subject) -> Callable[..., None]:
     return func
 
 
-_mapping: Dict[Blanket, Mapping] = {
+_mapping: dict[Blanket, Mapping] = {
     Blanket.helpers: Mapping(
         _module_extractor("helpers"),
         "get_helpers",
@@ -433,12 +433,12 @@ def _blanket_implementation(
 
     @overload
     def decorator(
-            subject: Union[SimpleSubject, None]
+            subject: SimpleSubject | None
     ) -> Callable[[PluginSubject], PluginSubject]: ...
 
     def decorator(
             subject: Any = None
-    ) -> Union[PluginSubject, Callable[[PluginSubject], PluginSubject]]:
+    ) -> PluginSubject | Callable[[PluginSubject], PluginSubject]:
 
         def wrapper(plugin: PluginSubject) -> PluginSubject:
             for key in Blanket:

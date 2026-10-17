@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """The plugin interfaces in :mod:`ckan.plugins.interfaces` are not directly
 testable because they don't contain any code, *but*:

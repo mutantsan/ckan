@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Unit tests for ckan/logic/action/update.py."""
 import datetime
 import uuid
@@ -22,7 +21,7 @@ from freezegun import freeze_time
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUpdate(object):
+class TestUpdate:
     def teardown(self):
         # Since some of the test methods below use the mock module to patch
         # things, we use this teardown() method to remove remove all patches.
@@ -395,7 +394,7 @@ class TestUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestOrganizationUpdate(object):
+class TestOrganizationUpdate:
     def test_update_organization_cant_change_type(self):
         user = factories.User()
         context = {"user": user["name"]}
@@ -468,7 +467,7 @@ class TestOrganizationUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestDatasetUpdate(object):
+class TestDatasetUpdate:
     def test_missing_id(self):
         user = factories.User()
         factories.Dataset(user=user)
@@ -787,7 +786,7 @@ class TestDatasetUpdate(object):
 @pytest.mark.ckan_config("ckan.views.default_views", "")
 @pytest.mark.ckan_config("ckan.plugins", "image_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestResourceViewUpdate(object):
+class TestResourceViewUpdate:
     def test_resource_view_update(self):
         resource_view = factories.ResourceView()
         params = {
@@ -907,7 +906,7 @@ class TestResourceViewUpdate(object):
 
 @pytest.mark.ckan_config("ckan.plugins", "image_view text_view resource_proxy")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestResourceUpdate(object):
+class TestResourceUpdate:
     def test_url_only(self):
         resource = factories.Resource(url="http://first")
 
@@ -1675,7 +1674,7 @@ class TestResourceUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestConfigOptionUpdate(object):
+class TestConfigOptionUpdate:
 
     # NOTE: the opposite is tested in
     # ckan/ckanext/example_iconfigurer/tests/test_iconfigurer_update_config.py
@@ -1696,7 +1695,7 @@ class TestConfigOptionUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserUpdate(object):
+class TestUserUpdate:
     def test_user_update_with_password_hash(self):
         sysadmin = factories.Sysadmin()
         context = {"user": sysadmin["name"]}
@@ -1744,7 +1743,7 @@ class TestUserUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestGroupUpdate(object):
+class TestGroupUpdate:
     def test_group_update_image_url_field(self):
         user = factories.User()
         context = {"user": user["name"]}
@@ -1849,7 +1848,7 @@ class TestGroupUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackageOwnerOrgUpdate(object):
+class TestPackageOwnerOrgUpdate:
     def test_package_owner_org_added(self):
         """A package without an owner_org can have one added."""
         sysadmin = factories.Sysadmin()
@@ -1902,7 +1901,7 @@ class TestPackageOwnerOrgUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestBulkOperations(object):
+class TestBulkOperations:
     def test_bulk_make_private(self):
 
         org = factories.Organization()
@@ -1998,7 +1997,7 @@ class TestBulkOperations(object):
 
 @pytest.mark.usefixtures("non_clean_db")
 @pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
-class TestCollaboratorsUpdate(object):
+class TestCollaboratorsUpdate:
     @pytest.mark.ckan_config("ckan.auth.allow_admin_collaborators", True)
     @pytest.mark.parametrize("role", ["admin", "editor"])
     def test_collaborators_can_update_resources(self, role):
@@ -2131,7 +2130,7 @@ class TestCollaboratorsUpdate(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestDatasetRevise(object):
+class TestDatasetRevise:
     def test_revise_description(self):
         dataset = factories.Dataset(notes="old notes")
         response = helpers.call_action(
@@ -2298,7 +2297,7 @@ class TestDatasetRevise(object):
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestUserPluginExtras(object):
+class TestUserPluginExtras:
     def test_stored_on_update_if_sysadmin(self):
 
         sysadmin = factories.Sysadmin()
@@ -2447,7 +2446,7 @@ class TestUserPluginExtras(object):
         assert plugin_extras["plugin1"]["key1"] == "value2"
 
 
-class TestVocabularyUpdate(object):
+class TestVocabularyUpdate:
     @pytest.mark.usefixtures("non_clean_db")
     def test_no_real_update(self):
         vocab = factories.Vocabulary()
@@ -2751,7 +2750,7 @@ class TestTermTranslations:
 
 
 @pytest.mark.usefixtures("clean_db")
-class TestPackagePluginData(object):
+class TestPackagePluginData:
     def test_stored_on_update_if_sysadmin(self):
         sysadmin = factories.Sysadmin()
 

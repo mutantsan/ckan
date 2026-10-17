@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Unit tests for ckan/logic/auth/create.py.
 
 """
@@ -74,7 +73,7 @@ class TestUserCreate:
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestRealUsersAuth(object):
+class TestRealUsersAuth:
     def test_no_org_user_can_create(self):
         user = factories.User()
         context = {"user": user["name"], "model": model}
@@ -144,8 +143,8 @@ class TestRealUsersAuth(object):
 
         resource_view = {
             "resource_id": resource["id"],
-            "title": u"Resource View",
-            "view_type": u"image_view",
+            "title": "Resource View",
+            "view_type": "image_view",
             "image_url": "url",
         }
 
@@ -174,8 +173,8 @@ class TestRealUsersAuth(object):
 
         resource_view = {
             "resource_id": resource["id"],
-            "title": u"Resource View",
-            "view_type": u"image_view",
+            "title": "Resource View",
+            "view_type": "image_view",
             "image_url": "url",
         }
 
@@ -190,8 +189,8 @@ class TestRealUsersAuth(object):
     def test_not_authorized_if_not_logged_in_3(self):
 
         resource_view = {
-            "title": u"Resource View",
-            "view_type": u"image_view",
+            "title": "Resource View",
+            "view_type": "image_view",
             "image_url": "url",
         }
 
@@ -389,20 +388,20 @@ class TestRealUsersAuth(object):
             helpers.call_auth("resource_create", context=context, **resource)
 
 
-class TestApiToken(object):
+class TestApiToken:
     def test_anon_is_not_allowed_to_create_tokens(self):
         with pytest.raises(logic.NotAuthorized):
             helpers.call_auth(
-                u"api_token_create", {u"user": None, u"model": model}
+                "api_token_create", {"user": None, "model": model}
             )
 
-    @pytest.mark.usefixtures(u"non_clean_db")
+    @pytest.mark.usefixtures("non_clean_db")
     def test_auth_user_is_allowed_to_create_tokens(self):
         user = factories.User()
         helpers.call_auth(
-            u"api_token_create",
-            {u"model": model, u"user": user[u"name"]},
-            user=user[u"name"],
+            "api_token_create",
+            {"model": model, "user": user["name"]},
+            user=user["name"],
         )
 
 
@@ -426,8 +425,8 @@ def members_fixtures():
 
 
 @pytest.mark.usefixtures("non_clean_db")
-@pytest.mark.ckan_config(u"ckan.auth.allow_dataset_collaborators", True)
-class TestPackageMemberCreateAuth(object):
+@pytest.mark.ckan_config("ckan.auth.allow_dataset_collaborators", True)
+class TestPackageMemberCreateAuth:
     def _get_context(self, user):
 
         return {

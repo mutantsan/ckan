@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -9,7 +8,7 @@ Resource = model.Resource
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestResource(object):
+class TestResource:
     def test_edit_url(self):
         res_dict = factories.Resource(url="http://first")
         res = Resource.get(res_dict["id"])

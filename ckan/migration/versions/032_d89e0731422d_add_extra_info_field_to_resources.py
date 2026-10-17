@@ -1,4 +1,3 @@
-# encoding: utf-8
 """032 Add extra info field_to_resources
 
 Revision ID: d89e0731422d

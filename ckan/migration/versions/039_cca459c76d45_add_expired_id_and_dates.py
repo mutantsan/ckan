@@ -1,4 +1,3 @@
-# encoding: utf-8
 """039 Add expired id and_dates
 
 Revision ID: cca459c76d45

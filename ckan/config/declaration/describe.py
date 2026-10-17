@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module defines the ways to describe the definition of config
 declaration.
 
@@ -39,7 +38,8 @@ avoided unless you have an irresistible desire to hack into CKAN core.
 
 import abc
 from io import StringIO
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
+from collections.abc import Callable
 
 from .key import Key, Pattern, Wildcard
 from .option import Option, Flag, Annotation
@@ -138,7 +138,7 @@ class BaseDictDescriber(AbstractDescriber):
         self.data = {"version": 1, "groups": []}
         self.current_listing = None
 
-    def _add_group(self, annotation: Optional[str] = None):
+    def _add_group(self, annotation: str | None = None):
         listing: list[Any] = []
         self.data["groups"].append(
             {"annotation": annotation, "options": listing}
@@ -153,7 +153,7 @@ class BaseDictDescriber(AbstractDescriber):
             self._add_group()
         assert self.current_listing is not None
 
-        data: Dict[str, Any] = {
+        data: dict[str, Any] = {
             "key": str(key),
         }
         if isinstance(key, Pattern):

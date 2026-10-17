@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 # Note these functions are similar to, but separate from name/title mungers
 # found in the ckanext importer. That one needs to be stable to prevent
@@ -137,7 +136,7 @@ def munge_filename_legacy(filename: str) -> str:
     return filename
 
 
-def munge_filename(filename: Union[str, bytes]) -> str:
+def munge_filename(filename: str | bytes) -> str:
     ''' Tidies a filename
 
     Keeps the filename extension (e.g. .csv).
@@ -154,8 +153,8 @@ def munge_filename(filename: Union[str, bytes]) -> str:
     # Clean up
     filename = filename.lower().strip()
     filename = substitute_ascii_equivalents(filename)
-    filename = re.sub(u'[^a-zA-Z0-9_. -]', '', filename).replace(u' ', u'-')
-    filename = re.sub(u'-+', u'-', filename)
+    filename = re.sub('[^a-zA-Z0-9_. -]', '', filename).replace(' ', '-')
+    filename = re.sub('-+', '-', filename)
 
     # Enforce length constraints
     name, ext = os.path.splitext(filename)

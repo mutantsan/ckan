@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import pytest
 
@@ -27,21 +26,21 @@ class TestBasicDictize:
     def test_group_apis_to_dict(self):
         context = {"model": model, "session": model.Session}
         api_group = {
-            "name": u"testgroup",
-            "title": u"Some Group Title",
-            "description": u"Great group!",
-            "packages": [u"annakarenina", u"warandpeace"],
+            "name": "testgroup",
+            "title": "Some Group Title",
+            "description": "Great group!",
+            "packages": ["annakarenina", "warandpeace"],
         }
 
         assert group_api_to_dict(api_group, context) == {
-            "description": u"Great group!",
-            "name": u"testgroup",
-            "packages": [{"id": u"annakarenina"}, {"id": u"warandpeace"}],
-            "title": u"Some Group Title",
+            "description": "Great group!",
+            "name": "testgroup",
+            "packages": [{"id": "annakarenina"}, {"id": "warandpeace"}],
+            "title": "Some Group Title",
         }, pformat(group_api_to_dict(api_group, context))
 
     def test_package_tag_list_save(self):
-        name = u"testpkg18"
+        name = "testpkg18"
         context = {"model": model, "session": model.Session}
         pkg_dict = {"name": name}
         package, _change = table_dict_save(pkg_dict, model.Package, context)
@@ -56,7 +55,7 @@ class TestBasicDictize:
         )
 
     def test_package_tag_list_save_duplicates(self):
-        name = u"testpkg19"
+        name = "testpkg19"
         context = {"model": model, "session": model.Session}
         pkg_dict = {"name": name}
 
@@ -214,7 +213,7 @@ class TestDictizeWithRemoveColumns:
             package_dictize(anna1, context)
         )
 
-        anna_dictized["name"] = u"annakarenina3"
+        anna_dictized["name"] = "annakarenina3"
 
         package_dict_save(anna_dictized, context)
         model.Session.commit()
@@ -235,20 +234,20 @@ class TestDictizeWithRemoveColumns:
 
         new_resource = {
             "mimetype": None,
-            u"alt_url": u"empty resource group id",
-            "hash": u"abc123",
-            "description": u'Full text. Needs escaping: " Umlaut: \xfc',
-            "format": u"plain text",
-            "url": u"http://test_new",
+            "alt_url": "empty resource group id",
+            "hash": "abc123",
+            "description": 'Full text. Needs escaping: " Umlaut: \xfc',
+            "format": "plain text",
+            "url": "http://test_new",
             "cache_url": None,
             "cache_last_updated": None,
-            "state": u"active",
+            "state": "active",
             "mimetype_inner": None,
             "url_type": None,
             "last_modified": None,
             "position": 0,
             "size": None,
-            "size_extra": u"123",
+            "size_extra": "123",
             "resource_type": None,
             "name": None,
             "package_id": "",  # Not OK

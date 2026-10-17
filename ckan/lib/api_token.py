@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 import jwt
 import logging
-from typing import Any, Iterable, Mapping, Optional
+from typing import Any, Optional
+from collections.abc import Iterable, Mapping
 from calendar import timegm
 from datetime import datetime
 
@@ -17,11 +17,11 @@ from ckan.types import Schema
 
 log = logging.getLogger(__name__)
 
-_config_encode_secret = u"api_token.jwt.encode.secret"
-_config_decode_secret = u"api_token.jwt.decode.secret"
-_config_secret_fallback = u"SECRET_KEY"
+_config_encode_secret = "api_token.jwt.encode.secret"
+_config_decode_secret = "api_token.jwt.decode.secret"
+_config_secret_fallback = "SECRET_KEY"
 
-_config_algorithm = u"api_token.jwt.algorithm"
+_config_algorithm = "api_token.jwt.algorithm"
 
 
 def _get_plugins() -> Iterable[plugins.IApiToken]:
@@ -36,20 +36,18 @@ def _get_secret(encode: bool) -> str:
     config_key = _config_encode_secret if encode else _config_decode_secret
     secret: str = config.get(config_key)
     if not secret:
-        secret = u"string:" + config.get(_config_secret_fallback)
-    type_, value = secret.split(u":", 1)
-    if type_ == u"file":
-        with open(value, u"r") as key_file:
+        secret = "string:" + config.get(_config_secret_fallback)
+    type_, value = secret.split(":", 1)
+    if type_ == "file":
+        with open(value) as key_file:
             value = key_file.read()
 
     if not value:
         raise CkanConfigurationException(
-            (
-                u"Neither `{key}` nor `{fallback}` specified. "
-                u"Missing secret key is a critical security issue."
-            ).format(
-                key=config_key, fallback=_config_secret_fallback,
-            )
+            
+                f"Neither `{config_key}` nor `{_config_secret_fallback}` specified. "
+                "Missing secret key is a critical security issue."
+            
         )
     return value
 
@@ -72,7 +70,7 @@ def postprocess(data: dict[str, Any], jti: str,
     return data
 
 
-def decode(encoded: str, **kwargs: Any) -> Optional[Mapping[str, Any]]:
+def decode(encoded: str, **kwargs: Any) -> Mapping[str, Any] | None:
     for plugin in _get_plugins():
         data = plugin.decode_api_token(encoded, **kwargs)
         if data:
@@ -83,7 +81,7 @@ def decode(encoded: str, **kwargs: Any) -> Optional[Mapping[str, Any]]:
         except jwt.InvalidTokenError as e:
             # TODO: add signal for performing extra work, like removing
             # expired tokens
-            log.error(u"Cannot decode JWT token: %s", e)
+            log.error("Cannot decode JWT token: %s", e)
             data = None
     return data
 
@@ -135,7 +133,7 @@ def add_extra(result: dict[str, Any]) -> dict[str, Any]:
 
 def get_user_from_token(token: str,
                         update_access_time: bool = True
-                        ) -> Optional[model.User]:
+                        ) -> model.User | None:
     data = decode(token)
     if not data:
         return None
@@ -146,9 +144,9 @@ def get_user_from_token(token: str,
     # order and only `IApiToken.preprocess_api_token` must be different.
     for plugin in reversed(list(_get_plugins())):
         data = plugin.preprocess_api_token(data)
-    if not data or u"jti" not in data:
+    if not data or "jti" not in data:
         return None
-    token_obj = model.ApiToken.get(data[u"jti"])
+    token_obj = model.ApiToken.get(data["jti"])
     if not token_obj:
         return None
     if update_access_time:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import pytest
 
@@ -10,31 +9,31 @@ from ckan.cli.cli import ckan
 import datetime
 
 
-@pytest.mark.usefixtures(u"clean_db", u"clean_index")
-class TestSearchIndex(object):
+@pytest.mark.usefixtures("clean_db", "clean_index")
+class TestSearchIndex:
     def test_search_index_rebuild(self, cli):
         """Direct update on package won't be reflected in search results till
         re-index.
 
         """
-        dataset = factories.Dataset(title=u"Before rebuild")
-        model.Session.query(model.Package).filter_by(id=dataset[u'id']).update(
-            {u'title': u'After update'})
+        dataset = factories.Dataset(title="Before rebuild")
+        model.Session.query(model.Package).filter_by(id=dataset['id']).update(
+            {'title': 'After update'})
         model.Session.commit()
 
-        search_result = helpers.call_action(u'package_search', q=u"After")
-        assert search_result[u'count'] == 0
+        search_result = helpers.call_action('package_search', q="After")
+        assert search_result['count'] == 0
 
-        result = cli.invoke(ckan, [u'search-index', u'rebuild'])
+        result = cli.invoke(ckan, ['search-index', 'rebuild'])
         assert not result.exit_code, result.output
-        search_result = helpers.call_action(u'package_search', q=u"After")
-        assert search_result[u'count'] == 1
+        search_result = helpers.call_action('package_search', q="After")
+        assert search_result['count'] == 1
 
         result = cli.invoke(ckan, ['search-index', 'rebuild', '-e'])
         print(result.output)
         assert not result.exit_code
-        search_result = helpers.call_action(u'package_search', q=u"After")
-        assert search_result[u'count'] == 1
+        search_result = helpers.call_action('package_search', q="After")
+        assert search_result['count'] == 1
 
     @pytest.mark.ckan_config("ckan.search.remove_deleted_packages", True)
     def test_no_index_deleted_package(self, cli):
@@ -42,7 +41,7 @@ class TestSearchIndex(object):
         factories.Dataset(title="Deleted package", name="deleted-pkg")
         helpers.call_action("package_delete", id="deleted-pkg")
         search_result = helpers.call_action('package_search', q="Deleted")
-        assert search_result[u'count'] == 0
+        assert search_result['count'] == 0
 
     @pytest.mark.ckan_config("ckan.search.remove_deleted_packages", True)
     def test_no_index_deleted_package_rebuild(self, cli):
@@ -52,7 +51,7 @@ class TestSearchIndex(object):
         result = cli.invoke(ckan, ['search-index', 'rebuild'])
         assert not result.exit_code, result.output
         search_result = helpers.call_action('package_search', q="Deleted")
-        assert search_result[u'count'] == 0
+        assert search_result['count'] == 0
 
     @pytest.mark.ckan_config("ckan.search.remove_deleted_packages", False)
     def test_index_deleted_package(self, cli):
@@ -62,13 +61,13 @@ class TestSearchIndex(object):
         helpers.call_action("package_delete", id="deleted-pkg")
         search_result = helpers.call_action(
             'package_search', q="Deleted", include_deleted=True)
-        assert search_result[u'count'] == 1
-        assert search_result[u'results'][0]['id'] == dataset['id']
+        assert search_result['count'] == 1
+        assert search_result['results'][0]['id'] == dataset['id']
         # should be removed after purge
         helpers.call_action("dataset_purge", id="deleted-pkg")
         search_result = helpers.call_action(
             'package_search', q="Deleted", include_deleted=True)
-        assert search_result[u'count'] == 0
+        assert search_result['count'] == 0
 
     @pytest.mark.ckan_config("ckan.search.remove_deleted_packages", False)
     def test_index_deleted_package_rebuild(self, cli):
@@ -80,13 +79,13 @@ class TestSearchIndex(object):
         assert not result.exit_code, result.output
         search_result = helpers.call_action(
             'package_search', q="Deleted", include_deleted=True)
-        assert search_result[u'count'] == 1
-        assert search_result[u'results'][0]['id'] == dataset['id']
+        assert search_result['count'] == 1
+        assert search_result['results'][0]['id'] == dataset['id']
         # should be removed after purge
         helpers.call_action("dataset_purge", id="deleted-pkg")
         search_result = helpers.call_action(
             'package_search', q="Deleted", include_deleted=True)
-        assert search_result[u'count'] == 0
+        assert search_result['count'] == 0
 
     @pytest.mark.ckan_config("ckan.search.remove_deleted_packages", False)
     def test_deleted_only_visible_for_right_users(self):
@@ -138,53 +137,53 @@ class TestSearchIndex(object):
 
         """
         # Create two datasets and check if they are available in search results
-        dataset = factories.Dataset(title=u"First package")
-        another_dataset = factories.Dataset(title=u"Second package")
-        search_result = helpers.call_action(u'package_search', q=u"package")
-        assert search_result[u'count'] == 2
+        dataset = factories.Dataset(title="First package")
+        another_dataset = factories.Dataset(title="Second package")
+        search_result = helpers.call_action('package_search', q="package")
+        assert search_result['count'] == 2
 
         # Remove one dataset
-        result = cli.invoke(ckan, [u'search-index', u'clear', dataset[u'id']])
+        result = cli.invoke(ckan, ['search-index', 'clear', dataset['id']])
         assert not result.exit_code, result.output
-        search_result = helpers.call_action(u'package_search', q=u"package")
-        assert search_result[u'count'] == 1
+        search_result = helpers.call_action('package_search', q="package")
+        assert search_result['count'] == 1
 
         # Restore removed dataset and make sure all dataset are there
         result = cli.invoke(ckan,
-                            [u'search-index', u'rebuild', dataset[u'id']])
+                            ['search-index', 'rebuild', dataset['id']])
         assert not result.exit_code, result.output
-        search_result = helpers.call_action(u'package_search', q=u"package")
-        assert search_result[u'count'] == 2
+        search_result = helpers.call_action('package_search', q="package")
+        assert search_result['count'] == 2
 
         # Remove one package from index and test `check` tool
         result = cli.invoke(
-            ckan, [u'search-index', u'clear', another_dataset[u'id']])
-        result = cli.invoke(ckan, [u'search-index', u'check'])
+            ckan, ['search-index', 'clear', another_dataset['id']])
+        result = cli.invoke(ckan, ['search-index', 'check'])
         assert not result.exit_code, result.output
-        assert u'1 out of 2' in result.output
-        search_result = helpers.call_action(u'package_search', q=u"package")
-        assert search_result[u'count'] == 1
+        assert '1 out of 2' in result.output
+        search_result = helpers.call_action('package_search', q="package")
+        assert search_result['count'] == 1
 
         # One can view data from index using CLI
-        result = cli.invoke(ckan, [u'search-index', u'show', dataset[u'id']])
+        result = cli.invoke(ckan, ['search-index', 'show', dataset['id']])
         assert not result.exit_code, result.output
-        assert u'First package' in result.output
-        assert u'Second package' not in result.output
+        assert 'First package' in result.output
+        assert 'Second package' not in result.output
 
         # Only search index is checked, not actual data in DB
         result = cli.invoke(ckan,
-                            [u'search-index', u'show', another_dataset[u'id']])
+                            ['search-index', 'show', another_dataset['id']])
         assert result.exit_code
 
-        result = cli.invoke(ckan, [u'search-index', u'rebuild', u'-o'])
+        result = cli.invoke(ckan, ['search-index', 'rebuild', '-o'])
         assert not result.exit_code, result.output
-        search_result = helpers.call_action(u'package_search', q=u"package")
-        assert search_result[u'count'] == 2
+        search_result = helpers.call_action('package_search', q="package")
+        assert search_result['count'] == 2
 
     def test_rebuild_invalid_dataset(self, cli):
         # attempt to index package that doesn't exist
         result = cli.invoke(
-            ckan, [u'search-index', u'rebuild', u'invalid-dataset'])
+            ckan, ['search-index', 'rebuild', 'invalid-dataset'])
         assert result.exit_code, result.output
         assert "Couldn't find" in result.output
 

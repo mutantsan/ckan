@@ -1,4 +1,3 @@
-# encoding: utf-8
 """084 Add metadata created
 
 Revision ID: d85ce5783688

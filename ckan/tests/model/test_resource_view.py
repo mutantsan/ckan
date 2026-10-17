@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -10,7 +9,7 @@ ResourceView = model.ResourceView
 
 @pytest.mark.ckan_config("ckan.plugins", "image_view webpage_view")
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
-class TestResourceView(object):
+class TestResourceView:
     def test_resource_view_get(self):
         resource_view_id = factories.ResourceView()["id"]
         resource_view = ResourceView.get(resource_view_id)

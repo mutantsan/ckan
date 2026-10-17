@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
  This module is an adaptation of flask-multistatic to provide

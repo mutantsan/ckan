@@ -33,7 +33,7 @@ class TestPluggablePreviews:
         assert "There are no views created" in result
 
         # no preview for type "ümlaut", should not fail
-        res["format"] = u"ümlaut"
+        res["format"] = "ümlaut"
         call_action("resource_update", **res)
         result = app.get(url, status=200)
         assert "There are no views created" in result

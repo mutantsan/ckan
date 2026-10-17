@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """
 Utility functions for I/O.
@@ -19,8 +18,8 @@ _FILESYSTEM_ENCODING = str(
 )
 
 
-def encode_path(p: Union[str, Any]) -> bytes:
-    u'''
+def encode_path(p: str | Any) -> bytes:
+    '''
     Convert a Unicode path string to a byte string.
 
     Intended to be used for encoding paths that are known to be
@@ -37,12 +36,12 @@ def encode_path(p: Union[str, Any]) -> bytes:
     Raises a ``TypeError`` is the input is not a Unicode string.
     '''
     if not isinstance(p, str):
-        raise TypeError(u'Can only encode unicode, not {}'.format(type(p)))
+        raise TypeError(f'Can only encode unicode, not {type(p)}')
     return p.encode(_FILESYSTEM_ENCODING)
 
 
-def decode_path(p: Union[bytes, Any]) -> str:
-    u'''
+def decode_path(p: bytes | Any) -> str:
+    '''
     Convert a byte path string to a Unicode string.
 
     Intended to be used for decoding byte paths to existing files as
@@ -57,7 +56,7 @@ def decode_path(p: Union[bytes, Any]) -> str:
     '''
 
     if not isinstance(p, bytes):
-        raise TypeError(u'Can only decode bytes, not {}'.format(type(p)))
+        raise TypeError(f'Can only decode bytes, not {type(p)}')
     return p.decode(_FILESYSTEM_ENCODING)
 
 

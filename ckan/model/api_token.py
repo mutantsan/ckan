@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import copy
@@ -14,53 +13,53 @@ from typing_extensions import Self
 from ckan.model import meta, User, DomainObject
 from ckan.common import config
 
-__all__ = [u"ApiToken", u"api_token_table"]
+__all__ = ["ApiToken", "api_token_table"]
 
 Mapped = orm.Mapped
 
 
 def _make_token() -> str:
-    nbytes = config.get(u"api_token.nbytes")
+    nbytes = config.get("api_token.nbytes")
     return token_urlsafe(nbytes)
 
 
 api_token_table = Table(
-    u"api_token",
+    "api_token",
     meta.metadata,
-    Column(u"id", types.UnicodeText, primary_key=True, default=_make_token),
-    Column(u"name", types.UnicodeText),
-    Column(u"user_id", types.UnicodeText, ForeignKey(u"user.id")),
-    Column(u"created_at", types.DateTime, default=datetime.datetime.utcnow),
-    Column(u"last_access", types.DateTime, nullable=True),
-    Column(u"plugin_extras", MutableDict.as_mutable(JSONB)),
+    Column("id", types.UnicodeText, primary_key=True, default=_make_token),
+    Column("name", types.UnicodeText),
+    Column("user_id", types.UnicodeText, ForeignKey("user.id")),
+    Column("created_at", types.DateTime, default=datetime.datetime.utcnow),
+    Column("last_access", types.DateTime, nullable=True),
+    Column("plugin_extras", MutableDict.as_mutable(JSONB)),
 )
 
 
 class ApiToken(DomainObject):
     id: Mapped[str]
     name: Mapped[str]
-    user_id: Mapped[Optional[str]]
+    user_id: Mapped[str | None]
     created_at: Mapped[datetime.datetime]
-    last_access: Mapped[Optional[datetime.datetime]]
+    last_access: Mapped[datetime.datetime | None]
     plugin_extras: Mapped[dict[str, Any]]
-    owner: Mapped[Optional[User]]
+    owner: Mapped[User | None]
 
     def __init__(
-            self, user_id: Optional[str] = None,
+            self, user_id: str | None = None,
             name: str = 'Unnamed') -> None:
         self.id = _make_token()
         self.user_id = user_id
         self.name = name
 
     @classmethod
-    def get(cls, id: Optional[str]) -> Optional[Self]:
+    def get(cls, id: str | None) -> Self | None:
         if not id:
             return None
 
         return meta.Session.get(cls, id)
 
     @classmethod
-    def revoke(cls, id: Optional[str]) -> bool:
+    def revoke(cls, id: str | None) -> bool:
         token = cls.get(id)
         if token:
             meta.Session.delete(token)
@@ -85,9 +84,9 @@ meta.registry.map_imperatively(
     ApiToken,
     api_token_table,
     properties={
-        u"owner": orm.relationship(
-            User, backref=orm.backref(u"api_tokens",
-                                      cascade=u"all, delete")
+        "owner": orm.relationship(
+            User, backref=orm.backref("api_tokens",
+                                      cascade="all, delete")
         )
     },
 )

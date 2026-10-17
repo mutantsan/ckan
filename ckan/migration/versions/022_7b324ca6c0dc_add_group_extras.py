@@ -1,4 +1,3 @@
-# encoding: utf-8
 """022 Add group_extras
 
 Revision ID: 7b324ca6c0dc

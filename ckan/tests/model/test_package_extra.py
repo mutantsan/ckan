@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -6,8 +5,8 @@ from ckan import model
 from ckan.tests import factories
 
 
-@pytest.mark.usefixtures(u"non_clean_db")
-class TestPackageExtra(object):
+@pytest.mark.usefixtures("non_clean_db")
+class TestPackageExtra:
     def test_create_extras(self):
         pkg = model.Package(name=factories.Dataset.stub().name)
 
@@ -24,15 +23,15 @@ class TestPackageExtra(object):
 
         dataset = factories.Dataset(
             extras=[
-                {u"key": u"subject", u"value": u"science"},
-                {u"key": u"accuracy", u"value": u"metre"},
+                {"key": "subject", "value": "science"},
+                {"key": "accuracy", "value": "metre"},
             ]
         )
-        pkg = model.Package.by_name(dataset[u"name"])
+        pkg = model.Package.by_name(dataset["name"])
 
-        del pkg.extras[u"subject"]
+        del pkg.extras["subject"]
         model.Session.commit()
         model.Session.remove()
 
-        pkg = model.Package.by_name(dataset[u"name"])
-        assert pkg.extras == {u"accuracy": u"metre"}
+        pkg = model.Package.by_name(dataset["name"])
+        assert pkg.extras == {"accuracy": "metre"}

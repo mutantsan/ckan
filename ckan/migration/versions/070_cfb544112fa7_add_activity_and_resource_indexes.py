@@ -1,4 +1,3 @@
-# encoding: utf-8
 """070 Add activity and resource_indexes
 
 Revision ID: cfb544112fa7

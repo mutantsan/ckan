@@ -1,4 +1,3 @@
-# encoding: utf-8
 """036 Lockdown roles
 
 Revision ID: ecaa8b38782f

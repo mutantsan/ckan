@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import unittest.mock as mock
 import pytest
@@ -17,14 +16,14 @@ def command(cli):
 
 
 @pytest.mark.usefixtures("with_extended_cli")
-class TestDescribe(object):
+class TestDescribe:
     def test_basic_invocation(self, command):
         """Command prints nothing without arguments;"""
         result = command("describe")
         assert not result.output
         assert not result.exit_code, result.output
 
-    @pytest.mark.ckan_config(u"ckan.plugins", u"datastore")
+    @pytest.mark.ckan_config("ckan.plugins", "datastore")
     @pytest.mark.usefixtures("with_plugins")
     def test_enabled(self, command):
         """Can list configuration from the enabled plugins."""
@@ -110,7 +109,7 @@ class TestDescribe(object):
 
 
 @pytest.mark.usefixtures("with_extended_cli")
-class TestDeclaration(object):
+class TestDeclaration:
     def test_basic_invocation(self, command):
         result = command("declaration")
         assert not result.output
@@ -146,7 +145,7 @@ class TestDeclaration(object):
 
 
 @pytest.mark.usefixtures("with_extended_cli")
-class TestDocs(object):
+class TestDocs:
     def test_basic_invocation(self, command):
         result = command("docs")
         assert not result.output
@@ -185,7 +184,7 @@ class TestDocs(object):
 
 
 @pytest.mark.usefixtures("with_extended_cli")
-class TestSearch(object):
+class TestSearch:
     def test_wrong_non_pattern(self, command):
         result = command("search", "ckan")
         assert not result.output
@@ -231,7 +230,7 @@ class TestSearch(object):
 
 
 @pytest.mark.usefixtures("with_extended_cli")
-class TestUndeclared(object):
+class TestUndeclared:
     def test_no_undeclared_options_by_default(self, command):
         result = command("undeclared", "-idatapusher", "-idatastore")
         assert not result.output
@@ -261,7 +260,7 @@ class TestUndeclared(object):
 
 
 @pytest.mark.usefixtures("with_extended_cli")
-class TestValidate(object):
+class TestValidate:
     def test_no_errors_by_default_in_safe_mofe(self, command):
         result = command("validate")
         assert not result.output

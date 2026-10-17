@@ -1,4 +1,3 @@
-# encoding: utf-8
 """086 Drop openid column
 
 Revision ID: 19663581b3bb

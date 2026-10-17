@@ -1,4 +1,3 @@
-# encoding: utf-8
 """072 Add resource view
 
 Revision ID: 08dcb9233ad7

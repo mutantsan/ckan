@@ -1,9 +1,9 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import Any, Mapping, cast
+from typing import Any, cast
+from collections.abc import Mapping
 
 
 from ckan.logic import NotFound

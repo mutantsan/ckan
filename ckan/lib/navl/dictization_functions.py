@@ -1,17 +1,16 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import copy
 import json
-from typing import (Any, Callable, Iterable, Optional,
-                    Sequence, Union)
+from typing import (Any, Optional, Union)
+from collections.abc import Callable, Iterable, Sequence
 
 from ckan.common import _
 from ckan.types import (
     Context, FlattenDataDict, FlattenErrorDict, FlattenKey, Schema)
 
 
-class Missing(object):
+class Missing:
     def __str__(self):
         raise Invalid(_('Missing value'))
 
@@ -40,22 +39,22 @@ class Missing(object):
 missing = Missing()
 
 
-class State(object):
+class State:
     pass
 
 
 class DictizationError(Exception):
-    error: Optional[str]
+    error: str | None
 
     def __str__(self):
         if hasattr(self, 'error') and self.error:
-            return '{}: {}'.format(self.__class__.__name__, repr(self.error))
+            return f'{self.__class__.__name__}: {repr(self.error)}'
         return self.__class__.__name__
 
     def __repr__(self):
         if hasattr(self, 'error') and self.error:
-            return '<{} {}>'.format(self.__class__.__name__, repr(self.error))
-        return '<{}>'.format(self.__class__.__name__)
+            return f'<{self.__class__.__name__} {repr(self.error)}>'
+        return f'<{self.__class__.__name__}>'
 
 
 class Invalid(DictizationError):
@@ -65,7 +64,7 @@ class Invalid(DictizationError):
     '''
     error: str
 
-    def __init__(self, error: str, key: Optional[Any] = None) -> None:
+    def __init__(self, error: str, key: Any | None = None) -> None:
         self.error = error
 
 
@@ -88,8 +87,8 @@ def flattened_order_key(key: Sequence[Any]) -> FlattenKey:
 
 
 def flatten_schema(schema: dict[str, Any],
-                   flattened: Optional[dict[FlattenKey, Any]] = None,
-                   key: Optional[list[Any]] = None
+                   flattened: dict[FlattenKey, Any] | None = None,
+                   key: list[Any] | None = None
                    ) -> dict[FlattenKey, Any]:
     '''convert schema into flat dict, where the keys become tuples
 
@@ -276,7 +275,7 @@ def _remove_blank_keys(schema: dict[str, Any]):
 def validate(
     data: dict[str, Any],
     schema: dict[str, Any],
-    context: Optional[Context] = None
+    context: Context | None = None
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     '''Validate an unflattened nested dict against a schema.'''
     context = context or {}
@@ -378,10 +377,10 @@ def _validate(
     return converted_data, errors
 
 
-def flatten_list(data: list[Union[dict[str, Any], Any]],
-                 flattened: Optional[FlattenDataDict] = None,
-                 old_key: Optional[list[Any]] = None,
-                 schema: Optional[dict[str, Any]] = None,
+def flatten_list(data: list[dict[str, Any] | Any],
+                 flattened: FlattenDataDict | None = None,
+                 old_key: list[Any] | None = None,
+                 schema: dict[str, Any] | None = None,
                  ) -> FlattenDataDict:
     '''flatten a list of dicts'''
 
@@ -398,9 +397,9 @@ def flatten_list(data: list[Union[dict[str, Any], Any]],
 
 
 def flatten_dict(data: dict[str, Any],
-                 flattened: Optional[FlattenDataDict] = None,
-                 old_key: Optional[list[Any]] = None,
-                 schema: Optional[dict[str, Any]] = None,
+                 flattened: FlattenDataDict | None = None,
+                 old_key: list[Any] | None = None,
+                 schema: dict[str, Any] | None = None,
                  ) -> FlattenDataDict:
     '''Flatten a dict'''
 
@@ -452,7 +451,7 @@ def unflatten(data: FlattenDataDict) -> dict[str, Any]:
     clean_lists: dict[int, Any] = {}
 
     for flattend_key in sorted(data.keys(), key=flattened_order_key):
-        current_pos: Union[list[Any], dict[str, Any]] = unflattened
+        current_pos: list[Any] | dict[str, Any] = unflattened
 
         for key in flattend_key[:-1]:
             try:
@@ -487,7 +486,7 @@ class MissingNullEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def check_dict(data_dict: Union[dict[str, Any], Any],
+def check_dict(data_dict: dict[str, Any] | Any,
                select_dict: dict[str, Any],
                parent_path: FlattenKey = ()) -> list[FlattenKey]:
     """
@@ -514,7 +513,7 @@ def check_dict(data_dict: Union[dict[str, Any], Any],
     return unmatched
 
 
-def check_list(data_list: Union[list[Any], Any],
+def check_list(data_list: list[Any] | Any,
                select_list: list[Any],
                parent_path: FlattenKey = ()) -> list[FlattenKey]:
     """
@@ -541,7 +540,7 @@ def check_list(data_list: Union[list[Any], Any],
     return unmatched
 
 
-def resolve_string_key(data: Union[dict[str, Any], list[Any]],
+def resolve_string_key(data: dict[str, Any] | list[Any],
                        string_key: str) -> tuple[Any, FlattenKey]:
     """
     return (child, parent_path) if string_key is found in data
@@ -552,7 +551,7 @@ def resolve_string_key(data: Union[dict[str, Any], list[Any]],
     with an id field matching "1492a..."
     """
     parent_path: list[Any] = []
-    current: Union[dict[str, Any], list[Any], Any] = data
+    current: dict[str, Any] | list[Any] | Any = data
     for k in string_key.split('__'):
         if isinstance(current, dict):
             if k not in current:
@@ -627,7 +626,7 @@ def filter_glob_match(
         for p in glob_patterns])
 
 
-def _filter_glob_match(data: Union[list[Any], dict[str, Any], Any],
+def _filter_glob_match(data: list[Any] | dict[str, Any] | Any,
                        parsed_globs: Iterable[tuple[bool, Sequence[str]]]):
     if isinstance(data, dict):
         protected = {}
@@ -694,7 +693,7 @@ def _filter_glob_match(data: Union[list[Any], dict[str, Any], Any],
 
 
 def update_merge_dict(data_dict: dict[str, Any],
-                      update_dict: Union[dict[str, Any], Any],
+                      update_dict: dict[str, Any] | Any,
                       parent_path: FlattenKey = ()) -> None:
     """
     update data_dict keys and values in-place based on update_dict.
@@ -717,7 +716,7 @@ def update_merge_dict(data_dict: dict[str, Any],
 
 
 def update_merge_list(data_list: list[Any],
-                      update_list: Union[list[Any], Any],
+                      update_list: list[Any] | Any,
                       parent_path: FlattenKey = ()) -> None:
     """
     update data_list entries in-place based on update_list.

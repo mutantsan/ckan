@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 from __future__ import annotations
 
@@ -16,69 +15,69 @@ from ckan.common import g, config, current_user, _
 from ckan.types import Context, Response
 
 
-CACHE_PARAMETERS = [u'__cache', u'__no_cache__']
+CACHE_PARAMETERS = ['__cache', '__no_cache__']
 
 
-home = Blueprint(u'home', __name__)
+home = Blueprint('home', __name__)
 
 
 def index() -> str:
-    u'''display home page'''
+    '''display home page'''
     extra_vars: dict[str, Any] = {}
     try:
         context: Context = {
-            u'user': current_user.name,
-            u'auth_user_obj': current_user
+            'user': current_user.name,
+            'auth_user_obj': current_user
         }
 
         data_dict: dict[str, Any] = {
-            u'q': u'*:*',
-            u'facet.field': h.facets(),
-            u'rows': 4,
-            u'start': 0,
-            u'sort': u'view_recent desc',
-            u'fq': u'capacity:"public"'}
-        query = logic.get_action(u'package_search')(context, data_dict)
+            'q': '*:*',
+            'facet.field': h.facets(),
+            'rows': 4,
+            'start': 0,
+            'sort': 'view_recent desc',
+            'fq': 'capacity:"public"'}
+        query = logic.get_action('package_search')(context, data_dict)
         g.package_count = query['count']
         g.datasets = query['results']
 
         org_label = h.humanize_entity_type(
-            u'organization',
-            h.default_group_type(u'organization'),
-            u'facet label') or _(u'Organizations')
+            'organization',
+            h.default_group_type('organization'),
+            'facet label') or _('Organizations')
 
         group_label = h.humanize_entity_type(
-            u'group',
-            h.default_group_type(u'group'),
-            u'facet label') or _(u'Groups')
+            'group',
+            h.default_group_type('group'),
+            'facet label') or _('Groups')
 
         g.facet_titles = {
-            u'organization': org_label,
-            u'groups': group_label,
-            u'tags': _(u'Tags'),
-            u'res_format': _(u'Formats'),
-            u'license': _(u'Licenses'),
+            'organization': org_label,
+            'groups': group_label,
+            'tags': _('Tags'),
+            'res_format': _('Formats'),
+            'license': _('Licenses'),
         }
 
-        extra_vars[u'search_facets'] = query[u'search_facets']
+        extra_vars['search_facets'] = query['search_facets']
 
     except search.SearchError:
         g.package_count = 0
 
     if current_user.is_authenticated and not current_user.email:
         url = h.url_for('user.edit')
-        msg = _(u'Please <a href="%s">update your profile</a>'
-                u' and add your email address. ') % url + \
-            _(u'%s uses your email address'
-                u' if you need to reset your password.') \
-            % config.get(u'ckan.site_title')
+        msg = _('Please <a href="%s">update your profile</a>'
+                ' and add your email address. ') % url + \
+            _('%s uses your email address'
+                ' if you need to reset your password.') \
+            % config.get('ckan.site_title')
         h.flash_notice(msg, allow_html=True)
-    return base.render(u'home/index.html', extra_vars=extra_vars)
+    return base.render('home/index.html', extra_vars=extra_vars)
 
 
 def about() -> str:
-    u''' display about page'''
-    return base.render(u'home/about.html', extra_vars={})
+    ''' display about page'''
+    return base.render('home/about.html', extra_vars={})
 
 
 def robots_txt() -> Response:
@@ -88,7 +87,7 @@ def robots_txt() -> Response:
     return resp
 
 
-def redirect_locale(target_locale: str, path: Optional[str] = None) -> Any:
+def redirect_locale(target_locale: str, path: str | None = None) -> Any:
     target = f'/{target_locale}/{path}' if path else f'/{target_locale}'
 
     if request.args:
@@ -99,15 +98,15 @@ def redirect_locale(target_locale: str, path: Optional[str] = None) -> Any:
     return redirect(url, code=308)
 
 
-util_rules: List[Tuple[str, Any]] = [
-    (u'/', index),
-    (u'/about', about),
-    (u'/robots.txt', robots_txt)
+util_rules: list[tuple[str, Any]] = [
+    ('/', index),
+    ('/about', about),
+    ('/robots.txt', robots_txt)
 ]
 for rule, view_func in util_rules:
     home.add_url_rule(rule, view_func=view_func)
 
-locales_mapping: List[Tuple[str, str]] = [
+locales_mapping: list[tuple[str, str]] = [
     ('zh_TW', 'zh_Hant_TW'),
     ('zh_CN', 'zh_Hans_CN'),
     ('no', 'nb_NO'),

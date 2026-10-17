@@ -1,7 +1,7 @@
-# encoding: utf-8
 from __future__ import annotations
 
-from typing import Any, Collection, Optional
+from typing import Any, Optional
+from collections.abc import Collection
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped
@@ -33,14 +33,14 @@ resource_view_table = sa.Table(
 class ResourceView(domain_object.DomainObject):
     id: Mapped[str]
     resource_id: Mapped[str]
-    title: Mapped[Optional[str]]
-    description: Mapped[Optional[str]]
+    title: Mapped[str | None]
+    description: Mapped[str | None]
     view_type: Mapped[str]
     order: Mapped[int]
     config: Mapped[dict[str, Any]]
 
     @classmethod
-    def get(cls, reference: str) -> Optional[Self]:
+    def get(cls, reference: str) -> Self | None:
         '''Returns a ResourceView object referenced by its id.'''
         if not reference:
             return None
@@ -73,7 +73,7 @@ class ResourceView(domain_object.DomainObject):
         return query.delete(synchronize_session='fetch')
 
     @classmethod
-    def delete_all(cls, view_types: Optional[Collection[str]] = None) -> int:
+    def delete_all(cls, view_types: Collection[str] | None = None) -> int:
         '''Delete all Resource Views, or all of a particular type'''
         query = meta.Session.query(cls)
 

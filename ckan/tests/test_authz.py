@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -67,7 +66,7 @@ def test_no_attributes_set_on_imported_auth_members():
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestAuthOrgHierarchy(object):
+class TestAuthOrgHierarchy:
     def test_parent_admin_auth(self):
         user = factories.User()
         parent = factories.Organization(

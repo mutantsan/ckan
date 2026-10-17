@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """fix conditional index on user
 

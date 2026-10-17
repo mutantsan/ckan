@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Functional tests for converters in ckan/logic/converters.py.
 
 """
@@ -137,7 +136,7 @@ def test_convert_to_extras_free_extra_can_not_have_the_same_key():
 
     assert "extras" in errors
     assert errors["extras"] == [
-        {"key": [u"There is a schema field with the same name"]}
+        {"key": ["There is a schema field with the same name"]}
     ]
 
 
@@ -155,4 +154,4 @@ def test_convert_from_extras_does_not_crash_when_extras_row_has_no_id():
     data, errors = validate(data_dict, schema, context)
 
     assert data["custom_text"] == "Hi"
-    assert errors == {"extras": [{"key": [u"Missing value"]}]}
+    assert errors == {"extras": [{"key": ["Missing value"]}]}

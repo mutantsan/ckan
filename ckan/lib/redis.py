@@ -1,11 +1,9 @@
-# encoding: utf-8
 
 '''
 Redis utilities.
 
 .. versionadded:: 2.7
 '''
-from __future__ import absolute_import
 
 import logging
 
@@ -54,5 +52,5 @@ def is_redis_available() -> bool:
     try:
         return redis_conn.ping() is True
     except Exception:
-        log.exception(u'Redis is not available')
+        log.exception('Redis is not available')
         return False

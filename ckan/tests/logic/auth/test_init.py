@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -64,7 +63,7 @@ def test_get_group_object_id_none():
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestInit(object):
+class TestInit:
     def test_get_package_object_with_id(self):
 
         user_name = helpers.call_action("get_site_user")["name"]

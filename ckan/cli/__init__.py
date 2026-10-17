@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import os
@@ -15,7 +14,7 @@ from ckan.types import Config
 log = logging.getLogger(__name__)
 
 
-class CKANConfigLoader(object):
+class CKANConfigLoader:
     config: Config
     config_file: str
     parser: ConfigParser
@@ -27,7 +26,7 @@ class CKANConfigLoader(object):
         self.parser = ConfigParser()
         # Preserve case in config keys
         self.parser.optionxform = lambda optionstr: str(optionstr)
-        self.section = u'app:main'
+        self.section = 'app:main'
         defaults = dict(
             (k, v) for k, v in os.environ.items()
             if k.startswith("CKAN_"))
@@ -41,7 +40,7 @@ class CKANConfigLoader(object):
             self.parser._defaults[key] = value  # type: ignore
 
     def _read_config_file(self, filename: str) -> None:
-        defaults = {u'here': os.path.dirname(os.path.abspath(filename))}
+        defaults = {'here': os.path.dirname(os.path.abspath(filename))}
         self._update_defaults(defaults)
         self.parser.read(filename)
 
@@ -124,7 +123,7 @@ class CKANConfigLoader(object):
                         self.parser.remove_section(section)
 
         log.debug(
-            u'Loaded configuration from the following files: %s',
+            'Loaded configuration from the following files: %s',
             chain
         )
 
@@ -135,21 +134,21 @@ class CKANConfigLoader(object):
 def error_shout(exception: Any) -> None:
     """Report CLI error with a styled message.
     """
-    click.secho(str(exception), fg=u'red', err=True)
+    click.secho(str(exception), fg='red', err=True)
 
 
-def load_config(ini_path: Optional[str] = None) -> Config:
+def load_config(ini_path: str | None = None) -> Config:
     if ini_path:
-        if ini_path.startswith(u'~'):
+        if ini_path.startswith('~'):
             ini_path = os.path.expanduser(ini_path)
-        filename: Optional[str] = os.path.abspath(ini_path)
-        config_source = [u'-c parameter']
-    elif os.environ.get(u'CKAN_INI'):
-        filename = os.environ[u'CKAN_INI']
-        config_source = [u'$CKAN_INI']
+        filename: str | None = os.path.abspath(ini_path)
+        config_source = ['-c parameter']
+    elif os.environ.get('CKAN_INI'):
+        filename = os.environ['CKAN_INI']
+        config_source = ['$CKAN_INI']
     else:
         # deprecated method since CKAN 2.9
-        default_filenames = [u'ckan.ini', u'development.ini']
+        default_filenames = ['ckan.ini', 'development.ini']
         config_source = default_filenames
         filename = None
         for default_filename in default_filenames:
@@ -159,17 +158,17 @@ def load_config(ini_path: Optional[str] = None) -> Config:
                 break
         if not filename:
             # give really clear error message for this common situation
-            msg = u'''
+            msg = '''
 ERROR: You need to specify the CKAN config (.ini) file path.
 
 Use the --config parameter or set environment variable CKAN_INI
 or have one of {} in the current directory.'''
-            msg = msg.format(u', '.join(default_filenames))
+            msg = msg.format(', '.join(default_filenames))
             raise CkanConfigurationException(msg)
 
     if not filename or not os.path.exists(filename):
-        msg = u'Config file not found: %s' % filename
-        msg += u'\n(Given by: %s)' % config_source
+        msg = 'Config file not found: %s' % filename
+        msg += '\n(Given by: %s)' % config_source
         raise CkanConfigurationException(msg)
 
     config_loader = CKANConfigLoader(filename)

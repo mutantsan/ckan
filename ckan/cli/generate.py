@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import contextlib
@@ -25,68 +24,68 @@ from ckan.common import config_declaration, config
 class CKANAlembicConfig(AlembicConfig):
     def get_template_directory(self):
         return os.path.join(os.path.dirname(ckan.__file__),
-                            u"../contrib/alembic")
+                            "../contrib/alembic")
 
 
-@click.group(short_help=u"Scaffolding for regular development tasks.")
+@click.group(short_help="Scaffolding for regular development tasks.")
 def generate():
     """Scaffolding for regular development tasks.
     """
     pass
 
 
-@generate.command(name=u'extension', short_help=u"Create empty extension.")
-@click.option(u'-o',
-              u'--output-dir',
-              help=u"Location to put the generated "
-              u"template.",
-              default=u'.')
+@generate.command(name='extension', short_help="Create empty extension.")
+@click.option('-o',
+              '--output-dir',
+              help="Location to put the generated "
+              "template.",
+              default='.')
 def extension(output_dir: str):
     """Generate empty extension files to expand CKAN.
     """
     try:
         from cookiecutter.main import cookiecutter
     except ImportError:
-        error_shout(u"`cookiecutter` library is missing from import path.")
-        error_shout(u"Make sure you have dev-dependencies installed:")
-        error_shout(u"\tpip install -r dev-requirements.txt")
+        error_shout("`cookiecutter` library is missing from import path.")
+        error_shout("Make sure you have dev-dependencies installed:")
+        error_shout("\tpip install -r dev-requirements.txt")
         raise click.Abort()
 
     cur_loc = os.path.dirname(os.path.abspath(__file__))
     os.chdir(cur_loc)
-    os.chdir(u'../../contrib/cookiecutter/ckan_extension/')
+    os.chdir('../../contrib/cookiecutter/ckan_extension/')
     template_loc = os.getcwd()
 
     # Prompt user for information
-    click.echo(u"\n")
+    click.echo("\n")
     while True:
-        name = click.prompt(u"Extension's name",
-                            default=u"must begin 'ckanext-'")
-        if not name.startswith(u"ckanext-"):
+        name = click.prompt("Extension's name",
+                            default="must begin 'ckanext-'")
+        if not name.startswith("ckanext-"):
             error_shout(
-                u"ERROR: Project name must start with 'ckanext-' > {}\n"
-                .format(name))
+                f"ERROR: Project name must start with 'ckanext-' > {name}\n"
+                )
         else:
             break
 
-    author = click.prompt(u"Author's name", default=u"")
-    email = click.prompt(u"Author's email", default=u"")
-    github = click.prompt(u"Your Github user or organization name",
-                          default=u"")
-    description = click.prompt(u"Brief description of the project",
-                               default=u"")
-    keywords = click.prompt(u"List of keywords (separated by spaces)",
-                            default=u"CKAN")
+    author = click.prompt("Author's name", default="")
+    email = click.prompt("Author's email", default="")
+    github = click.prompt("Your Github user or organization name",
+                          default="")
+    description = click.prompt("Brief description of the project",
+                               default="")
+    keywords = click.prompt("List of keywords (separated by spaces)",
+                            default="CKAN")
 
     # Ensure one instance of 'CKAN' in keywords
-    keywords = [u"CKAN"] + [
-        k for k in keywords.strip().split() if k.lower() != u"ckan"
+    keywords = ["CKAN"] + [
+        k for k in keywords.strip().split() if k.lower() != "ckan"
     ]
-    keywords = u' '.join(keywords)
+    keywords = ' '.join(keywords)
 
     # Set short name and plugin class name
-    project_short = name[8:].lower().replace(u'-', u'_')
-    plugin_class_name = project_short.title().replace(u'_', u'') + u'Plugin'
+    project_short = name[8:].lower().replace('-', '_')
+    plugin_class_name = project_short.title().replace('_', '') + 'Plugin'
 
     include_examples = int(click.confirm(
         "Do you want to include code examples?"))
@@ -107,8 +106,8 @@ def extension(output_dir: str):
         "_source": "cli",
     }
 
-    if output_dir == u'.':
-        os.chdir(u'../../../..')
+    if output_dir == '.':
+        os.chdir('../../../..')
         output_dir = os.getcwd()
 
     cookiecutter(template_loc, no_input=True, extra_context=context,
@@ -119,7 +118,7 @@ def extension(output_dir: str):
             os.path.join(
                 output_dir, context["project"], "ckanext", project_short))
 
-    click.echo(u"\nWritten: {}/{}".format(output_dir, name))
+    click.echo(f"\nWritten: {output_dir}/{name}")
 
 
 _code_examples = [
@@ -145,21 +144,21 @@ def remove_code_examples(root: str):
                 os.remove(path)
 
 
-@generate.command(name=u'config',
-                  short_help=u'Create a ckan.ini file.')
-@click.argument(u'output_path', nargs=1)
+@generate.command(name='config',
+                  short_help='Create a ckan.ini file.')
+@click.argument('output_path', nargs=1)
 @click.option('-i', '--include-plugin', multiple=True,
               help="Include config declaration from the given plugin")
 def make_config(output_path: str, include_plugin: list[str]):
-    u"""Generate a new CKAN configuration ini file."""
+    """Generate a new CKAN configuration ini file."""
 
     # Output to current directory if no path is specified
-    if u'/' not in output_path:
+    if '/' not in output_path:
         output_path = os.path.join(os.getcwd(), output_path)
 
     cur_loc = os.path.dirname(os.path.abspath(__file__))
-    template_loc = os.path.join(cur_loc, u'..', u'config',
-                                u'deployment.ini_tmpl')
+    template_loc = os.path.join(cur_loc, '..', 'config',
+                                'deployment.ini_tmpl')
 
     config_declaration._reset()
     config_declaration.load_core_declaration()
@@ -177,25 +176,25 @@ def make_config(output_path: str, include_plugin: list[str]):
             section="DEFAULT"
         )
     }
-    with open(template_loc, u'r') as file_in:
+    with open(template_loc) as file_in:
         template = string.Template(file_in.read())
         try:
-            with open(output_path, u'w') as file_out:
+            with open(output_path, 'w') as file_out:
                 file_out.writelines(template.substitute(variables))
-        except IOError as e:
+        except OSError as e:
             error_shout(e)
             raise click.Abort()
 
 
 @generate.command()
-@click.option(u"-p",
-              u"--plugin",
-              help=(u"Plugin's that requires migration"
-                    u"(name, used in `ckan.plugins` config section). "
-                    u"If not provided, core CKAN migration created instead."))
-@click.option(u"-m",
-              u"--message",
-              help=u"Message string to use with `revision`.")
+@click.option("-p",
+              "--plugin",
+              help=("Plugin's that requires migration"
+                    "(name, used in `ckan.plugins` config section). "
+                    "If not provided, core CKAN migration created instead."))
+@click.option("-m",
+              "--message",
+              help="Message string to use with `revision`.")
 @click.option(
     "--autogenerate",
     is_flag=True,
@@ -207,7 +206,7 @@ def migration(plugin: str, message: str, autogenerate: bool):
     """Create new alembic revision for DB migration.
     """
     if not config:
-        error_shout(u'Config is not loaded')
+        error_shout('Config is not loaded')
         raise click.Abort()
     alembic_config = CKANAlembicConfig(_resolve_alembic_config(plugin))
     assert alembic_config.config_file_name
@@ -215,7 +214,7 @@ def migration(plugin: str, message: str, autogenerate: bool):
     alembic_config.set_main_option("sqlalchemy.url", config["sqlalchemy.url"])
     alembic_config.set_main_option('script_location', migration_dir)
 
-    if not os.path.exists(os.path.join(migration_dir, u'script.py.mako')):
+    if not os.path.exists(os.path.join(migration_dir, 'script.py.mako')):
         alembic.command.init(alembic_config, migration_dir)
 
     rev = alembic.command.revision(
@@ -224,7 +223,7 @@ def migration(plugin: str, message: str, autogenerate: bool):
     rev_path = rev.path  # type: ignore
     click.secho(
         f"Revision file created. Now, you need to update it: \n\t{rev_path}",
-        fg=u"green")
+        fg="green")
 
 
 _factories = {
@@ -254,8 +253,8 @@ _factories = {
 @click.option("-n", "--fake-count", type=int, default=1,
               help="Number of entities to create")
 @click.pass_context
-def fake_data(ctx: click.Context, category: Optional[str],
-              factory_class: Optional[str], fake_count: int):
+def fake_data(ctx: click.Context, category: str | None,
+              factory_class: str | None, fake_count: int):
     """Generate random entities using test factories.
 
     First argument of this command can be either an import path of a
@@ -311,10 +310,7 @@ def fake_data(ctx: click.Context, category: Optional[str],
         raise click.Abort()
 
     if not isinstance(factory, type) or not issubclass(factory, CKANFactory):
-        error_shout("Factory must be a subclass of `{module}:{cls}`".format(
-            module=CKANFactory.__module__,
-            cls=CKANFactory.__name__,
-        ))
+        error_shout(f"Factory must be a subclass of `{CKANFactory.__module__}:{CKANFactory.__name__}`")
         raise click.Abort()
 
     try:

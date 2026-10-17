@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 '''Helper functions
 
@@ -22,8 +21,9 @@ import unicodedata
 
 from collections import defaultdict
 from typing import (
-    Any, Callable, Match, NoReturn, cast, Dict,
-    Iterable, Optional, TypeVar, Union)
+    Any, NoReturn, cast, Dict, Optional, TypeVar, Union)
+from re import Match
+from collections.abc import Callable, Iterable
 
 
 import dominate.tags as dom_tags
@@ -103,14 +103,12 @@ LEGACY_ROUTE_NAMES = {
 }
 
 
-class HelperAttributeDict(Dict[str, Callable[..., Any]]):
+class HelperAttributeDict(dict[str, Callable[..., Any]]):
     """Collection of CKAN native and extension-provided helpers.
     """
     def __missing__(self, key: str) -> NoReturn:
         raise ckan.exceptions.HelperError(
-            'Helper \'{key}\' has not been defined.'.format(
-                key=key
-            )
+            f'Helper \'{key}\' has not been defined.'
         )
 
     def __getattr__(self, key: str) -> Callable[..., Any]:
@@ -135,17 +133,17 @@ class literal(Markup):  # noqa
     __slots__ = ()
 
     @classmethod
-    def escape(cls, s: Optional[str]) -> Markup:
+    def escape(cls, s: str | None) -> Markup:
         if s is None:
-            return Markup(u"")
-        return super(literal, cls).escape(s)
+            return Markup("")
+        return super().escape(s)
 
 
-def core_helper(f: Helper, name: Optional[str] = None) -> Helper:
+def core_helper(f: Helper, name: str | None = None) -> Helper:
     """
     Register a function as a builtin helper method.
     """
-    def _get_name(func_or_class: Union[Callable[..., Any], type]) -> str:
+    def _get_name(func_or_class: Callable[..., Any] | type) -> str:
         # Handles both methods and class instances.
         try:
             return func_or_class.__name__
@@ -196,7 +194,7 @@ def chained_helper(func: Helper) -> Helper:
     return func
 
 
-def _datestamp_to_datetime(datetime_: Any) -> Optional[datetime.datetime]:
+def _datestamp_to_datetime(datetime_: Any) -> datetime.datetime | None:
     ''' Converts a datestamp to a datetime.  If a datetime is provided it
     just gets returned.
 
@@ -277,7 +275,7 @@ def redirect_to(*args: Any, **kw: Any) -> Response:
 
 
 @core_helper
-def get_site_protocol_and_host() -> Union[tuple[str, str], tuple[None, None]]:
+def get_site_protocol_and_host() -> tuple[str, str] | tuple[None, None]:
     '''Return the protocol and host of the configured `ckan.site_url`.
     This is needed to generate valid, full-qualified URLs.
 
@@ -448,19 +446,13 @@ def _url_for_flask(*args: Any, **kw: Any) -> str:
                             if value is None:
                                 continue
                             query_args.append(
-                                u'{}={}'.format(
-                                    quote(str(key)),
-                                    quote(str(value))
-                                )
+                                f'{quote(str(key))}={quote(str(value))}'
                             )
                     else:
                         if val is None:
                             continue
                         query_args.append(
-                            u'{}={}'.format(
-                                quote(str(key)),
-                                quote(str(val))
-                            )
+                            f'{quote(str(key))}={quote(str(val))}'
                         )
 
                 if query_args:
@@ -652,7 +644,7 @@ def current_url() -> str:
 
 
 @core_helper
-def lang() -> Optional[str]:
+def lang() -> str | None:
     ''' Return the language code for the current locale eg `en` '''
     return request.environ.get('CKAN_LANG')
 
@@ -808,7 +800,7 @@ def remove_locale_from_url(url: str) -> str:
 
 @core_helper
 def page_is_active(
-        menu_item: str, active_blueprints: Optional[list[str]] = None) -> bool:
+        menu_item: str, active_blueprints: list[str] | None = None) -> bool:
     '''
         Returns whether the current link is the active page or not.
 
@@ -888,7 +880,7 @@ def _preprocess_dom_attrs(attrs: dict[str, Any]) -> dict[str, Any]:
 
 
 @core_helper
-def link_to(label: Optional[str], url: str, **attrs: Any) -> Markup:
+def link_to(label: str | None, url: str, **attrs: Any) -> Markup:
     attrs = _preprocess_dom_attrs(attrs)
     attrs['href'] = url
     if label == '' or label is None:
@@ -897,7 +889,7 @@ def link_to(label: Optional[str], url: str, **attrs: Any) -> Markup:
 
 
 @core_helper
-def nav_link(text: str, *args: Any, **kwargs: Any) -> Union[Markup, str]:
+def nav_link(text: str, *args: Any, **kwargs: Any) -> Markup | str:
     '''
     :param class_: pass extra class(es) to add to the ``<a>`` tag
     :param icon: name of ckan icon to use within the link
@@ -923,8 +915,7 @@ def nav_link(text: str, *args: Any, **kwargs: Any) -> Union[Markup, str]:
 
 @core_helper
 def build_nav_main(
-    *args: Union[tuple[str, str], tuple[str, str, list[str]],
-                 tuple[str, str, list[str], str], ]
+    *args: tuple[str, str] | tuple[str, str, list[str]] | tuple[str, str, list[str], str]
 ) -> Markup:
 
     """Build a set of menu items.
@@ -1071,7 +1062,7 @@ def _humanize_activity(object_type: str, activity_type: str) -> str:
 
 @core_helper
 def humanize_entity_type(entity_type: str, object_type: str,
-                         purpose: str) -> Optional[str]:
+                         purpose: str) -> str | None:
     """Convert machine-readable representation of package/group type into
     human-readable form.
 
@@ -1126,41 +1117,41 @@ def humanize_entity_type(entity_type: str, object_type: str,
         return _humanize_activity(object_type, activity_type=purpose)
 
     log.debug(
-        u'Humanize %s of type %s for %s', entity_type, object_type, purpose)
+        'Humanize %s of type %s for %s', entity_type, object_type, purpose)
     templates = {
-        u'add link': _(u"Add {object_type}"),
-        u'add association link': _(u"Add to {object_type}"),
-        u'breadcrumb': _(u"{object_type}s"),
-        u'content tab': _(u"{object_type}s"),
-        u'create label': _(u"Create {object_type}"),
-        u'create title': _(u"Create {object_type}"),
-        u'delete confirmation': _(
-            u'Are you sure you want to delete this {object_type}?'),
-        u'description placeholder': _(
-            u"A little information about my {object_type}..."),
-        u'edit label': _(u"Edit {object_type}"),
-        u'facet label': _(u"{object_type}s"),
-        u'form label': _(u"{object_type} Form"),
-        u'main nav': _(u"{object_type}s"),
-        u'my label': _(u"My {object_type}s"),
-        u'view label': _("View {object_type}"),
-        u'name placeholder': _(u"My {object_type}"),
+        'add link': _("Add {object_type}"),
+        'add association link': _("Add to {object_type}"),
+        'breadcrumb': _("{object_type}s"),
+        'content tab': _("{object_type}s"),
+        'create label': _("Create {object_type}"),
+        'create title': _("Create {object_type}"),
+        'delete confirmation': _(
+            'Are you sure you want to delete this {object_type}?'),
+        'description placeholder': _(
+            "A little information about my {object_type}..."),
+        'edit label': _("Edit {object_type}"),
+        'facet label': _("{object_type}s"),
+        'form label': _("{object_type} Form"),
+        'main nav': _("{object_type}s"),
+        'my label': _("My {object_type}s"),
+        'view label': _("View {object_type}"),
+        'name placeholder': _("My {object_type}"),
         'no any objects': _(
             "There are currently no {object_type}s for this site."),
         'no associated label': _(
             'There are no {object_type}s associated with this dataset.'),
         'no description': _(
             'There is no description for this {object_type}.'),
-        u'no label': _(u"No {object_type}"),
-        u'page title': _(u"{object_type}s"),
-        u'save label': _(u"Save {object_type}"),
-        u'search placeholder': _(u'Search {object_type}s...'),
-        u'you not member': _(u'You are not a member of any {object_type}s.'),
-        u'user not member': _(u'User isn\'t a member of any {object_type}s.'),
-        u'update label': _(u"Update {object_type}"),
+        'no label': _("No {object_type}"),
+        'page title': _("{object_type}s"),
+        'save label': _("Save {object_type}"),
+        'search placeholder': _('Search {object_type}s...'),
+        'you not member': _('You are not a member of any {object_type}s.'),
+        'user not member': _('User isn\'t a member of any {object_type}s.'),
+        'update label': _("Update {object_type}"),
     }
 
-    type_label = object_type.replace(u"_", u" ").capitalize()
+    type_label = object_type.replace("_", " ").capitalize()
     if purpose not in templates:
         return type_label
 
@@ -1297,20 +1288,19 @@ def get_param_int(name: str, default: int = 0) -> int:
         return default
 
 
-def _url_with_params(url: str, params: Optional[Iterable[tuple[str,
-                                                               Any]]]) -> str:
+def _url_with_params(url: str, params: Iterable[tuple[str, Any]] | None) -> str:
     if not params:
         return url
     params = [(k, v.encode('utf-8') if isinstance(v, str) else str(v))
               for k, v in params]
-    return url + u'?' + urlencode(params)
+    return url + '?' + urlencode(params)
 
 
 @core_helper
 def sorted_extras(package_extras: list[dict[str, Any]],
                   auto_clean: bool = False,
-                  subs: Optional[dict[str, str]] = None,
-                  exclude: Optional[list[str]] = None
+                  subs: dict[str, str] | None = None,
+                  exclude: list[str] | None = None
                   ) -> list[tuple[str, Any]]:
     ''' Used for outputting package extras
 
@@ -1346,7 +1336,7 @@ def sorted_extras(package_extras: list[dict[str, Any]],
 
 @core_helper
 def check_access(
-        action: str, data_dict: Optional[dict[str, Any]] = None) -> bool:
+        action: str, data_dict: dict[str, Any] | None = None) -> bool:
     context: Context = {'user': current_user.name}
     if not data_dict:
         data_dict = {}
@@ -1360,9 +1350,9 @@ def check_access(
 
 
 @core_helper
-def linked_user(user: Union[str, model.User],
+def linked_user(user: str | model.User,
                 maxlength: int = 0,
-                avatar: int = 20) -> Union[Markup, str, None]:
+                avatar: int = 20) -> Markup | str | None:
     if not isinstance(user, model.User):
         user_name = str(user)
         user_obj = model.User.get(user_name)
@@ -1376,7 +1366,7 @@ def linked_user(user: Union[str, model.User],
         if maxlength and len(user.display_name) > maxlength:
             displayname = displayname[:maxlength] + '...'
 
-        return literal(u'{link}'.format(
+        return literal('{link}'.format(
             link=link_to(
                 displayname,
                 url_for('user.read', id=name)
@@ -1387,7 +1377,7 @@ def linked_user(user: Union[str, model.User],
 
 @core_helper
 def markdown_extract(text: str,
-                     extract_length: int = 190) -> Union[str, Markup]:
+                     extract_length: int = 190) -> str | Markup:
     ''' return the plain text representation of markdown encoded text.  That
     is the texted without any html tags.  If extract_length is 0 then it
     will not be truncated.'''
@@ -1421,7 +1411,7 @@ _VALID_GRAVATAR_DEFAULTS = ['404', 'mm', 'identicon', 'monsterid',
 @core_helper
 def gravatar(email_hash: str,
              size: int = 100,
-             default: Optional[str] = None) -> Markup:
+             default: str | None = None) -> Markup:
     if default is None:
         default = config.get('ckan.gravatar_default')
     assert default is not None
@@ -1473,7 +1463,7 @@ def sanitize_url(url: str):
 
 
 @core_helper
-def user_image(user_id: str, size: int = 100) -> Union[Markup, str]:
+def user_image(user_id: str, size: int = 100) -> Markup | str:
     try:
         user_dict = logic.get_action('user_show')(
             {'ignore_auth': True},
@@ -1501,7 +1491,7 @@ def user_image(user_id: str, size: int = 100) -> Union[Markup, str]:
 
 
 @core_helper
-def pager_url(page: int, partial: Optional[str] = None, **kwargs: Any) -> str:
+def pager_url(page: int, partial: str | None = None, **kwargs: Any) -> str:
     pargs = []
     pargs.append(request.endpoint)
     kwargs['page'] = page
@@ -1525,8 +1515,8 @@ def get_page_number(
             raise ValueError("Negative number not allowed")
     except ValueError:
         import ckan.lib.base as base
-        base.abort(400, ('"{key}" parameter must be a positive integer'
-                   .format(key=key)))
+        base.abort(400, (f'"{key}" parameter must be a positive integer'
+                   ))
 
     return p
 
@@ -1546,8 +1536,8 @@ def get_display_timezone() -> datetime.tzinfo:
 
 
 @core_helper
-def render_datetime(datetime_: Optional[datetime.datetime],
-                    date_format: Optional[str] = None,
+def render_datetime(datetime_: datetime.datetime | None,
+                    date_format: str | None = None,
                     with_hours: bool = False,
                     with_seconds: bool = False) -> str:
     '''Render a datetime object or timestamp string as a localised date or
@@ -1577,10 +1567,10 @@ def render_datetime(datetime_: Optional[datetime.datetime],
             year = str(datetime_.year)
 
             date_format = re.sub('(?<!%)((%%)*)%y',
-                                 r'\g<1>{year}'.format(year=year[-2:]),
+                                 rf'\g<1>{year[-2:]}',
                                  date_format)
             date_format = re.sub('(?<!%)((%%)*)%Y',
-                                 r'\g<1>{year}'.format(year=year),
+                                 rf'\g<1>{year}',
                                  date_format)
 
             datetime_ = datetime.datetime(2016, datetime_.month, datetime_.day,
@@ -1663,7 +1653,7 @@ def date_str_to_datetime(date_str: str) -> datetime.datetime:
 @core_helper
 def parse_rfc_2822_date(date_str: str,
                         assume_utc: bool = True
-                        ) -> Optional[datetime.datetime]:
+                        ) -> datetime.datetime | None:
     '''Parse a date string of the form specified in RFC 2822, and return a
     datetime.
 
@@ -1755,7 +1745,7 @@ def time_ago_from_timestamp(timestamp: int) -> str:
 
 @core_helper
 def dataset_display_name(
-        package_or_package_dict: Union[dict[str, Any], model.Package]) -> str:
+        package_or_package_dict: dict[str, Any] | model.Package) -> str:
 
     if isinstance(package_or_package_dict, dict):
         return get_translated(package_or_package_dict, 'title') or \
@@ -1768,7 +1758,7 @@ def dataset_display_name(
 
 @core_helper
 def dataset_link(
-        package_or_package_dict: Union[dict[str, Any], model.Package]
+        package_or_package_dict: dict[str, Any] | model.Package
 ) -> Markup:
     if isinstance(package_or_package_dict, dict):
         name = package_or_package_dict['name']
@@ -1779,7 +1769,7 @@ def dataset_link(
     text = dataset_display_name(package_or_package_dict)
     return link_to(
         text,
-        url_for('{}.read'.format(type_), id=name)
+        url_for(f'{type_}.read', id=name)
     )
 
 
@@ -1805,7 +1795,7 @@ def resource_link(resource_dict: dict[str, Any],
                   package_id: str,
                   package_type: str = 'dataset') -> Markup:
     text = resource_display_name(resource_dict)
-    url = url_for('{}_resource.read'.format(package_type),
+    url = url_for(f'{package_type}_resource.read',
                   id=package_id,
                   resource_id=resource_dict['id'])
     return link_to(text, url)
@@ -1813,7 +1803,7 @@ def resource_link(resource_dict: dict[str, Any],
 
 @core_helper
 def tag_link(tag: dict[str, Any], package_type: str = 'dataset') -> Markup:
-    url = url_for('{}.search'.format(package_type), tags=tag['name'])
+    url = url_for(f'{package_type}.search', tags=tag['name'])
     return link_to(tag.get('title', tag['name']), url)
 
 
@@ -1893,10 +1883,10 @@ def follow_count(obj_type: str, obj_id: str) -> int:
     return logic.get_action(action)(context, {'id': obj_id})
 
 
-def _create_url_with_params(params: Optional[Iterable[tuple[str, Any]]] = None,
-                            controller: Optional[str] = None,
-                            action: Optional[str] = None,
-                            extras: Optional[dict[str, Any]] = None):
+def _create_url_with_params(params: Iterable[tuple[str, Any]] | None = None,
+                            controller: str | None = None,
+                            action: str | None = None,
+                            extras: dict[str, Any] | None = None):
     """internal function for building urls with parameters."""
     if not extras:
         if not controller and not action:
@@ -1919,11 +1909,11 @@ def _create_url_with_params(params: Optional[Iterable[tuple[str, Any]]] = None,
 
 
 @core_helper
-def add_url_param(alternative_url: Optional[str] = None,
-                  controller: Optional[str] = None,
-                  action: Optional[str] = None,
-                  extras: Optional[dict[str, Any]] = None,
-                  new_params: Optional[dict[str, Any]] = None) -> str:
+def add_url_param(alternative_url: str | None = None,
+                  controller: str | None = None,
+                  action: str | None = None,
+                  extras: dict[str, Any] | None = None,
+                  new_params: dict[str, Any] | None = None) -> str:
     '''
     Adds extra parameters to existing ones
 
@@ -1949,13 +1939,13 @@ def add_url_param(alternative_url: Optional[str] = None,
 
 
 @core_helper
-def remove_url_param(key: Union[list[str], str],
-                     value: Optional[str] = None,
-                     replace: Optional[str] = None,
-                     controller: Optional[str] = None,
-                     action: Optional[str] = None,
-                     extras: Optional[dict[str, Any]] = None,
-                     alternative_url: Optional[str] = None) -> str:
+def remove_url_param(key: list[str] | str,
+                     value: str | None = None,
+                     replace: str | None = None,
+                     controller: str | None = None,
+                     action: str | None = None,
+                     extras: dict[str, Any] | None = None,
+                     alternative_url: str | None = None) -> str:
     ''' Remove one or multiple keys from the current parameters.
     The first parameter can be either a string with the name of the key to
     remove or a list of keys to remove.
@@ -2005,7 +1995,7 @@ def remove_url_param(key: Union[list[str], str],
 def groups_available(am_member: bool = False,
                      include_dataset_count: bool = False,
                      include_member_count: bool = False,
-                     user: Union[str, None] = None) -> list[dict[str, Any]]:
+                     user: str | None = None) -> list[dict[str, Any]]:
     '''Return a list of the groups that the user is authorized to edit.
 
     :param am_member: if True return only the groups the logged-in user is a
@@ -2034,7 +2024,7 @@ def groups_available(am_member: bool = False,
 def organizations_available(permission: str = 'manage_group',
                             include_dataset_count: bool = False,
                             include_member_count: bool = False,
-                            user: Union[str, None] = None
+                            user: str | None = None
                             ) -> list[dict[str, Any]]:
     '''Return a list of organizations that a user has the specified permission
     for. If no user is specified, the current user is used.
@@ -2059,11 +2049,11 @@ def member_count(group: str) -> int:
     '''Return the number of members belonging to the group'''
     context: Context = {}
     data_dict = {
-        u'id': group,
-        u'object_type': u'user'
+        'id': group,
+        'object_type': 'user'
     }
     try:
-        return len(logic.get_action(u'member_list')(context, data_dict))
+        return len(logic.get_action('member_list')(context, data_dict))
     except logic.NotAuthorized:
         return 0
 
@@ -2091,7 +2081,7 @@ def escape_js(str_to_escape: str) -> str:
 @core_helper
 def get_pkg_dict_extra(pkg_dict: dict[str, Any],
                        key: str,
-                       default: Optional[Any] = None) -> Any:
+                       default: Any | None = None) -> Any:
     '''Returns the value for the dataset extra with the provided key.
 
     If the key is not found, it returns a default value, which is None by
@@ -2113,7 +2103,7 @@ def get_pkg_dict_extra(pkg_dict: dict[str, Any],
 
 @core_helper
 def get_request_param(parameter_name: str,
-                      default: Optional[Any] = None) -> Any:
+                      default: Any | None = None) -> Any:
     ''' This function allows templates to access query string parameters
     from the request. This is useful for things like sort order in
     searches. '''
@@ -2186,7 +2176,7 @@ def html_auto_link(data: str) -> str:
 @core_helper
 def render_markdown(data: str,
                     auto_link: bool = True,
-                    allow_html: bool = False) -> Union[str, Markup]:
+                    allow_html: bool = False) -> str | Markup:
     ''' Returns the data as rendered markdown
 
     :param auto_link: Should ckan specific links be created e.g. `group:xxx`
@@ -2309,7 +2299,7 @@ def resource_view_is_filterable(resource_view: dict[str, Any]) -> bool:
 
 
 @core_helper
-def resource_view_get_fields(resource: dict[str, Any]) -> list["str"]:
+def resource_view_get_fields(resource: dict[str, Any]) -> list[str]:
     '''Returns sorted list of text and time fields of a datastore resource.'''
     if not resource.get('datastore_active'):
         return []
@@ -2619,12 +2609,12 @@ def resource_url_type(resource_id: str) -> str:
 
 
 @core_helper
-def check_config_permission(permission: str) -> Union[list[str], bool]:
+def check_config_permission(permission: str) -> list[str] | bool:
     return authz.check_config_permission(permission)
 
 
 @core_helper
-def get_organization(org: Optional[str] = None,
+def get_organization(org: str | None = None,
                      include_datasets: bool = False) -> dict[str, Any]:
     if org is None:
         return {}
@@ -2637,7 +2627,7 @@ def get_organization(org: Optional[str] = None,
 
 @core_helper
 def license_options(
-    existing_license_id: Optional[tuple[str, str]] = None
+    existing_license_id: tuple[str, str] | None = None
 ) -> list[tuple[str, str]]:
     '''Returns [(l.title, l.id), ...] for the licenses configured to be
     offered. Always includes the existing_license_id, if supplied.
@@ -2655,17 +2645,17 @@ def license_options(
 
 
 @core_helper
-def get_translated(data_dict: dict[str, Any], field: str) -> Union[str, Any]:
+def get_translated(data_dict: dict[str, Any], field: str) -> str | Any:
     language = i18n.get_lang()
     try:
-        return data_dict[field + u'_translated'][language]
+        return data_dict[field + '_translated'][language]
     except KeyError:
         pass
     # Check the base language, en_GB->en
     try:
         base_language = language.split('_')[0]
         if base_language != language:
-            return data_dict[field + u'_translated'][base_language]
+            return data_dict[field + '_translated'][base_language]
     except KeyError:
         pass
     return data_dict.get(field, '')
@@ -2673,15 +2663,15 @@ def get_translated(data_dict: dict[str, Any], field: str) -> Union[str, Any]:
 
 @core_helper
 def facets() -> list[str]:
-    u'''Returns a list of the current facet names'''
-    return config.get(u'search.facets')
+    '''Returns a list of the current facet names'''
+    return config.get('search.facets')
 
 
 @core_helper
 def mail_to(email_address: str, name: str) -> Markup:
     email = escape(email_address)
     author = escape(name)
-    html = Markup(u'<a href=mailto:{0}>{1}</a>'.format(email, author))
+    html = Markup(f'<a href=mailto:{email}>{author}</a>')
     return html
 
 
@@ -2727,7 +2717,7 @@ def load_plugin_helpers() -> None:
     for name, func_list in chained_helpers.items():
         if name not in helper_functions:
             raise logic.NotFound(
-                u'The helper %r is not found for chained helper' % (name))
+                'The helper %r is not found for chained helper' % (name))
         for func in reversed(func_list):
             new_func = functools.partial(
                 func, helper_functions[name])
@@ -2763,7 +2753,7 @@ def get_collaborators(package_id: str) -> list[tuple[str, str]]:
 @core_helper
 def can_update_owner_org(
         package_dict: dict[str, Any],
-        user_orgs: Optional[list[dict[str, Any]]] = None) -> bool:
+        user_orgs: list[dict[str, Any]] | None = None) -> bool:
 
     if not package_dict.get('id') or not package_dict.get('owner_org'):
         # We are either creating a dataset or it is an unowned dataset.
@@ -2803,8 +2793,8 @@ def decode_view_request_filters() -> dict[str, Any] | None:
         filterString = request.form.get('filters')
     if filterString is not None and len(filterString) > 0:
         filters = {}
-        for k_v in filterString.split(u'|'):
-            k, _sep, v = k_v.partition(u':')
+        for k_v in filterString.split('|'):
+            k, _sep, v = k_v.partition(':')
             if unquote(str(k)) in filters:
                 if unquote(str(v)) not in filters[unquote(str(k))]:
                     filters[unquote(str(k))].append(unquote(str(v)))
@@ -2815,8 +2805,8 @@ def decode_view_request_filters() -> dict[str, Any] | None:
 
 
 @core_helper
-def check_ckan_version(min_version: Optional[str] = None,
-                       max_version: Optional[str] = None):
+def check_ckan_version(min_version: str | None = None,
+                       max_version: str | None = None):
     """Return ``True`` if the CKAN version is greater than or equal to
     ``min_version`` and less than or equal to ``max_version``,
     return ``False`` otherwise.

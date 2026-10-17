@@ -1,4 +1,3 @@
-# encoding: utf-8
 """079 Resource revision index
 
 Revision ID: e0177a15d2c9

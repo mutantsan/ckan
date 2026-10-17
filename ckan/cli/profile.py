@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import re
 import traceback
@@ -63,7 +62,7 @@ def profile(url: str, user: str, cold: bool, best_of: int):
     import pstats
 
     stats = pstats.Stats(output_filename)
-    stats.sort_stats(u"cumulative")
+    stats.sort_stats("cumulative")
     stats.print_stats(0.1)  # show only top 10% of lines
-    click.secho(u"Only top 10% of lines shown")
-    click.secho(u"Written profile to: %s" % output_filename, fg=u"green")
+    click.secho("Only top 10% of lines shown")
+    click.secho("Written profile to: %s" % output_filename, fg="green")

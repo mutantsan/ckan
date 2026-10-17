@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import base64
 import os
@@ -18,7 +17,7 @@ import ckan.tests.factories as factories
 from ckan.common import config
 
 
-class MailerBase(object):
+class MailerBase:
     def mime_encode(self, msg, recipient_name, subtype='plain'):
         text = MIMEText(msg.encode("utf-8"), subtype, "utf-8")
         encoded_body = text.get_payload().strip()

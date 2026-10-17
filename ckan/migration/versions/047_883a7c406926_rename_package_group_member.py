@@ -1,4 +1,3 @@
-# encoding: utf-8
 """047 Rename package_group_member
 
 Revision ID: 883a7c406926

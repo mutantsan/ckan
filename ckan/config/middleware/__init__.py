@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 """WSGI app initialization"""
 from __future__ import annotations
@@ -18,10 +17,10 @@ log = logging.getLogger(__name__)
 
 # This is a test Flask request context to be used internally.
 # Do not use it!
-_internal_test_request_context: Optional[RequestContext] = None
+_internal_test_request_context: RequestContext | None = None
 
 
-def make_app(conf: Union[Config, CKANConfig]) -> CKANApp:
+def make_app(conf: Config | CKANConfig) -> CKANApp:
     '''
     Initialise the Flask app and wrap it in dispatcher middleware.
     '''

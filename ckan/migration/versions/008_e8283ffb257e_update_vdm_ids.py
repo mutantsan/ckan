@@ -1,4 +1,3 @@
-# encoding: utf-8
 """008 Update vdm ids
 
 Revision ID: e8283ffb257e

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """034 Resource group table
 
 Revision ID: 6c600693af5b

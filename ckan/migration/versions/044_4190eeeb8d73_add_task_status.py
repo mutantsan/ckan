@@ -1,4 +1,3 @@
-# encoding: utf-8
 """044 Add task status
 
 Revision ID: 4190eeeb8d73

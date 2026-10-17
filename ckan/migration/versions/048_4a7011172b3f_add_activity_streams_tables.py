@@ -1,4 +1,3 @@
-# encoding: utf-8
 """048 Add activity streams tables
 
 Revision ID: 4a7011172b3f

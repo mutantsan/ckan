@@ -1,4 +1,3 @@
-# encoding: utf-8
 
 import pytest
 
@@ -7,7 +6,7 @@ from ckan.tests import factories
 
 
 @pytest.mark.usefixtures("non_clean_db")
-class TestPackage(object):
+class TestPackage:
     def test_create(self):
         # Demonstrate creating a package.
         #
@@ -17,19 +16,19 @@ class TestPackage(object):
         # etc
 
         pkg = model.Package(name=factories.Dataset.stub().name)
-        pkg.notes = u"Some notes"
-        pkg.author = u"bob"
-        pkg.license_id = u"odc-by"
+        pkg.notes = "Some notes"
+        pkg.author = "bob"
+        pkg.license_id = "odc-by"
 
         model.Session.add(pkg)
         model.Session.commit()
         model.Session.remove()
 
         pkg = model.Package.by_name(pkg.name)
-        assert pkg.notes == u"Some notes"
-        assert pkg.author == u"bob"
-        assert pkg.license_id == u"odc-by"
-        assert pkg.license.title == u"Open Data Commons Attribution License"
+        assert pkg.notes == "Some notes"
+        assert pkg.author == "bob"
+        assert pkg.license_id == "odc-by"
+        assert pkg.license.title == "Open Data Commons Attribution License"
 
     def test_as_dict(self):
         pkg = model.Package.by_name(
@@ -46,30 +45,30 @@ class TestPackage(object):
 
     def test_update(self):
         dataset = factories.Dataset()
-        pkg = model.Package.by_name(dataset[u"name"])
+        pkg = model.Package.by_name(dataset["name"])
 
-        pkg.author = u"bob"
+        pkg.author = "bob"
         model.Session.commit()
         model.Session.remove()
 
-        pkg = model.Package.by_name(dataset[u"name"])
-        assert pkg.author == u"bob"
+        pkg = model.Package.by_name(dataset["name"])
+        assert pkg.author == "bob"
 
     def test_delete(self):
         group = factories.Group()
         dataset = factories.Dataset(
-            groups=[{u"id": group[u"id"]}],
-            tags=[{u"name": factories.Tag.stub().name}],
-            extras=[{u"key": u"subject", u"value": u"science"}],
+            groups=[{"id": group["id"]}],
+            tags=[{"name": factories.Tag.stub().name}],
+            extras=[{"key": "subject", "value": "science"}],
         )
-        pkg = model.Package.by_name(dataset[u"name"])
+        pkg = model.Package.by_name(dataset["name"])
 
         pkg.delete()
         model.Session.commit()
         model.Session.remove()
 
-        pkg = model.Package.by_name(dataset[u"name"])
-        assert pkg.state == u"deleted"
+        pkg = model.Package.by_name(dataset["name"])
+        assert pkg.state == "deleted"
 
         # it is removed from the group
         group = model.Group.get(group["id"])
@@ -81,7 +80,7 @@ class TestPackage(object):
             .filter_by(package_id=pkg.id)
             .all()[0]
         )
-        assert package_tag.state == u"active"
+        assert package_tag.state == "active"
 
         # it is removed from the tag
         tag = (
@@ -98,17 +97,17 @@ class TestPackage(object):
         dataset = factories.Dataset(
             resources=[
                 {
-                    u"url": u"http://example.com/image.png",
-                    u"format": u"png",
-                    u"name": u"Image 1",
+                    "url": "http://example.com/image.png",
+                    "format": "png",
+                    "name": "Image 1",
                 }
             ],
-            tags=[{u"name": tag_name}],
-            extras=[{u"key": u"subject", u"value": u"science"}],
-            groups=[{u"id": group[u"id"]}],
-            owner_org=org[u"id"],
+            tags=[{"name": tag_name}],
+            extras=[{"key": "subject", "value": "science"}],
+            groups=[{"id": group["id"]}],
+            owner_org=org["id"],
         )
-        pkg = model.Package.by_name(dataset[u"name"])
+        pkg = model.Package.by_name(dataset["name"])
 
         pkg.purge()
         model.Session.commit()
@@ -129,11 +128,11 @@ class TestPackage(object):
             .all()
         )
         # org remains, just not attached to the package
-        org = model.Group.get(org[u"id"])
+        org = model.Group.get(org["id"])
         assert org.packages() == []
         # tag object remains, just not attached to the package
         tag = model.Session.query(model.Tag).filter_by(name=tag_name).all()[0]
         assert tag.packages == []
         # group object remains, just not attached to the package
-        group = model.Group.get(group[u"id"])
+        group = model.Group.get(group["id"])
         assert group.packages() == []

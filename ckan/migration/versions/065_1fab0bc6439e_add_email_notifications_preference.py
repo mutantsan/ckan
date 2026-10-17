@@ -1,4 +1,3 @@
-# encoding: utf-8
 """065 Add email notifications preference
 
 Revision ID: 1fab0bc6439e

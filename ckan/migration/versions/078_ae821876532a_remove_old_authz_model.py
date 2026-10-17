@@ -1,4 +1,3 @@
-# encoding: utf-8
 """078 Remove old authz model
 
 Revision ID: ae821876532a

@@ -1,4 +1,3 @@
-# encoding: utf-8
 from __future__ import annotations
 
 import logging
@@ -35,22 +34,22 @@ from . import (
     file,
 )
 
-META_ATTR = u'_ckan_meta'
-CMD_TYPE_PLUGIN = u'plugin'
-CMD_TYPE_ENTRY = u'entry_point'
+META_ATTR = '_ckan_meta'
+CMD_TYPE_PLUGIN = 'plugin'
+CMD_TYPE_ENTRY = 'entry_point'
 
 log = logging.getLogger(__name__)
 
 _no_config_commands = [
-    [u'config-tool'],
-    [u'generate', u'config'],
-    [u'generate', u'extension'],
+    ['config-tool'],
+    ['generate', 'config'],
+    ['generate', 'extension'],
 ]
 
 
-class CtxObject(object):
+class CtxObject:
 
-    def __init__(self, conf: Optional[str] = None):
+    def __init__(self, conf: str | None = None):
         # Don't import `load_config` by itself, rather call it using
         # module so that it can be patched during tests
         raw_config = ckan_cli.load_config(conf)
@@ -63,8 +62,8 @@ class CtxObject(object):
 
 class ExtendableGroup(click.Group):
     _section_titles = {
-        CMD_TYPE_PLUGIN: u'Plugins',
-        CMD_TYPE_ENTRY: u'Entry points',
+        CMD_TYPE_PLUGIN: 'Plugins',
+        CMD_TYPE_ENTRY: 'Entry points',
     }
 
     def format_commands(
@@ -89,17 +88,17 @@ class ExtendableGroup(click.Group):
                 continue
             if cmd.hidden:
                 continue
-            help = cmd.short_help or u''
+            help = cmd.short_help or ''
 
             meta = getattr(cmd, META_ATTR, None)
             if meta:
-                ext_commands[meta[u'type']][meta[u'name']].append(
+                ext_commands[meta['type']][meta['name']].append(
                     (subcommand, help))
             else:
                 commands.append((subcommand, help))
 
         if commands:
-            with formatter.section(u'Commands'):
+            with formatter.section('Commands'):
                 formatter.write_dl(commands)
 
         for section, group in ext_commands.items():
@@ -133,7 +132,7 @@ def _init_ckan_config(ctx: click.Context, param: str, value: str):
     _add_external_commands(ctx)
 
 
-def _add_ctx_object(ctx: click.Context, path: Optional[str] = None):
+def _add_ctx_object(ctx: click.Context, path: str | None = None):
     """Initialize CKAN App using config file available under provided path.
 
     """
@@ -170,7 +169,7 @@ def _command_with_ckan_meta(cmd: click.Command, name: str, type_: str):
 
     This information is used when CLI help text is generated.
     """
-    setattr(cmd, META_ATTR, {u'name': name, u'type': type_})
+    setattr(cmd, META_ATTR, {'name': name, 'type': type_})
     return cmd
 
 
@@ -190,16 +189,13 @@ def _get_commands_from_entry_point(entry_point: str = 'ckan.click_command'):
     registered_entries = {}
     for entry in entry_points(group=entry_point):
         if entry.name in registered_entries:
-            error_shout((
-                u'Attempt to override entry_point `{name}`.\n'
-                u'First encounter:\n\t{first!r}\n'
-                u'Second encounter:\n\t{second!r}\n'
-                u'Either uninstall one of mentioned extensions or update'
-                u' corresponding `setup.py` and re-install the extension.'
-            ).format(
-                name=entry.name,
-                first=registered_entries[entry.name].dist,
-                second=entry.dist))
+            error_shout(
+                f'Attempt to override entry_point `{entry.name}`.\n'
+                f'First encounter:\n\t{registered_entries[entry.name].dist!r}\n'
+                f'Second encounter:\n\t{entry.dist!r}\n'
+                'Either uninstall one of mentioned extensions or update'
+                ' corresponding `setup.py` and re-install the extension.'
+            )
             raise click.Abort()
         registered_entries[entry.name] = entry
 
@@ -208,10 +204,10 @@ def _get_commands_from_entry_point(entry_point: str = 'ckan.click_command'):
 
 @click.group(cls=ExtendableGroup)
 @click.option(
-    u'-c', u'--config', metavar=u'CONFIG',
+    '-c', '--config', metavar='CONFIG',
     is_eager=True, callback=_init_ckan_config, expose_value=False,
-    help=u'Config file to use (default: ckan.ini)')
-@click.help_option(u'-h', u'--help')
+    help='Config file to use (default: ckan.ini)')
+@click.help_option('-h', '--help')
 def ckan():
     pass
 
