@@ -21,7 +21,7 @@ import unicodedata
 
 from collections import defaultdict
 from typing import (
-    Any, NoReturn, cast, Dict, Optional, TypeVar, Union)
+    Any, NoReturn, cast, TypeVar)
 from re import Match
 from collections.abc import Callable, Iterable
 

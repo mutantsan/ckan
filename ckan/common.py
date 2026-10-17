@@ -12,7 +12,7 @@ import logging
 from collections.abc import MutableMapping, Iterable
 
 from typing import (
-    Any, Optional, TYPE_CHECKING,
+    Any, TYPE_CHECKING,
     TypeVar, cast, overload, Union)
 from typing import Literal
 

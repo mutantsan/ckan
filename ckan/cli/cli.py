@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from typing import Optional
 from importlib.metadata import entry_points
 
 import click

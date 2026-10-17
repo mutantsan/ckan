@@ -1,7 +1,6 @@
 
 import datetime
 import pytz
-from typing import Optional
 
 from flask_babel import (
     format_decimal,

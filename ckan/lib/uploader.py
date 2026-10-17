@@ -7,7 +7,7 @@ import logging
 import magic
 import mimetypes
 from pathlib import Path
-from typing import Any, IO, Optional
+from typing import Any, IO
 from urllib.parse import urlparse
 
 import file_keeper as fk

@@ -6,7 +6,7 @@ Functions and data structures that are needed for the ckan data preview.
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Iterable
 
 from urllib.parse import urlparse

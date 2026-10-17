@@ -98,7 +98,7 @@ import operator
 import unittest.mock as mock
 
 from functools import partial
-from typing import Any, Optional
+from typing import Any
 
 import factory
 import sqlalchemy as sa

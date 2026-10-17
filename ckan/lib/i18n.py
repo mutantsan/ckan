@@ -41,7 +41,7 @@ import json
 import logging
 import os
 import os.path
-from typing import Any, Optional
+from typing import Any
 
 from babel import Locale
 from babel.core import (LOCALE_ALIASES,

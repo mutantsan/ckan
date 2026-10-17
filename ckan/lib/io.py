@@ -7,7 +7,7 @@ import hashlib
 import os
 import sys
 import tempfile
-from typing import Any, Union
+from typing import Any
 
 from ckan.common import config
 from ckan.exceptions import CkanConfigurationException

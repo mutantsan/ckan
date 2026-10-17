@@ -7,8 +7,7 @@ import logging
 import random
 import re
 import datetime
-from socket import error as socket_error
-from typing import Any, Union, cast
+from typing import Any, cast
 
 import six
 

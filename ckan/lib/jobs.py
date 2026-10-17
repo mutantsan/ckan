@@ -19,7 +19,7 @@ prefixed names. Use the functions ``add_queue_name_prefix`` and
 from __future__ import annotations
 
 import logging
-from typing import Any, Union, Optional, cast
+from typing import Any, cast
 from collections.abc import Callable, Iterable
 
 import rq

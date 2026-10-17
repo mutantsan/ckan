@@ -7,7 +7,7 @@ Provides functions for rendering templates, aborting the request, etc.
 from __future__ import annotations
 
 import logging
-from typing import Any, NoReturn, Optional
+from typing import Any, NoReturn
 
 from jinja2.exceptions import TemplateNotFound, TemplatesNotFound
 

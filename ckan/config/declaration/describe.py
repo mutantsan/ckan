@@ -38,7 +38,7 @@ avoided unless you have an irresistible desire to hack into CKAN core.
 
 import abc
 from io import StringIO
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any
 from collections.abc import Callable
 
 from .key import Key, Pattern, Wildcard

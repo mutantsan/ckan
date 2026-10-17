@@ -6,7 +6,7 @@ import logging
 import warnings
 import pytz
 
-from typing import Union, cast
+from typing import cast
 
 from sqlalchemy import engine_from_config, inspect
 import sqlalchemy.exc

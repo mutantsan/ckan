@@ -3,7 +3,7 @@ option.
 
 """
 import fnmatch
-from typing import Any, Tuple, Union
+from typing import Any
 from collections.abc import Iterable
 
 

@@ -6,7 +6,7 @@ from collections import OrderedDict
 from functools import partial
 from typing import TypeAlias
 from urllib.parse import urlencode
-from typing import Any, Optional, Union
+from typing import Any, Union
 from collections.abc import Iterable
 
 from flask import Blueprint

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections import OrderedDict
-from typing import Any, Optional, Union
+from typing import Any
 
 from urllib.parse import urlencode
 import csv

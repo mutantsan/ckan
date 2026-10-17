@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import enum
-from typing import Any, Generic, Optional, TypeVar, cast
+from typing import Any, Generic, TypeVar, cast
 
 from typing_extensions import Self
 

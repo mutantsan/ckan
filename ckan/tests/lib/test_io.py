@@ -1,5 +1,4 @@
 import hashlib
-import io
 import os.path
 import shutil
 import tempfile

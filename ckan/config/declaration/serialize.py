@@ -22,7 +22,7 @@ avoided unless you have an irresistible desire to hack into CKAN core.
 """
 import os
 import logging
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 from collections.abc import Callable
 
 import ckan

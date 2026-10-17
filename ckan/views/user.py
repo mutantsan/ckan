@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional, Union
+from typing import Any
 
 from flask import Blueprint, current_app
 from flask.views import MethodView

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Union, List, Tuple
+from typing import Any
 
 from flask import Blueprint
 from flask.views import MethodView

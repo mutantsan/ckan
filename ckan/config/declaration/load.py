@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import logging
 import pathlib
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any
 from collections.abc import Callable
 from typing_extensions import TypedDict
 import msgspec

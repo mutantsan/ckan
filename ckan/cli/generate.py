@@ -5,7 +5,6 @@ import os
 import json
 from packaging.version import Version
 import shutil
-from typing import Optional
 
 import alembic.command
 import click

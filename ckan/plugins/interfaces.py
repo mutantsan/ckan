@@ -6,8 +6,7 @@ extend CKAN.
 from __future__ import annotations
 
 from typing import (
-    Any, IO, Optional,
-    TYPE_CHECKING, Tuple, Union, List
+    Any, IO, TYPE_CHECKING, Union
 )
 from collections.abc import Callable, Iterable, Mapping, Sequence
 

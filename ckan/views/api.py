@@ -3,10 +3,9 @@ from __future__ import annotations
 import os
 import logging
 import html
-import io
 import datetime
 
-from typing import Any, Optional, Union
+from typing import Any
 from collections.abc import Callable
 
 from flask import Blueprint, make_response

@@ -3,13 +3,12 @@ from __future__ import annotations
 import codecs
 import os
 import smtplib
-import socket
 import ssl
 import logging
 import mimetypes
 from urllib.parse import urlparse
 from time import time
-from typing import Any, Optional, Tuple, Union, IO
+from typing import Any, Union, IO
 from collections.abc import Iterable
 
 from email.message import EmailMessage

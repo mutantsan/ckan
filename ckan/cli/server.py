@@ -4,7 +4,6 @@ import glob
 import itertools
 import logging
 import warnings
-from typing import Optional
 from collections.abc import Iterable
 
 import click

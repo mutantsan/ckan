@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
-from typing import (Any, Optional, Union)
+from typing import (Any)
 from collections.abc import Callable, Iterable, Sequence
 
 from ckan.common import _

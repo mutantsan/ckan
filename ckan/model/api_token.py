@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import datetime
 from secrets import token_urlsafe
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import types, Column, Table, ForeignKey, orm
 from sqlalchemy.dialects.postgresql import JSONB

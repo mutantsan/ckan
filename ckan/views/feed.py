@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import json
 import unicodedata
-from typing import Optional, Any
+from typing import Any
 
 
 from urllib.parse import urlparse

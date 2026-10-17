@@ -6,7 +6,6 @@
 
 import os.path
 import re
-from typing import Union
 
 from ckan import model
 from ckan.lib.io import decode_path
